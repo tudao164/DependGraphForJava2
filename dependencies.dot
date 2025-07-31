@@ -1,0 +1,64 @@
+digraph JavaDependencies {
+    rankdir=LR;
+    node [shape=box, style=filled, fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial", fontsize=9, color=darkblue];
+    graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
+
+    "UserController" [label="UserController\n(UserController)", URL="javascript:showNodeInfo('UserController')", fillcolor="lightblue"];
+    "DatabaseConfig" [label="DatabaseConfig\n(DatabaseConfig)", URL="javascript:showNodeInfo('DatabaseConfig')", fillcolor="lightblue"];
+    "Order" [label="Order\n(Order)", URL="javascript:showNodeInfo('Order')", fillcolor="lightblue"];
+    "UserService" [label="UserService\n(UserService)", URL="javascript:showNodeInfo('UserService')", fillcolor="lightblue"];
+    "OrderService" [label="OrderService\n(OrderService)", URL="javascript:showNodeInfo('OrderService')", fillcolor="lightblue"];
+    "Main" [label="Main\n(Main)", URL="javascript:showNodeInfo('Main')", fillcolor="lightblue"];
+    "Product" [label="Product\n(Product)", URL="javascript:showNodeInfo('Product')", fillcolor="lightblue"];
+    "AppConfig" [label="AppConfig\n(AppConfig)", URL="javascript:showNodeInfo('AppConfig')", fillcolor="lightblue"];
+    "Category" [label="Category\n(Category)", URL="javascript:showNodeInfo('Category')", fillcolor="lightblue"];
+    "OrderController" [label="OrderController\n(OrderController)", URL="javascript:showNodeInfo('OrderController')", fillcolor="lightblue"];
+    "ProductRepository" [label="ProductRepository\n(ProductRepository)", URL="javascript:showNodeInfo('ProductRepository')", fillcolor="lightblue"];
+    "PaymentValidator" [label="PaymentValidator\n(PaymentValidator)", URL="javascript:showNodeInfo('PaymentValidator')", fillcolor="lightblue"];
+    "OrderRepository" [label="OrderRepository\n(OrderRepository)", URL="javascript:showNodeInfo('OrderRepository')", fillcolor="lightblue"];
+    "User" [label="User\n(User)", URL="javascript:showNodeInfo('User')", fillcolor="lightblue"];
+    "PaymentService" [label="PaymentService\n(PaymentService)", URL="javascript:showNodeInfo('PaymentService')", fillcolor="lightblue"];
+    "NotificationService" [label="NotificationService\n(NotificationService)", URL="javascript:showNodeInfo('NotificationService')", fillcolor="lightblue"];
+    "UserDTO" [label="UserDTO\n(UserDTO)", URL="javascript:showNodeInfo('UserDTO')", fillcolor="lightblue"];
+    "Address" [label="Address\n(Address)", URL="javascript:showNodeInfo('Address')", fillcolor="lightblue"];
+    "UserRepository" [label="UserRepository\n(UserRepository)", URL="javascript:showNodeInfo('UserRepository')", fillcolor="lightblue"];
+    "OrderDTO" [label="OrderDTO\n(OrderDTO)", URL="javascript:showNodeInfo('OrderDTO')", fillcolor="lightblue"];
+    "InvalidOrderException" [label="InvalidOrderException\n(InvalidOrderException)", URL="javascript:showNodeInfo('InvalidOrderException')", fillcolor="lightblue"];
+    "InvalidInputException" [label="InvalidInputException\n(InvalidInputException)", URL="javascript:showNodeInfo('InvalidInputException')", fillcolor="lightblue"];
+    "StringUtils" [label="StringUtils\n(StringUtils)", URL="javascript:showNodeInfo('StringUtils')", fillcolor="lightblue"];
+
+    // Dependencies with method calls
+    "Main" -> "AppConfig" [label="new AppConfig()", URL="javascript:showEdgeInfo('Main', 'AppConfig')"];
+    "Main" -> "UserController" [label="new UserController()", URL="javascript:showEdgeInfo('Main', 'UserController')"];
+    "Main" -> "OrderController" [label="new OrderController()", URL="javascript:showEdgeInfo('Main', 'OrderController')"];
+    "OrderController" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('OrderController', 'StringUtils')"];
+    "OrderController" -> "InvalidInputException" [label="new InvalidInputException()", URL="javascript:showEdgeInfo('OrderController', 'InvalidInputException')"];
+    "OrderController" -> "OrderDTO" [label="new OrderDTO()", URL="javascript:showEdgeInfo('OrderController', 'OrderDTO')"];
+    "UserController" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('UserController', 'StringUtils')"];
+    "UserController" -> "InvalidInputException" [label="new InvalidInputException()", URL="javascript:showEdgeInfo('UserController', 'InvalidInputException')"];
+    "UserController" -> "UserDTO" [label="new UserDTO()", URL="javascript:showEdgeInfo('UserController', 'UserDTO')"];
+    "Address" -> "StringUtils" [label="sanitize", URL="javascript:showEdgeInfo('Address', 'StringUtils')"];
+    "Category" -> "StringUtils" [label="sanitize", URL="javascript:showEdgeInfo('Category', 'StringUtils')"];
+    "Order" -> "InvalidOrderException" [label="new InvalidOrderException()", URL="javascript:showEdgeInfo('Order', 'InvalidOrderException')"];
+    "Product" -> "StringUtils" [label="sanitize", URL="javascript:showEdgeInfo('Product', 'StringUtils')"];
+    "User" -> "StringUtils" [label="sanitize", URL="javascript:showEdgeInfo('User', 'StringUtils')"];
+    "NotificationService" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('NotificationService', 'StringUtils')"];
+    "OrderService" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('OrderService', 'StringUtils')"];
+    "OrderService" -> "InvalidOrderException" [label="new InvalidOrderException()", URL="javascript:showEdgeInfo('OrderService', 'InvalidOrderException')"];
+    "OrderService" -> "Order" [label="new Order()", URL="javascript:showEdgeInfo('OrderService', 'Order')"];
+    "UserService" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('UserService', 'StringUtils')"];
+    "UserService" -> "InvalidInputException" [label="new InvalidInputException()", URL="javascript:showEdgeInfo('UserService', 'InvalidInputException')"];
+    "UserService" -> "User" [label="new User()", URL="javascript:showEdgeInfo('UserService', 'User')"];
+    "AppConfig" -> "DatabaseConfig" [label="new DatabaseConfig()", URL="javascript:showEdgeInfo('AppConfig', 'DatabaseConfig')"];
+    "AppConfig" -> "UserRepository" [label="new UserRepository()", URL="javascript:showEdgeInfo('AppConfig', 'UserRepository')"];
+    "AppConfig" -> "OrderRepository" [label="new OrderRepository()", URL="javascript:showEdgeInfo('AppConfig', 'OrderRepository')"];
+    "AppConfig" -> "ProductRepository" [label="new ProductRepository()", URL="javascript:showEdgeInfo('AppConfig', 'ProductRepository')"];
+    "AppConfig" -> "NotificationService" [label="new NotificationService()", URL="javascript:showEdgeInfo('AppConfig', 'NotificationService')"];
+    "AppConfig" -> "PaymentService" [label="new PaymentService()", URL="javascript:showEdgeInfo('AppConfig', 'PaymentService')"];
+    "AppConfig" -> "PaymentValidator" [label="new PaymentValidator()", URL="javascript:showEdgeInfo('AppConfig', 'PaymentValidator')"];
+    "AppConfig" -> "UserService" [label="new UserService()", URL="javascript:showEdgeInfo('AppConfig', 'UserService')"];
+    "AppConfig" -> "OrderService" [label="new OrderService()", URL="javascript:showEdgeInfo('AppConfig', 'OrderService')"];
+    "DatabaseConfig" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('DatabaseConfig', 'StringUtils')"];
+    "PaymentValidator" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('PaymentValidator', 'StringUtils')"];
+}

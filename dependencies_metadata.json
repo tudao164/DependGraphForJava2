@@ -1,0 +1,490 @@
+{
+  "project_info": {
+    "source_directory": "java-test-project2\\src\\main\\java\\com\\example\\ecommerce",
+    "total_files": 23,
+    "total_classes": 50,
+    "analysis_date": "D:\\ThucTap\\GenerateGraph2",
+    "custom_nodes": 0,
+    "custom_edges": 0
+  },
+  "files": {
+    "UserController": {
+      "classes": [
+        "UserController"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "isEmpty",
+          "isEmpty",
+          "isEmpty"
+        ],
+        "InvalidInputException": [
+          "new InvalidInputException()",
+          "new InvalidInputException()"
+        ],
+        "UserDTO": [
+          "new UserDTO()"
+        ]
+      },
+      "incoming_calls": {
+        "Main": [
+          "new UserController()"
+        ]
+      },
+      "is_custom": false
+    },
+    "DatabaseConfig": {
+      "classes": [
+        "DatabaseConfig"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "isEmpty",
+          "isEmpty"
+        ]
+      },
+      "incoming_calls": {
+        "AppConfig": [
+          "new DatabaseConfig()"
+        ]
+      },
+      "is_custom": false
+    },
+    "Order": {
+      "classes": [
+        "Order"
+      ],
+      "outgoing_calls": {
+        "InvalidOrderException": [
+          "new InvalidOrderException()"
+        ]
+      },
+      "incoming_calls": {
+        "OrderService": [
+          "new Order()"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserService": {
+      "classes": [
+        "UserService"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "isEmpty",
+          "isEmpty",
+          "isEmpty",
+          "isEmpty"
+        ],
+        "InvalidInputException": [
+          "new InvalidInputException()",
+          "new InvalidInputException()",
+          "new InvalidInputException()"
+        ],
+        "User": [
+          "new User()"
+        ]
+      },
+      "incoming_calls": {
+        "AppConfig": [
+          "new UserService()"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderService": {
+      "classes": [
+        "OrderService"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "isEmpty"
+        ],
+        "InvalidOrderException": [
+          "new InvalidOrderException()",
+          "new InvalidOrderException()",
+          "new InvalidOrderException()",
+          "new InvalidOrderException()"
+        ],
+        "Order": [
+          "new Order()"
+        ]
+      },
+      "incoming_calls": {
+        "AppConfig": [
+          "new OrderService()"
+        ]
+      },
+      "is_custom": false
+    },
+    "Main": {
+      "classes": [
+        "Main"
+      ],
+      "outgoing_calls": {
+        "AppConfig": [
+          "new AppConfig()"
+        ],
+        "UserController": [
+          "new UserController()"
+        ],
+        "OrderController": [
+          "new OrderController()"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "Product": {
+      "classes": [
+        "Product"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "sanitize",
+          "sanitize"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "AppConfig": {
+      "classes": [
+        "AppConfig"
+      ],
+      "outgoing_calls": {
+        "DatabaseConfig": [
+          "new DatabaseConfig()"
+        ],
+        "UserRepository": [
+          "new UserRepository()"
+        ],
+        "OrderRepository": [
+          "new OrderRepository()"
+        ],
+        "ProductRepository": [
+          "new ProductRepository()"
+        ],
+        "NotificationService": [
+          "new NotificationService()"
+        ],
+        "PaymentService": [
+          "new PaymentService()"
+        ],
+        "PaymentValidator": [
+          "new PaymentValidator()"
+        ],
+        "UserService": [
+          "new UserService()"
+        ],
+        "OrderService": [
+          "new OrderService()"
+        ]
+      },
+      "incoming_calls": {
+        "Main": [
+          "new AppConfig()"
+        ]
+      },
+      "is_custom": false
+    },
+    "Category": {
+      "classes": [
+        "Category"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "OrderController": {
+      "classes": [
+        "OrderController"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "isEmpty",
+          "isEmpty"
+        ],
+        "InvalidInputException": [
+          "new InvalidInputException()"
+        ],
+        "OrderDTO": [
+          "new OrderDTO()"
+        ]
+      },
+      "incoming_calls": {
+        "Main": [
+          "new OrderController()"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductRepository": {
+      "classes": [
+        "ProductRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "AppConfig": [
+          "new ProductRepository()"
+        ]
+      },
+      "is_custom": false
+    },
+    "PaymentValidator": {
+      "classes": [
+        "PaymentValidator"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "isEmpty"
+        ]
+      },
+      "incoming_calls": {
+        "AppConfig": [
+          "new PaymentValidator()"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderRepository": {
+      "classes": [
+        "OrderRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "AppConfig": [
+          "new OrderRepository()"
+        ]
+      },
+      "is_custom": false
+    },
+    "User": {
+      "classes": [
+        "User"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize"
+        ]
+      },
+      "incoming_calls": {
+        "UserService": [
+          "new User()"
+        ]
+      },
+      "is_custom": false
+    },
+    "PaymentService": {
+      "classes": [
+        "PaymentService"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "AppConfig": [
+          "new PaymentService()"
+        ]
+      },
+      "is_custom": false
+    },
+    "NotificationService": {
+      "classes": [
+        "NotificationService"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "isEmpty"
+        ]
+      },
+      "incoming_calls": {
+        "AppConfig": [
+          "new NotificationService()"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserDTO": {
+      "classes": [
+        "UserDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "new UserDTO()"
+        ]
+      },
+      "is_custom": false
+    },
+    "Address": {
+      "classes": [
+        "Address"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "UserRepository": {
+      "classes": [
+        "UserRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "AppConfig": [
+          "new UserRepository()"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderDTO": {
+      "classes": [
+        "OrderDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "new OrderDTO()"
+        ]
+      },
+      "is_custom": false
+    },
+    "InvalidOrderException": {
+      "classes": [
+        "InvalidOrderException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "Order": [
+          "new InvalidOrderException()"
+        ],
+        "OrderService": [
+          "new InvalidOrderException()",
+          "new InvalidOrderException()",
+          "new InvalidOrderException()",
+          "new InvalidOrderException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "InvalidInputException": {
+      "classes": [
+        "InvalidInputException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "new InvalidInputException()"
+        ],
+        "UserController": [
+          "new InvalidInputException()",
+          "new InvalidInputException()"
+        ],
+        "UserService": [
+          "new InvalidInputException()",
+          "new InvalidInputException()",
+          "new InvalidInputException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "StringUtils": {
+      "classes": [
+        "StringUtils"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "isEmpty",
+          "isEmpty"
+        ],
+        "UserController": [
+          "isEmpty",
+          "isEmpty",
+          "isEmpty"
+        ],
+        "Address": [
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize"
+        ],
+        "Category": [
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize"
+        ],
+        "Product": [
+          "sanitize",
+          "sanitize"
+        ],
+        "User": [
+          "sanitize",
+          "sanitize",
+          "sanitize",
+          "sanitize"
+        ],
+        "NotificationService": [
+          "isEmpty"
+        ],
+        "OrderService": [
+          "isEmpty"
+        ],
+        "UserService": [
+          "isEmpty",
+          "isEmpty",
+          "isEmpty",
+          "isEmpty"
+        ],
+        "DatabaseConfig": [
+          "isEmpty",
+          "isEmpty"
+        ],
+        "PaymentValidator": [
+          "isEmpty"
+        ]
+      },
+      "is_custom": false
+    }
+  },
+  "statistics": {
+    "most_connected_files": [],
+    "method_call_summary": {}
+  },
+  "editing": {
+    "hidden_nodes": [],
+    "hidden_edges": [],
+    "custom_colors": {},
+    "custom_nodes": {},
+    "custom_edges": {}
+  }
+}
