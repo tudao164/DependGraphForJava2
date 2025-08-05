@@ -94,29 +94,43 @@ class WebUIServer:
                 """Get list of all functions for selection"""
                 functions = []
                 
-                # Lấy tất cả classes (bao gồm services)
+                # Lấy tất cả classes
                 for class_name, file_path in self.analyzer.classes.items():
                     rel_path = str(Path(file_path).relative_to(self.analyzer.source_directory))
-                    
-                    # Xác định type: service nếu tên kết thúc bằng Service, ngược lại là class
-                    func_type = 'service' if class_name.endswith('Service') else 'class'
-                    
                     functions.append({
-                        'id': f'class_{class_name}',  # Tất cả đều dùng prefix 'class_'
+                        'id': f'class_{class_name}',
                         'name': class_name,
-                        'type': func_type,
+                        'type': 'class',
                         'file': rel_path,
                         'dependencies': len(self.analyzer.imports.get(file_path, set()))
                     })
                 
+                # Thêm services (classes có tên kết thúc bằng Service) - avoid duplicates
+                service_functions = []
+                for class_name, file_path in self.analyzer.classes.items():
+                    if class_name.endswith('Service'):
+                        rel_path = str(Path(file_path).relative_to(self.analyzer.source_directory))
+                        # Check if already added as class
+                        class_id = f'class_{class_name}'
+                        if not any(f['id'] == class_id for f in functions):
+                            service_functions.append({
+                                'id': f'service_{class_name}',
+                                'name': class_name,
+                                'type': 'service',
+                                'file': rel_path,
+                                'dependencies': len(self.analyzer.imports.get(file_path, set()))
+                            })
+                
+                functions.extend(service_functions)
+                
                 # Thêm methods từ method_calls - limit to avoid too many items
                 method_count = 0
                 for source_file, targets in self.analyzer.method_calls.items():
-                    if method_count >= 100:  # Tăng limit lên 100
+                    if method_count >= 50:  # Limit to 50 methods to avoid overwhelming UI
                         break
                     for target_file, methods in targets.items():
                         for method in methods:
-                            if method_count >= 100:
+                            if method_count >= 50:
                                 break
                             source_rel = str(Path(source_file).relative_to(self.analyzer.source_directory))
                             target_rel = str(Path(target_file).relative_to(self.analyzer.source_directory))
@@ -129,7 +143,7 @@ class WebUIServer:
                             })
                             method_count += 1
                 
-                # Remove duplicates based on ID
+                # Remove duplicates
                 unique_functions = {}
                 for func in functions:
                     if func['id'] not in unique_functions:

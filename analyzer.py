@@ -637,3 +637,144 @@ class EnhancedJavaDependencyAnalyzer:
                 print(f"  {i}. {file_name}: {count} calls")
         
         print(f"{'='*50}")
+    
+    def filter_by_selection(self, selected_functions):
+        """Filter the analyzer data based on selected functions"""
+        
+        # Nếu không có gì được chọn, không filter
+        if not selected_functions:
+            print("⚠️ No functions selected, keeping all data")
+            return
+            
+        print(f"🔍 Processing {len(selected_functions)} selected functions...")
+        
+        # Parse selected function IDs
+        selected_classes = set()
+        selected_methods = set()
+        selected_services = set()
+        
+        for func_id in selected_functions:
+            if func_id.startswith('class_'):
+                class_name = func_id[6:]  # Remove 'class_' prefix
+                selected_classes.add(class_name)
+            elif func_id.startswith('method_'):
+                # Parse method_<method_name>_<source_file>_<target_file>
+                parts = func_id.split('_', 3)  # Split max 3 times
+                if len(parts) >= 4:
+                    method_name = parts[1]
+                    source_rel = parts[2]
+                    target_rel = parts[3]
+                    method_info = f"{method_name}_{source_rel}_{target_rel}"
+                    selected_methods.add(method_info)
+        
+        print(f"📊 Selected: {len(selected_classes)} classes, {len(selected_methods)} methods")
+        
+        # Nếu chọn quá nhiều (có thể là "select all"), chỉ filter nhẹ
+        total_classes = len(self.classes)
+        if len(selected_classes) >= total_classes * 0.8:  # Nếu chọn >= 80% classes
+            print("🎯 Selected most/all classes, keeping full graph with minimal filtering")
+            # Chỉ clear hidden nodes/edges, giữ nguyên data gốc
+            self.hidden_nodes.clear()
+            self.hidden_edges.clear()
+            print(f"✅ Keeping full graph: {len(self.classes)} classes and {len(self.method_calls)} file dependencies")
+            return
+        
+        # Filter classes - keep only selected classes and their dependencies
+        filtered_classes = {}
+        filtered_file_to_classes = {}
+        
+        # Thêm tất cả selected classes
+        for class_name, file_path in self.classes.items():
+            if class_name in selected_classes:
+                filtered_classes[class_name] = file_path
+                if file_path in self.file_to_classes:
+                    filtered_file_to_classes[file_path] = self.file_to_classes[file_path]
+        
+        # Filter method calls - keep calls involving selected classes
+        filtered_method_calls = defaultdict(lambda: defaultdict(list))
+        
+        for source_file, targets in self.method_calls.items():
+            # Check if source file contains selected classes
+            source_classes = self.file_to_classes.get(source_file, set())
+            source_has_selected = any(cls in selected_classes for cls in source_classes)
+            
+            # Nếu source không được chọn, nhưng có methods cụ thể được chọn từ source này
+            if not source_has_selected and selected_methods:
+                source_rel = str(Path(source_file).relative_to(self.source_directory))
+                for method_info in selected_methods:
+                    if source_rel in method_info:
+                        source_has_selected = True
+                        break
+            
+            if source_has_selected:
+                for target_file, methods in targets.items():
+                    # Check if target file contains selected classes
+                    target_classes = self.file_to_classes.get(target_file, set())
+                    target_has_selected = any(cls in selected_classes for cls in target_classes)
+                    
+                    # Hoặc target được tham chiếu trong selected methods
+                    if not target_has_selected and selected_methods:
+                        target_rel = str(Path(target_file).relative_to(self.source_directory))
+                        for method_info in selected_methods:
+                            if target_rel in method_info:
+                                target_has_selected = True
+                                break
+                    
+                    if target_has_selected:
+                        # Nếu có method cụ thể được chọn, filter methods
+                        if selected_methods:
+                            source_rel = str(Path(source_file).relative_to(self.source_directory))
+                            target_rel = str(Path(target_file).relative_to(self.source_directory))
+                            
+                            filtered_methods = []
+                            for method in methods:
+                                method_key = f"{method}_{source_rel}_{target_rel}"
+                                if method_key in selected_methods:
+                                    filtered_methods.append(method)
+                            
+                            # Nếu không có method cụ thể nào được chọn cho edge này,
+                            # nhưng cả source và target classes được chọn, thì giữ tất cả methods
+                            if not filtered_methods:
+                                source_cls_selected = any(cls in selected_classes for cls in source_classes)
+                                target_cls_selected = any(cls in selected_classes for cls in target_classes)
+                                if source_cls_selected and target_cls_selected:
+                                    filtered_methods = methods
+                                
+                            if filtered_methods:
+                                filtered_method_calls[source_file][target_file] = filtered_methods
+                                
+                                # Đảm bảo cả source và target classes được add
+                                for cls in source_classes:
+                                    if cls not in filtered_classes and source_file in self.file_to_classes:
+                                        filtered_classes[cls] = source_file
+                                        filtered_file_to_classes[source_file] = self.file_to_classes[source_file]
+                                        
+                                for cls in target_classes:
+                                    if cls not in filtered_classes and target_file in self.file_to_classes:
+                                        filtered_classes[cls] = target_file
+                                        filtered_file_to_classes[target_file] = self.file_to_classes[target_file]
+                        else:
+                            # No specific method filtering, include all methods for selected classes
+                            filtered_method_calls[source_file][target_file] = methods
+                            
+                            # Add related classes
+                            for cls in source_classes:
+                                if cls not in filtered_classes:
+                                    filtered_classes[cls] = source_file
+                                    filtered_file_to_classes[source_file] = self.file_to_classes[source_file]
+                                    
+                            for cls in target_classes:
+                                if cls not in filtered_classes:
+                                    filtered_classes[cls] = target_file  
+                                    filtered_file_to_classes[target_file] = self.file_to_classes[target_file]
+        
+        # Update analyzer data
+        self.classes = filtered_classes
+        self.file_to_classes = filtered_file_to_classes
+        self.method_calls = filtered_method_calls
+        
+        # Clear hidden nodes/edges to show filtered results
+        self.hidden_nodes.clear()
+        self.hidden_edges.clear()
+        
+        print(f"✅ Filtered to {len(filtered_classes)} classes and {len(filtered_method_calls)} file dependencies")
