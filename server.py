@@ -162,7 +162,7 @@ class WebUIServer:
                     return {"success": False, "message": "Không có function nào được chọn"}
                 
                 try:
-                    # Filter analyzer data dựa trên selection
+                    # Filter analyzer data dựa trên selection (now includes HTML processing)
                     self.analyzer.filter_by_selection(selected_functions)
                     
                     # Tạo graph mới

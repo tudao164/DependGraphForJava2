@@ -1,0 +1,26 @@
+digraph JavaDependencies {
+    rankdir=LR;
+    node [shape=box, style=filled, fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial", fontsize=9, color=darkblue];
+    graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
+
+    "User" [label="User\n(User)", URL="javascript:showNodeInfo('User')", fillcolor="lightblue"];
+    "StringUtils" [label="StringUtils\n(StringUtils)", URL="javascript:showNodeInfo('StringUtils')", fillcolor="lightblue"];
+    "UserController" [label="UserController\n(UserController)", URL="javascript:showNodeInfo('UserController')", fillcolor="lightblue"];
+    "UserService" [label="UserService\n(UserService)", URL="javascript:showNodeInfo('UserService')", fillcolor="lightblue"];
+    "InvalidInputException" [label="InvalidInputException\n(InvalidInputException)", URL="javascript:showNodeInfo('InvalidInputException')", fillcolor="lightblue"];
+    "UserDTO" [label="UserDTO\n(UserDTO)", URL="javascript:showNodeInfo('UserDTO')", fillcolor="lightblue"];
+
+    // Dependencies with method calls
+    "UserController" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('UserController', 'StringUtils')"];
+    "UserController" -> "InvalidInputException" [label="new InvalidInputException()", URL="javascript:showEdgeInfo('UserController', 'InvalidInputException')"];
+    "UserController" -> "UserDTO" [label="new UserDTO()", URL="javascript:showEdgeInfo('UserController', 'UserDTO')"];
+    "User" -> "StringUtils" [label="sanitize", URL="javascript:showEdgeInfo('User', 'StringUtils')"];
+    "UserService" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('UserService', 'StringUtils')"];
+    "UserService" -> "InvalidInputException" [label="new InvalidInputException()", URL="javascript:showEdgeInfo('UserService', 'InvalidInputException')"];
+    "UserService" -> "User" [label="new User()", URL="javascript:showEdgeInfo('UserService', 'User')"];
+
+    // HTML Function Nodes
+    "HTML_User_Login_Form" [label="User Login Form\n(HTML Function)", URL="javascript:showNodeInfo('HTML_User_Login_Form')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_User_Login_Form" -> "UserController" [label="calls", URL="javascript:showEdgeInfo('HTML_User_Login_Form', 'UserController')", color="green", style="bold"];
+}

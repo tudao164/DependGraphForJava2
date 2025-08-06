@@ -4,19 +4,21 @@ digraph JavaDependencies {
     edge [fontname="Arial", fontsize=9, color=darkblue];
     graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
 
-    "UserController" [label="UserController\n(UserController)", URL="javascript:showNodeInfo('UserController')", fillcolor="lightblue"];
-    "UserService" [label="UserService\n(UserService)", URL="javascript:showNodeInfo('UserService')", fillcolor="lightblue"];
-    "InvalidInputException" [label="InvalidInputException\n(InvalidInputException)", URL="javascript:showNodeInfo('InvalidInputException')", fillcolor="lightblue"];
+    "Order" [label="Order\n(Order)", URL="javascript:showNodeInfo('Order')", fillcolor="lightblue"];
+    "OrderService" [label="OrderService\n(OrderService)", URL="javascript:showNodeInfo('OrderService')", fillcolor="lightblue"];
+    "OrderDTO" [label="OrderDTO\n(OrderDTO)", URL="javascript:showNodeInfo('OrderDTO')", fillcolor="lightblue"];
+    "OrderController" [label="OrderController\n(OrderController)", URL="javascript:showNodeInfo('OrderController')", fillcolor="lightblue"];
     "StringUtils" [label="StringUtils\n(StringUtils)", URL="javascript:showNodeInfo('StringUtils')", fillcolor="lightblue"];
-    "User" [label="User\n(User)", URL="javascript:showNodeInfo('User')", fillcolor="lightblue"];
-    "UserDTO" [label="UserDTO\n(UserDTO)", URL="javascript:showNodeInfo('UserDTO')", fillcolor="lightblue"];
+    "InvalidInputException" [label="InvalidInputException\n(InvalidInputException)", URL="javascript:showNodeInfo('InvalidInputException')", fillcolor="lightblue"];
 
     // Dependencies with method calls
-    "UserController" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('UserController', 'StringUtils')"];
-    "UserController" -> "InvalidInputException" [label="new InvalidInputException()", URL="javascript:showEdgeInfo('UserController', 'InvalidInputException')"];
-    "UserController" -> "UserDTO" [label="new UserDTO()", URL="javascript:showEdgeInfo('UserController', 'UserDTO')"];
-    "User" -> "StringUtils" [label="sanitize", URL="javascript:showEdgeInfo('User', 'StringUtils')"];
-    "UserService" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('UserService', 'StringUtils')"];
-    "UserService" -> "InvalidInputException" [label="new InvalidInputException()", URL="javascript:showEdgeInfo('UserService', 'InvalidInputException')"];
-    "UserService" -> "User" [label="new User()", URL="javascript:showEdgeInfo('UserService', 'User')"];
+    "OrderController" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('OrderController', 'StringUtils')"];
+    "OrderController" -> "InvalidInputException" [label="new InvalidInputException()", URL="javascript:showEdgeInfo('OrderController', 'InvalidInputException')"];
+    "OrderController" -> "OrderDTO" [label="new OrderDTO()", URL="javascript:showEdgeInfo('OrderController', 'OrderDTO')"];
+    "OrderService" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('OrderService', 'StringUtils')"];
+    "OrderService" -> "Order" [label="new Order()", URL="javascript:showEdgeInfo('OrderService', 'Order')"];
+
+    // HTML Function Nodes
+    "HTML_Add_to_Cart" [label="Add to Cart\n(HTML Function)", URL="javascript:showNodeInfo('HTML_Add_to_Cart')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_Add_to_Cart" -> "OrderController" [label="calls", URL="javascript:showEdgeInfo('HTML_Add_to_Cart', 'OrderController')", color="green", style="bold"];
 }

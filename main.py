@@ -6,7 +6,7 @@ Main entry point for the Enhanced Java Dependency Graph Generator.
 import os
 import argparse
 import subprocess
-from analyzer import EnhancedJavaDependencyAnalyzer
+from html_analyzer import HTMLAwareAnalyzer
 from server import WebUIServer
 
 
@@ -38,7 +38,7 @@ def main():
         print("   - Windows: Tải từ https://graphviz.org/download/")
         return
         
-    analyzer = EnhancedJavaDependencyAnalyzer(args.source_dir)
+    analyzer = HTMLAwareAnalyzer(args.source_dir)
     print(f"🔍 Đang phân tích các file Java trong: {args.source_dir}")
     
     analyzer.analyze()

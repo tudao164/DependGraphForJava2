@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+"""
+Enhanced analyzer với HTML nodes support
+"""
+
+from analyzer import EnhancedJavaDependencyAnalyzer
+from html_db import HTMLFunctionDatabase
+
+class HTMLAwareAnalyzer(EnhancedJavaDependencyAnalyzer):
+    def __init__(self, source_directory: str):
+        super().__init__(source_directory)
+        # HTML functions integration
+        self.selected_html_functions = []
+        self.html_to_java_mappings = {}
+    
+    def filter_by_selection(self, selected_functions):
+        """Override to preserve HTML data through filtering"""
+        # First, process HTML functions and store them
+        selected_html_functions = [func_id for func_id in selected_functions if func_id.startswith('html_')]
+        
+        if selected_html_functions:
+            try:
+                # Get HTML function data
+                html_function_ids = [int(func_id.replace('html_', '')) for func_id in selected_html_functions]
+                html_functions_data = []
+                
+                for func_id in html_function_ids:
+                    func_data = self.html_db.get_function_by_id(f"html_{func_id}")
+                    if func_data:
+                        html_functions_data.append(func_data)
+                
+                # Get controller mappings
+                controller_mappings = self.html_db.get_controller_mappings_for_html(selected_html_functions)
+                
+                # Store HTML data for graph generation
+                self.selected_html_functions = html_functions_data
+                self.html_to_java_mappings = {}
+                
+                for func_data in html_functions_data:
+                    func_name = func_data['name']
+                    html_func_id = f"html_{func_data['function_id']}"
+                    
+                    if html_func_id in controller_mappings:
+                        java_component = controller_mappings[html_func_id]
+                        self.html_to_java_mappings[func_name] = java_component
+                        
+            except Exception as e:
+                print(f"❌ Error processing HTML functions in filter: {e}")
+        
+        # Call parent method to handle Java filtering
+        super().filter_by_selection(selected_functions)
+        
+    def add_html_functions_to_graph(self, selected_html_function_ids):
+        """Add HTML functions to graph data"""
+        if not self.html_db or not selected_html_function_ids:
+            return
+            
+        try:
+            # Get HTML function data
+            html_functions_data = []
+            for func_id in selected_html_function_ids:
+                func_data = self.html_db.get_function_by_id(func_id)
+                if func_data:
+                    html_functions_data.append(func_data)
+            
+            # Get mappings
+            controller_mappings = self.html_db.get_controller_mappings_for_html(selected_html_function_ids)
+            
+            # Store for graph generation
+            self.selected_html_functions = html_functions_data
+            self.html_to_java_mappings = {}
+            
+            for func_data in html_functions_data:
+                func_name = func_data['name']
+                html_func_id = f"html_{func_data['function_id']}"
+                
+                if html_func_id in controller_mappings:
+                    java_component = controller_mappings[html_func_id]
+                    self.html_to_java_mappings[func_name] = java_component
+                    print(f"📱 {func_name} → 🔧 {java_component}")
+                    
+        except Exception as e:
+            print(f"❌ Error adding HTML functions: {e}")
+    
+    def _generate_dot_content(self):
+        """Override để thêm HTML nodes"""
+        # Get base DOT content
+        content_lines = super()._generate_dot_content().split('\n')
+        
+        # Find insert position (before closing brace)
+        insert_pos = len(content_lines) - 1
+        while insert_pos > 0 and content_lines[insert_pos].strip() != '}':
+            insert_pos -= 1
+        
+        # Insert HTML nodes if available
+        if hasattr(self, 'selected_html_functions') and self.selected_html_functions:
+            html_lines = []
+            html_lines.append("")
+            html_lines.append("    // HTML Function Nodes")
+            
+            for html_func in self.selected_html_functions:
+                func_name = html_func['name']
+                node_name = f"HTML_{func_name.replace(' ', '_').replace('()', '').replace('/', '_')}"
+                url = f"javascript:showNodeInfo('{node_name}')"
+                html_lines.append(f'    "{node_name}" [label="{func_name}\\n(HTML Function)", URL="{url}", fillcolor="lightgreen", shape="ellipse"];')
+                
+                # Add edge to Java component
+                if hasattr(self, 'html_to_java_mappings') and func_name in self.html_to_java_mappings:
+                    java_component = self.html_to_java_mappings[func_name]
+                    
+                    # Find Java node in existing content
+                    java_node = None
+                    for line in content_lines:
+                        if f'"{java_component}"' in line and '[label=' in line:
+                            java_node = java_component
+                            break
+                    
+                    if java_node:
+                        url_edge = f"javascript:showEdgeInfo('{node_name}', '{java_node}')"
+                        html_lines.append(f'    "{node_name}" -> "{java_node}" [label="calls", URL="{url_edge}", color="green", style="bold"];')
+                    else:
+                        # Create Java node if not found
+                        java_node_name = f"Java_{java_component}"
+                        url_java = f"javascript:showNodeInfo('{java_node_name}')"
+                        html_lines.append(f'    "{java_node_name}" [label="{java_component}\\n(Java Component)", URL="{url_java}", fillcolor="lightyellow"];')
+                        url_edge = f"javascript:showEdgeInfo('{node_name}', '{java_node_name}')"
+                        html_lines.append(f'    "{node_name}" -> "{java_node_name}" [label="calls", URL="{url_edge}", color="green", style="bold"];')
+            
+            # Insert HTML lines before closing brace
+            content_lines[insert_pos:insert_pos] = html_lines
+        
+        return '\n'.join(content_lines)
