@@ -8,6 +8,7 @@ import http.server
 import socketserver
 import webbrowser
 from pathlib import Path
+from html_db import HTMLFunctionDatabase
 
 
 class WebUIServer:
@@ -16,6 +17,7 @@ class WebUIServer:
         self.metadata_file = Path(metadata_file) if metadata_file else None
         self.analyzer = analyzer
         self.port = 8000
+        self.html_db = HTMLFunctionDatabase()  # Initialize HTML function database
         
     def start_server(self):
         """Start web server for dependency graph"""
@@ -65,6 +67,13 @@ class WebUIServer:
                             "success": True,
                             "functions": functions
                         }
+                    elif self.path == '/api/html-functions':
+                        # API để lấy HTML functions từ database
+                        html_functions = self.analyzer.html_db.get_all_functions() if hasattr(self.analyzer, 'html_db') else []
+                        response_data = {
+                            "success": True,
+                            "functions": html_functions
+                        }
                     
                     self._send_json_response(response_data)
                     
@@ -93,6 +102,14 @@ class WebUIServer:
             def _get_functions_list(self):
                 """Get list of all functions for selection"""
                 functions = []
+                
+                # Lấy HTML/JS functions từ PostgreSQL database
+                try:
+                    html_functions = self.analyzer.html_db.get_all_functions() if hasattr(self.analyzer, 'html_db') else []
+                    functions.extend(html_functions)
+                    print(f"✅ Loaded {len(html_functions)} HTML functions from database")
+                except Exception as e:
+                    print(f"❌ Error loading HTML functions: {e}")
                 
                 # Lấy tất cả classes (bao gồm services)
                 for class_name, file_path in self.analyzer.classes.items():

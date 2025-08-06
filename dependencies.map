@@ -1,89 +1,22 @@
 <map id="JavaDependencies" name="JavaDependencies">
-<area shape="rect" id="node1" href="javascript:showNodeInfo(&#39;UserRepository&#39;)" title="UserRepository\n(UserRepository)" alt="" coords="534,465,691,518"/>
-<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;StringUtils&#39;)" title="StringUtils\n(StringUtils)" alt="" coords="1389,457,1504,510"/>
-<area shape="rect" id="node3" href="javascript:showNodeInfo(&#39;UserService&#39;)" title="UserService\n(UserService)" alt="" coords="547,596,678,649"/>
-<area shape="poly" id="edge19" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="679,625,769,629,884,630,1011,624,1137,608,1205,591,1271,568,1383,515,1386,520,1273,573,1207,597,1138,614,1011,630,884,636,769,634,678,630"/>
-<area shape="rect" id="edge19-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="1014,597,1057,611"/>
-<area shape="rect" id="node15" href="javascript:showNodeInfo(&#39;InvalidInputException&#39;)" title="InvalidInputException\n(InvalidInputException)" alt="" coords="933,733,1138,786"/>
-<area shape="poly" id="edge20" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="679,641,938,725,936,731,678,646"/>
-<area shape="rect" id="edge20-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="743,649,894,663"/>
-<area shape="rect" id="node23" href="javascript:showNodeInfo(&#39;User&#39;)" title="User\n(User)" alt="" coords="1000,532,1072,585"/>
-<area shape="poly" id="edge21" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;User&#39;)" title="new User()" alt="" coords="678,609,727,601,984,563,985,568,727,606,679,614"/>
-<area shape="rect" id="edge21-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;User&#39;)" title="new User()" alt="" coords="788,563,848,577"/>
-<area shape="rect" id="node4" href="javascript:showNodeInfo(&#39;PaymentService&#39;)" title="PaymentService\n(PaymentService)" alt="" coords="530,183,695,235"/>
-<area shape="rect" id="node5" href="javascript:showNodeInfo(&#39;NotificationService&#39;)" title="NotificationService\n(NotificationService)" alt="" coords="727,171,909,223"/>
-<area shape="poly" id="edge15" href="javascript:showEdgeInfo(&#39;NotificationService&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="910,193,1002,199,1109,216,1164,231,1218,250,1270,274,1318,304,1353,335,1384,372,1428,442,1423,445,1379,375,1350,339,1315,308,1268,279,1216,255,1162,236,1108,222,1001,205,910,198"/>
-<area shape="rect" id="edge15-label" href="javascript:showEdgeInfo(&#39;NotificationService&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="1014,183,1057,197"/>
-<area shape="rect" id="node6" href="javascript:showNodeInfo(&#39;OrderService&#39;)" title="OrderService\n(OrderService)" alt="" coords="542,53,682,106"/>
-<area shape="poly" id="edge16" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="683,88,925,129,1049,153,1138,174,1235,199,1275,217,1318,250,1359,295,1392,347,1417,398,1434,442,1429,444,1412,400,1387,349,1355,298,1315,254,1272,222,1233,205,1137,180,1048,158,924,134,682,93"/>
-<area shape="rect" id="edge16-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="1014,120,1057,134"/>
-<area shape="rect" id="node11" href="javascript:showNodeInfo(&#39;Order&#39;)" title="Order\n(Order)" alt="" coords="995,52,1076,105"/>
-<area shape="poly" id="edge18" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;Order&#39;)" title="new Order()" alt="" coords="683,77,980,76,980,81,683,82"/>
-<area shape="rect" id="edge18-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;Order&#39;)" title="new Order()" alt="" coords="786,65,851,79"/>
-<area shape="rect" id="node21" href="javascript:showNodeInfo(&#39;InvalidOrderException&#39;)" title="InvalidOrderException\n(InvalidOrderException)" alt="" coords="1341,5,1552,58"/>
-<area shape="poly" id="edge17" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;InvalidOrderException&#39;)" title="new InvalidOrderException()" alt="" coords="683,64,727,57,892,36,1021,26,1150,23,1317,25,1325,25,1325,30,1317,30,1150,29,1021,31,892,42,727,62,683,69"/>
-<area shape="rect" id="edge17-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;InvalidOrderException&#39;)" title="new InvalidOrderException()" alt="" coords="958,12,1113,26"/>
-<area shape="rect" id="node7" href="javascript:showNodeInfo(&#39;DatabaseConfig&#39;)" title="DatabaseConfig\n(DatabaseConfig)" alt="" coords="737,244,899,297"/>
-<area shape="poly" id="edge31" href="javascript:showEdgeInfo(&#39;DatabaseConfig&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="900,264,990,267,1098,279,1155,290,1212,305,1266,326,1318,352,1347,372,1374,396,1418,443,1414,447,1370,400,1344,376,1315,357,1264,331,1210,311,1154,295,1098,284,990,272,900,270"/>
-<area shape="rect" id="edge31-label" href="javascript:showEdgeInfo(&#39;DatabaseConfig&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="1014,253,1057,267"/>
-<area shape="rect" id="node8" href="javascript:showNodeInfo(&#39;OrderRepository&#39;)" title="OrderRepository\n(OrderRepository)" alt="" coords="529,311,696,363"/>
-<area shape="rect" id="node9" href="javascript:showNodeInfo(&#39;OrderController&#39;)" title="OrderController\n(OrderController)" alt="" coords="533,855,692,907"/>
-<area shape="poly" id="edge4" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="692,888,804,899,934,907,1053,905,1101,898,1137,887,1192,853,1243,810,1288,761,1327,709,1360,656,1388,606,1427,523,1432,525,1393,608,1365,659,1331,712,1292,765,1247,814,1196,858,1139,892,1102,904,1054,910,933,912,804,905,691,893"/>
-<area shape="rect" id="edge4-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="1014,876,1057,890"/>
-<area shape="rect" id="node14" href="javascript:showNodeInfo(&#39;OrderDTO&#39;)" title="OrderDTO\n(OrderDTO)" alt="" coords="976,949,1095,1002"/>
-<area shape="poly" id="edge6" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderDTO&#39;)" title="new OrderDTO()" alt="" coords="664,905,728,931,788,946,850,957,961,969,960,974,849,962,787,951,726,936,662,910"/>
-<area shape="rect" id="edge6-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderDTO&#39;)" title="new OrderDTO()" alt="" coords="773,920,863,934"/>
-<area shape="poly" id="edge5" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="692,881,743,878,799,869,856,854,908,829,915,822,919,814,923,805,932,796,937,792,940,797,935,800,928,808,924,816,920,825,911,833,858,859,800,874,744,883,692,886"/>
-<area shape="rect" id="edge5-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="743,817,894,831"/>
-<area shape="rect" id="node10" href="javascript:showNodeInfo(&#39;PaymentValidator&#39;)" title="PaymentValidator\n(PaymentValidator)" alt="" coords="730,471,906,523"/>
-<area shape="poly" id="edge32" href="javascript:showEdgeInfo(&#39;PaymentValidator&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="906,492,1373,483,1373,488,907,498"/>
-<area shape="rect" id="edge32-label" href="javascript:showEdgeInfo(&#39;PaymentValidator&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="1014,476,1057,490"/>
-<area shape="poly" id="edge12" href="javascript:showEdgeInfo(&#39;Order&#39;, &#39;InvalidOrderException&#39;)" title="new InvalidOrderException()" alt="" coords="1076,71,1325,43,1325,48,1076,77"/>
-<area shape="rect" id="edge12-label" href="javascript:showEdgeInfo(&#39;Order&#39;, &#39;InvalidOrderException&#39;)" title="new InvalidOrderException()" alt="" coords="1162,33,1317,47"/>
-<area shape="rect" id="node12" href="javascript:showNodeInfo(&#39;AppConfig&#39;)" title="AppConfig\n(AppConfig)" alt="" coords="220,349,337,402"/>
-<area shape="poly" id="edge23" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;UserRepository&#39;)" title="new UserRepository()" alt="" coords="326,400,363,418,442,446,519,468,518,473,440,451,361,423,324,405"/>
-<area shape="rect" id="edge23-label" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;UserRepository&#39;)" title="new UserRepository()" alt="" coords="370,406,489,420"/>
-<area shape="poly" id="edge29" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;UserService&#39;)" title="new UserService()" alt="" coords="283,402,289,446,302,500,326,554,342,577,363,597,402,618,445,630,489,634,531,633,531,638,489,639,444,635,400,623,360,601,338,581,321,556,297,502,283,447,278,403"/>
-<area shape="rect" id="edge29-label" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;UserService&#39;)" title="new UserService()" alt="" coords="379,585,480,599"/>
-<area shape="poly" id="edge27" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;PaymentService&#39;)" title="new PaymentService()" alt="" coords="287,348,315,297,335,272,360,251,397,232,436,219,514,206,515,211,437,224,399,237,363,255,339,276,319,300,292,350"/>
-<area shape="rect" id="edge27-label" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;PaymentService&#39;)" title="new PaymentService()" alt="" coords="368,196,491,210"/>
-<area shape="poly" id="edge26" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;NotificationService&#39;)" title="new NotificationService()" alt="" coords="280,348,288,311,303,267,326,224,342,205,360,188,390,174,430,164,527,157,627,161,703,168,712,169,711,174,703,173,626,166,527,163,431,170,392,179,363,193,346,208,331,227,308,270,294,313,286,349"/>
-<area shape="rect" id="edge26-label" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;NotificationService&#39;)" title="new NotificationService()" alt="" coords="362,147,498,161"/>
-<area shape="poly" id="edge30" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;OrderService&#39;)" title="new OrderService()" alt="" coords="277,349,281,300,294,239,304,207,319,176,337,148,360,123,398,98,440,83,484,75,526,72,526,77,485,80,441,88,400,103,363,127,341,151,323,179,309,209,299,240,287,301,282,349"/>
-<area shape="rect" id="edge30-label" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;OrderService&#39;)" title="new OrderService()" alt="" coords="377,62,483,76"/>
-<area shape="poly" id="edge22" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;DatabaseConfig&#39;)" title="new DatabaseConfig()" alt="" coords="323,346,361,329,454,302,551,284,642,274,721,269,722,274,643,279,551,289,456,307,363,334,325,351"/>
-<area shape="rect" id="edge22-label" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;DatabaseConfig&#39;)" title="new DatabaseConfig()" alt="" coords="368,283,491,297"/>
-<area shape="poly" id="edge24" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;OrderRepository&#39;)" title="new OrderRepository()" alt="" coords="337,366,514,346,514,351,338,372"/>
-<area shape="rect" id="edge24-label" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;OrderRepository&#39;)" title="new OrderRepository()" alt="" coords="368,337,492,351"/>
-<area shape="poly" id="edge28" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;PaymentValidator&#39;)" title="new PaymentValidator()" alt="" coords="296,401,324,442,342,463,363,481,403,504,438,516,522,528,612,536,703,528,720,525,721,530,703,533,612,542,521,533,436,521,401,509,360,485,338,467,319,446,291,404"/>
-<area shape="rect" id="edge28-label" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;PaymentValidator&#39;)" title="new PaymentValidator()" alt="" coords="365,469,495,483"/>
-<area shape="rect" id="node20" href="javascript:showNodeInfo(&#39;ProductRepository&#39;)" title="ProductRepository\n(ProductRepository)" alt="" coords="522,388,703,441"/>
-<area shape="poly" id="edge25" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;ProductRepository&#39;)" title="new ProductRepository()" alt="" coords="338,380,507,399,506,405,337,385"/>
-<area shape="rect" id="edge25-label" href="javascript:showEdgeInfo(&#39;AppConfig&#39;, &#39;ProductRepository&#39;)" title="new ProductRepository()" alt="" coords="362,372,497,386"/>
-<area shape="rect" id="node13" href="javascript:showNodeInfo(&#39;Category&#39;)" title="Category\n(Category)" alt="" coords="982,1027,1089,1079"/>
-<area shape="poly" id="edge11" href="javascript:showEdgeInfo(&#39;Category&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="1088,1042,1142,1029,1203,1008,1264,976,1291,956,1315,932,1350,884,1378,830,1399,774,1416,716,1435,609,1442,526,1447,526,1440,610,1421,718,1404,775,1383,832,1354,886,1319,935,1294,960,1266,980,1205,1013,1143,1035,1089,1048"/>
-<area shape="rect" id="edge11-label" href="javascript:showEdgeInfo(&#39;Category&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="1218,920,1260,934"/>
-<area shape="rect" id="node16" href="javascript:showNodeInfo(&#39;Product&#39;)" title="Product\n(Product)" alt="" coords="988,393,1083,446"/>
-<area shape="poly" id="edge13" href="javascript:showEdgeInfo(&#39;Product&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="1084,424,1374,470,1373,475,1083,430"/>
-<area shape="rect" id="edge13-label" href="javascript:showEdgeInfo(&#39;Product&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="1218,426,1260,440"/>
-<area shape="rect" id="node17" href="javascript:showNodeInfo(&#39;UserDTO&#39;)" title="UserDTO\n(UserDTO)" alt="" coords="980,811,1091,863"/>
-<area shape="rect" id="node18" href="javascript:showNodeInfo(&#39;UserController&#39;)" title="UserController\n(UserController)" alt="" coords="538,733,687,786"/>
-<area shape="poly" id="edge7" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="687,744,1044,677,1218,639,1280,622,1315,609,1344,590,1371,568,1415,520,1419,524,1375,571,1348,595,1318,614,1282,627,1219,644,1045,682,688,749"/>
-<area shape="rect" id="edge7-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="1014,647,1057,661"/>
-<area shape="poly" id="edge8" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="687,757,918,757,918,762,687,762"/>
-<area shape="rect" id="edge8-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="743,746,894,760"/>
-<area shape="poly" id="edge9" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserDTO&#39;)" title="new UserDTO()" alt="" coords="688,771,966,822,965,827,687,776"/>
-<area shape="rect" id="edge9-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserDTO&#39;)" title="new UserDTO()" alt="" coords="776,769,861,783"/>
-<area shape="rect" id="node19" href="javascript:showNodeInfo(&#39;Address&#39;)" title="Address\n(Address)" alt="" coords="986,316,1085,369"/>
-<area shape="poly" id="edge10" href="javascript:showEdgeInfo(&#39;Address&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="1086,351,1194,378,1318,419,1383,447,1381,452,1316,423,1192,383,1085,356"/>
-<area shape="rect" id="edge10-label" href="javascript:showEdgeInfo(&#39;Address&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="1218,359,1260,373"/>
-<area shape="rect" id="node22" href="javascript:showNodeInfo(&#39;Main&#39;)" title="Main\n(Main)" alt="" coords="5,733,79,786"/>
-<area shape="poly" id="edge3" href="javascript:showEdgeInfo(&#39;Main&#39;, &#39;OrderController&#39;)" title="new OrderController()" alt="" coords="80,765,519,859,518,864,79,770"/>
-<area shape="rect" id="edge3-label" href="javascript:showEdgeInfo(&#39;Main&#39;, &#39;OrderController&#39;)" title="new OrderController()" alt="" coords="219,785,338,799"/>
-<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;Main&#39;, &#39;AppConfig&#39;)" title="new AppConfig()" alt="" coords="57,732,250,414,255,417,62,735"/>
-<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;Main&#39;, &#39;AppConfig&#39;)" title="new AppConfig()" alt="" coords="103,497,195,511"/>
-<area shape="poly" id="edge2" href="javascript:showEdgeInfo(&#39;Main&#39;, &#39;UserController&#39;)" title="new UserController()" alt="" coords="79,757,522,757,522,762,79,762"/>
-<area shape="rect" id="edge2-label" href="javascript:showEdgeInfo(&#39;Main&#39;, &#39;UserController&#39;)" title="new UserController()" alt="" coords="221,746,335,760"/>
-<area shape="poly" id="edge14" href="javascript:showEdgeInfo(&#39;User&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="1072,552,1181,537,1316,514,1373,501,1375,506,1317,519,1182,542,1072,557"/>
-<area shape="rect" id="edge14-label" href="javascript:showEdgeInfo(&#39;User&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="1218,502,1260,516"/>
+<area shape="rect" id="node1" href="javascript:showNodeInfo(&#39;UserController&#39;)" title="UserController\n(UserController)" alt="" coords="5,64,155,117"/>
+<area shape="rect" id="node3" href="javascript:showNodeInfo(&#39;InvalidInputException&#39;)" title="InvalidInputException\n(InvalidInputException)" alt="" coords="354,142,558,194"/>
+<area shape="poly" id="edge2" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="156,103,339,141,338,146,155,108"/>
+<area shape="rect" id="edge2-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="179,97,330,111"/>
+<area shape="rect" id="node4" href="javascript:showNodeInfo(&#39;StringUtils&#39;)" title="StringUtils\n(StringUtils)" alt="" coords="648,206,763,258"/>
+<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="151,61,237,37,341,19,397,17,453,20,507,30,559,49,602,78,638,115,666,154,688,190,683,193,662,157,634,118,598,82,557,54,506,35,452,25,397,22,342,25,238,42,153,66"/>
+<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="434,5,477,19"/>
+<area shape="rect" id="node6" href="javascript:showNodeInfo(&#39;UserDTO&#39;)" title="UserDTO\n(UserDTO)" alt="" coords="401,64,511,117"/>
+<area shape="poly" id="edge3" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserDTO&#39;)" title="new UserDTO()" alt="" coords="155,88,385,88,385,93,155,93"/>
+<area shape="rect" id="edge3-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserDTO&#39;)" title="new UserDTO()" alt="" coords="212,77,297,91"/>
+<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;UserService&#39;)" title="UserService\n(UserService)" alt="" coords="14,206,146,258"/>
+<area shape="poly" id="edge6" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="146,218,178,212,338,185,339,190,179,217,147,223"/>
+<area shape="rect" id="edge6-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;InvalidInputException&#39;)" title="new InvalidInputException()" alt="" coords="179,175,330,189"/>
+<area shape="poly" id="edge5" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="146,229,632,229,632,235,146,235"/>
+<area shape="rect" id="edge5-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;StringUtils&#39;)" title="isEmpty" alt="" coords="434,218,477,232"/>
+<area shape="rect" id="node5" href="javascript:showNodeInfo(&#39;User&#39;)" title="User\n(User)" alt="" coords="420,280,492,333"/>
+<area shape="poly" id="edge7" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;User&#39;)" title="new User()" alt="" coords="147,253,179,262,300,285,405,299,404,304,299,290,178,267,146,258"/>
+<area shape="rect" id="edge7-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;User&#39;)" title="new User()" alt="" coords="224,251,284,265"/>
+<area shape="poly" id="edge4" href="javascript:showEdgeInfo(&#39;User&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="491,297,553,282,623,262,633,259,634,264,625,267,555,287,493,302"/>
+<area shape="rect" id="edge4-label" href="javascript:showEdgeInfo(&#39;User&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="582,251,624,265"/>
 </map>

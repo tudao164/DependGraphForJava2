@@ -9,6 +9,7 @@ import json
 import subprocess
 from pathlib import Path
 from collections import defaultdict
+from html_db import HTMLFunctionDatabase
 
 
 class EnhancedJavaDependencyAnalyzer:
@@ -23,6 +24,14 @@ class EnhancedJavaDependencyAnalyzer:
         self.custom_colors = {}  # node -> color mapping
         self.custom_nodes = {}  # custom nodes with their properties
         self.custom_edges = defaultdict(lambda: defaultdict(list))  # custom edges: source -> target -> methods
+        
+        # Initialize HTML function database
+        try:
+            self.html_db = HTMLFunctionDatabase()
+            print("✅ HTML Database initialized successfully")
+        except Exception as e:
+            print(f"❌ Failed to initialize HTML Database: {e}")
+            self.html_db = None
         
     def analyze(self):
         """Phân tích tất cả file Java"""
@@ -652,6 +661,7 @@ class EnhancedJavaDependencyAnalyzer:
         selected_classes = set()
         selected_methods = set()
         selected_services = set()
+        selected_html_functions = []
         
         for func_id in selected_functions:
             if func_id.startswith('class_'):
@@ -666,8 +676,65 @@ class EnhancedJavaDependencyAnalyzer:
                     target_rel = parts[3]
                     method_info = f"{method_name}_{source_rel}_{target_rel}"
                     selected_methods.add(method_info)
+            elif func_id.startswith('html_'):
+                # HTML functions from database
+                selected_html_functions.append(func_id)
         
-        print(f"📊 Selected: {len(selected_classes)} classes, {len(selected_methods)} methods")
+        # 🎯 HTML-only mode: Chỉ chọn HTML functions, auto-map đến Java
+        if selected_html_functions and not selected_classes and not selected_methods and self.html_db:
+            print("🎯 HTML-only mode: Auto-mapping to Java components")
+            try:
+                controller_mappings = self.html_db.get_controller_mappings_for_html(selected_html_functions)
+                print("🔗 HTML→Java auto-mapping:")
+                
+                for html_func_id, java_component in controller_mappings.items():
+                    # Lấy function name để display
+                    func_data = self.html_db.get_function_by_id(html_func_id)
+                    func_name = func_data['name'] if func_data else html_func_id
+                    
+                    print(f"   � {func_name} → 🔧 {java_component}")
+                    
+                    # Thêm Java component vào selected classes
+                    if java_component in self.classes:
+                        selected_classes.add(java_component)
+                        # Add dependencies cho component này
+                        self._add_dependencies_for_class(java_component, selected_classes)
+                    else:
+                        # Tìm related classes
+                        found_related = False
+                        for class_name in self.classes.keys():
+                            if (java_component.lower() in class_name.lower() or 
+                                class_name.lower() in java_component.lower()):
+                                selected_classes.add(class_name)
+                                print(f"      ✅ Found related: {class_name}")
+                                self._add_dependencies_for_class(class_name, selected_classes)
+                                found_related = True
+                                break
+                        
+                        if not found_related:
+                            print(f"      ❌ No related class found for {java_component}")
+                            
+            except Exception as e:
+                print(f"❌ Error processing HTML functions: {e}")
+        
+        # Mixed mode: HTML + Java selections
+        elif selected_html_functions and self.html_db:
+            try:
+                controller_mappings = self.html_db.get_controller_mappings_for_html(selected_html_functions)
+                print(f"🔗 HTML→Java mappings: {controller_mappings}")
+                
+                # Thêm mapped controllers vào selected classes
+                for html_func_id, controller_name in controller_mappings.items():
+                    if controller_name in self.classes:
+                        selected_classes.add(controller_name)
+                        print(f"   {html_func_id} → {controller_name}")
+                    else:
+                        print(f"   ⚠️ Controller {controller_name} not found in Java classes")
+                        
+            except Exception as e:
+                print(f"❌ Error processing HTML functions: {e}")
+        
+        print(f"📊 Final selection: {len(selected_classes)} classes, {len(selected_methods)} methods, {len(selected_html_functions)} HTML functions")
         
         # Nếu chọn quá nhiều (có thể là "select all"), chỉ filter nhẹ
         total_classes = len(self.classes)
@@ -778,3 +845,41 @@ class EnhancedJavaDependencyAnalyzer:
         self.hidden_edges.clear()
         
         print(f"✅ Filtered to {len(filtered_classes)} classes and {len(filtered_method_calls)} file dependencies")
+    
+    def _add_dependencies_for_class(self, class_name, selected_classes):
+        """Add dependencies (services, repositories) for a given class"""
+        try:
+            # Tìm file chứa class này
+            if class_name not in self.classes:
+                return
+                
+            class_file = self.classes[class_name]
+            
+            # Add classes được import trong file này
+            imported_classes = self.imports.get(class_file, set())
+            for imported_class in imported_classes:
+                if imported_class in self.classes:
+                    selected_classes.add(imported_class)
+                    print(f"      ➕ Added dependency: {imported_class}")
+            
+            # Add classes từ method calls
+            if class_file in self.method_calls:
+                for target_file, methods in self.method_calls[class_file].items():
+                    target_classes = self.file_to_classes.get(target_file, set())
+                    for target_class in target_classes:
+                        selected_classes.add(target_class)
+                        print(f"      ➕ Added method dependency: {target_class}")
+            
+            # Add reverse dependencies (ai gọi class này)
+            for source_file, targets in self.method_calls.items():
+                if class_file in targets:
+                    source_classes = self.file_to_classes.get(source_file, set())
+                    for source_class in source_classes:
+                        if (source_class.endswith('Service') or 
+                            source_class.endswith('Repository') or
+                            source_class.endswith('Controller')):
+                            selected_classes.add(source_class)
+                            print(f"      ➕ Added reverse dependency: {source_class}")
+                            
+        except Exception as e:
+            print(f"      ❌ Error adding dependencies for {class_name}: {e}")
