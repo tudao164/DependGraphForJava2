@@ -4,12 +4,12 @@ digraph JavaDependencies {
     edge [fontname="Arial", fontsize=9, color=darkblue];
     graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
 
-    "User" [label="User\n(User)", URL="javascript:showNodeInfo('User')", fillcolor="lightblue"];
-    "StringUtils" [label="StringUtils\n(StringUtils)", URL="javascript:showNodeInfo('StringUtils')", fillcolor="lightblue"];
-    "UserController" [label="UserController\n(UserController)", URL="javascript:showNodeInfo('UserController')", fillcolor="lightblue"];
     "UserService" [label="UserService\n(UserService)", URL="javascript:showNodeInfo('UserService')", fillcolor="lightblue"];
-    "InvalidInputException" [label="InvalidInputException\n(InvalidInputException)", URL="javascript:showNodeInfo('InvalidInputException')", fillcolor="lightblue"];
+    "StringUtils" [label="StringUtils\n(StringUtils)", URL="javascript:showNodeInfo('StringUtils')", fillcolor="lightblue"];
     "UserDTO" [label="UserDTO\n(UserDTO)", URL="javascript:showNodeInfo('UserDTO')", fillcolor="lightblue"];
+    "UserController" [label="UserController\n(UserController)", URL="javascript:showNodeInfo('UserController')", fillcolor="lightblue"];
+    "User" [label="User\n(User)", URL="javascript:showNodeInfo('User')", fillcolor="lightblue"];
+    "InvalidInputException" [label="InvalidInputException\n(InvalidInputException)", URL="javascript:showNodeInfo('InvalidInputException')", fillcolor="lightblue"];
 
     // Dependencies with method calls
     "UserController" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('UserController', 'StringUtils')"];
@@ -21,6 +21,6 @@ digraph JavaDependencies {
     "UserService" -> "User" [label="new User()", URL="javascript:showEdgeInfo('UserService', 'User')"];
 
     // HTML Function Nodes
-    "HTML_User_Login_Form" [label="User Login Form\n(HTML Function)", URL="javascript:showNodeInfo('HTML_User_Login_Form')", fillcolor="lightgreen", shape="ellipse"];
-    "HTML_User_Login_Form" -> "UserController" [label="calls", URL="javascript:showEdgeInfo('HTML_User_Login_Form', 'UserController')", color="green", style="bold"];
+    "HTML_registerUser" [label="registerUser()\n(HTML Function)", URL="javascript:showNodeInfo('HTML_registerUser')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_registerUser" -> "UserController" [label="calls", URL="javascript:showEdgeInfo('HTML_registerUser', 'UserController')", color="green", style="bold"];
 }

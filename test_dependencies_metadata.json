@@ -8,6 +8,29 @@
     "custom_edges": 0
   },
   "files": {
+    "UserService": {
+      "classes": [
+        "UserService"
+      ],
+      "outgoing_calls": {
+        "StringUtils": [
+          "isEmpty",
+          "isEmpty",
+          "isEmpty",
+          "isEmpty"
+        ],
+        "InvalidInputException": [
+          "new InvalidInputException()",
+          "new InvalidInputException()",
+          "new InvalidInputException()"
+        ],
+        "User": [
+          "new User()"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
     "StringUtils": {
       "classes": [
         "StringUtils"
@@ -34,6 +57,18 @@
       },
       "is_custom": false
     },
+    "UserDTO": {
+      "classes": [
+        "UserDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "new UserDTO()"
+        ]
+      },
+      "is_custom": false
+    },
     "UserController": {
       "classes": [
         "UserController"
@@ -55,47 +90,6 @@
       "incoming_calls": {},
       "is_custom": false
     },
-    "UserService": {
-      "classes": [
-        "UserService"
-      ],
-      "outgoing_calls": {
-        "StringUtils": [
-          "isEmpty",
-          "isEmpty",
-          "isEmpty",
-          "isEmpty"
-        ],
-        "InvalidInputException": [
-          "new InvalidInputException()",
-          "new InvalidInputException()",
-          "new InvalidInputException()"
-        ],
-        "User": [
-          "new User()"
-        ]
-      },
-      "incoming_calls": {},
-      "is_custom": false
-    },
-    "InvalidInputException": {
-      "classes": [
-        "InvalidInputException"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "UserController": [
-          "new InvalidInputException()",
-          "new InvalidInputException()"
-        ],
-        "UserService": [
-          "new InvalidInputException()",
-          "new InvalidInputException()",
-          "new InvalidInputException()"
-        ]
-      },
-      "is_custom": false
-    },
     "User": {
       "classes": [
         "User"
@@ -115,14 +109,20 @@
       },
       "is_custom": false
     },
-    "UserDTO": {
+    "InvalidInputException": {
       "classes": [
-        "UserDTO"
+        "InvalidInputException"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
         "UserController": [
-          "new UserDTO()"
+          "new InvalidInputException()",
+          "new InvalidInputException()"
+        ],
+        "UserService": [
+          "new InvalidInputException()",
+          "new InvalidInputException()",
+          "new InvalidInputException()"
         ]
       },
       "is_custom": false

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Frontend - API Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .api-group {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        .input-group input, .input-group textarea {
+            width: 200px;
+            padding: 5px;
+            margin: 0 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .result {
+            background: #e9ecef;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛒 E-Commerce Frontend - API Demo</h1>
+    <p>Demo các chức năng frontend gọi API backend API_LTDD_CuoiKy</p>
+
+    <!-- User Management Section -->
+    <div class="container">
+        <div class="section">
+            <h2>👤 User Management</h2>
+            
+            <div class="api-group">
+                <h3>Đăng ký tài khoản</h3>
+                <div class="input-group">
+                    <input type="email" id="registerEmail" placeholder="Email">
+                    <input type="password" id="registerPassword" placeholder="Password">
+                    <input type="text" id="registerFullName" placeholder="Full Name">
+                </div>
+                <button class="btn" onclick="registerUser()">Đăng ký</button>
+                <div id="registerResult" class="result"></div>
+            </div>
+
+            <div class="api-group">
+                <h3>Đăng nhập</h3>
+                <div class="input-group">
+                    <input type="email" id="loginEmail" placeholder="Email">
+                    <input type="password" id="loginPassword" placeholder="Password">
+                </div>
+                <button class="btn" onclick="loginUser()">Đăng nhập</button>
+                <div id="loginResult" class="result"></div>
+            </div>
+
+            <div class="api-group">
+                <h3>Quên mật khẩu</h3>
+                <div class="input-group">
+                    <input type="email" id="forgotEmail" placeholder="Email">
+                </div>
+                <button class="btn" onclick="forgotPassword()">Gửi OTP</button>
+                <div id="forgotResult" class="result"></div>
+            </div>
+
+            <div class="api-group">
+                <h3>Lấy thông tin user</h3>
+                <div class="input-group">
+                    <input type="text" id="getUserId" placeholder="User ID">
+                </div>
+                <button class="btn" onclick="getUserInfo()">Lấy thông tin</button>
+                <div id="userInfoResult" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Management Section -->
+    <div class="container">
+        <div class="section">
+            <h2>📦 Product Management</h2>
+            
+            <div class="api-group">
+                <h3>Lấy danh sách sản phẩm</h3>
+                <button class="btn" onclick="getAllProducts()">Lấy tất cả sản phẩm</button>
+                <div id="productsResult" class="result"></div>
+            </div>
+
+            <div class="api-group">
+                <h3>Tìm kiếm sản phẩm</h3>
+                <div class="input-group">
+                    <input type="text" id="searchProductName" placeholder="Tên sản phẩm">
+                </div>
+                <button class="btn" onclick="searchProducts()">Tìm kiếm</button>
+                <div id="searchResult" class="result"></div>
+            </div>
+
+            <div class="api-group">
+                <h3>Lấy sản phẩm theo danh mục</h3>
+                <div class="input-group">
+                    <input type="number" id="categoryId" placeholder="Category ID">
+                </div>
+                <button class="btn" onclick="getProductsByCategory()">Lấy sản phẩm</button>
+                <div id="categoryProductsResult" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Management Section -->
+    <div class="container">
+        <div class="section">
+            <h2>📂 Category Management</h2>
+            
+            <div class="api-group">
+                <h3>Lấy danh sách danh mục</h3>
+                <button class="btn" onclick="getAllCategories()">Tất cả danh mục</button>
+                <button class="btn" onclick="getRootCategories()">Danh mục gốc</button>
+                <div id="categoriesResult" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Management Section -->
+    <div class="container">
+        <div class="section">
+            <h2>🛒 Cart Management</h2>
+            
+            <div class="api-group">
+                <h3>Quản lý giỏ hàng</h3>
+                <div class="input-group">
+                    <input type="text" id="cartUserId" placeholder="User ID">
+                    <input type="number" id="cartProductId" placeholder="Product ID">
+                    <input type="number" id="cartQuantity" placeholder="Quantity">
+                </div>
+                <button class="btn" onclick="getCartByUser()">Xem giỏ hàng</button>
+                <button class="btn" onclick="addToCart()">Thêm vào giỏ</button>
+                <button class="btn" onclick="removeFromCart()">Xóa khỏi giỏ</button>
+                <div id="cartResult" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Management Section -->
+    <div class="container">
+        <div class="section">
+            <h2>📝 Order Management</h2>
+            
+            <div class="api-group">
+                <h3>Quản lý đơn hàng</h3>
+                <div class="input-group">
+                    <input type="text" id="orderUserId" placeholder="User ID">
+                    <input type="text" id="orderId" placeholder="Order ID">
+                </div>
+                <button class="btn" onclick="getUserOrders()">Lấy đơn hàng user</button>
+                <button class="btn" onclick="getOrderById()">Chi tiết đơn hàng</button>
+                <button class="btn" onclick="checkout()">Checkout</button>
+                <div id="orderResult" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Management Section -->
+    <div class="container">
+        <div class="section">
+            <h2>⭐ Review Management</h2>
+            
+            <div class="api-group">
+                <h3>Quản lý đánh giá</h3>
+                <div class="input-group">
+                    <input type="number" id="reviewProductId" placeholder="Product ID">
+                    <input type="text" id="reviewUserId" placeholder="User ID">
+                    <input type="number" id="rating" placeholder="Rating (1-5)" min="1" max="5">
+                    <textarea id="reviewComment" placeholder="Nội dung đánh giá"></textarea>
+                </div>
+                <button class="btn" onclick="getProductReviews()">Đánh giá sản phẩm</button>
+                <button class="btn" onclick="getUserReviews()">Đánh giá của user</button>
+                <button class="btn" onclick="createReview()">Tạo đánh giá</button>
+                <div id="reviewResult" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080'; // Thay đổi theo port backend của bạn
+
+        // Utility function để hiển thị kết quả
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = JSON.stringify(data, null, 2);
+            element.className = `result ${isError ? 'error' : 'success'}`;
+        }
+
+        // Utility function để gọi API
+        async function callAPI(url, method = 'GET', body = null) {
+            try {
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+
+                const response = await fetch(url, options);
+                const data = await response.json();
+                return { success: true, data };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        // ========== USER MANAGEMENT FUNCTIONS ==========
+
+        async function registerUser() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const fullName = document.getElementById('registerFullName').value;
+
+            if (!email || !password || !fullName) {
+                showResult('registerResult', { error: 'Vui lòng điền đầy đủ thông tin' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/register`, 'POST', {
+                email, password, fullName
+            });
+
+            showResult('registerResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showResult('loginResult', { error: 'Vui lòng điền email và password' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/login`, 'POST', {
+                email, password
+            });
+
+            showResult('loginResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function forgotPassword() {
+            const email = document.getElementById('forgotEmail').value;
+
+            if (!email) {
+                showResult('forgotResult', { error: 'Vui lòng điền email' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/forgot-password`, 'POST', { email });
+            showResult('forgotResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function getUserInfo() {
+            const userId = document.getElementById('getUserId').value;
+
+            if (!userId) {
+                showResult('userInfoResult', { error: 'Vui lòng điền User ID' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/users/${userId}`);
+            showResult('userInfoResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        // ========== PRODUCT MANAGEMENT FUNCTIONS ==========
+
+        async function getAllProducts() {
+            const result = await callAPI(`${API_BASE_URL}/products`);
+            showResult('productsResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function searchProducts() {
+            const productName = document.getElementById('searchProductName').value;
+
+            if (!productName) {
+                showResult('searchResult', { error: 'Vui lòng điền tên sản phẩm' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/products/search?name=${encodeURIComponent(productName)}`);
+            showResult('searchResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function getProductsByCategory() {
+            const categoryId = document.getElementById('categoryId').value;
+
+            if (!categoryId) {
+                showResult('categoryProductsResult', { error: 'Vui lòng điền Category ID' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/products/category/${categoryId}`);
+            showResult('categoryProductsResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        // ========== CATEGORY MANAGEMENT FUNCTIONS ==========
+
+        async function getAllCategories() {
+            const result = await callAPI(`${API_BASE_URL}/categories`);
+            showResult('categoriesResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function getRootCategories() {
+            const result = await callAPI(`${API_BASE_URL}/categories/root`);
+            showResult('categoriesResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        // ========== CART MANAGEMENT FUNCTIONS ==========
+
+        async function getCartByUser() {
+            const userId = document.getElementById('cartUserId').value;
+
+            if (!userId) {
+                showResult('cartResult', { error: 'Vui lòng điền User ID' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/carts/${userId}`);
+            showResult('cartResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function addToCart() {
+            const userId = document.getElementById('cartUserId').value;
+            const productId = document.getElementById('cartProductId').value;
+            const quantity = document.getElementById('cartQuantity').value;
+
+            if (!userId || !productId || !quantity) {
+                showResult('cartResult', { error: 'Vui lòng điền đầy đủ thông tin' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/carts/${userId}/items`, 'POST', {
+                productId: parseInt(productId),
+                quantity: parseInt(quantity)
+            });
+
+            showResult('cartResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function removeFromCart() {
+            const userId = document.getElementById('cartUserId').value;
+            const productId = document.getElementById('cartProductId').value;
+
+            if (!userId || !productId) {
+                showResult('cartResult', { error: 'Vui lòng điền User ID và Product ID' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/carts/${userId}/items/${productId}`, 'DELETE');
+            showResult('cartResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        // ========== ORDER MANAGEMENT FUNCTIONS ==========
+
+        async function getUserOrders() {
+            const userId = document.getElementById('orderUserId').value;
+
+            if (!userId) {
+                showResult('orderResult', { error: 'Vui lòng điền User ID' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/orders/user/${userId}`);
+            showResult('orderResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function getOrderById() {
+            const orderId = document.getElementById('orderId').value;
+
+            if (!orderId) {
+                showResult('orderResult', { error: 'Vui lòng điền Order ID' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/orders/${orderId}`);
+            showResult('orderResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function checkout() {
+            const userId = document.getElementById('orderUserId').value;
+
+            if (!userId) {
+                showResult('orderResult', { error: 'Vui lòng điền User ID' }, true);
+                return;
+            }
+
+            // Simplified checkout request
+            const result = await callAPI(`${API_BASE_URL}/orders/checkout/${userId}`, 'POST', {
+                paymentMethod: 'CASH',
+                shippingAddress: 'Địa chỉ giao hàng mặc định'
+            });
+
+            showResult('orderResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        // ========== REVIEW MANAGEMENT FUNCTIONS ==========
+
+        async function getProductReviews() {
+            const productId = document.getElementById('reviewProductId').value;
+
+            if (!productId) {
+                showResult('reviewResult', { error: 'Vui lòng điền Product ID' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/reviews/product/${productId}`);
+            showResult('reviewResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function getUserReviews() {
+            const userId = document.getElementById('reviewUserId').value;
+
+            if (!userId) {
+                showResult('reviewResult', { error: 'Vui lòng điền User ID' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/reviews/user/${userId}`);
+            showResult('reviewResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        async function createReview() {
+            const productId = document.getElementById('reviewProductId').value;
+            const userId = document.getElementById('reviewUserId').value;
+            const rating = document.getElementById('rating').value;
+            const comment = document.getElementById('reviewComment').value;
+
+            if (!productId || !userId || !rating) {
+                showResult('reviewResult', { error: 'Vui lòng điền đầy đủ thông tin' }, true);
+                return;
+            }
+
+            const result = await callAPI(`${API_BASE_URL}/reviews`, 'POST', {
+                productId: parseInt(productId),
+                userId: userId,
+                rating: parseInt(rating),
+                comment: comment || ''
+            });
+
+            showResult('reviewResult', result.success ? result.data : result.error, !result.success);
+        }
+
+        // Auto-fill demo data
+        window.onload = function() {
+            document.getElementById('registerEmail').value = 'test@example.com';
+            document.getElementById('registerPassword').value = 'password123';
+            document.getElementById('registerFullName').value = 'Test User';
+            document.getElementById('loginEmail').value = 'test@example.com';
+            document.getElementById('loginPassword').value = 'password123';
+        };
+    </script>
+</body>
+</html>

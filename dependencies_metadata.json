@@ -1,56 +1,13 @@
 {
   "project_info": {
-    "source_directory": "java-test-project2",
-    "total_files": 2,
-    "total_classes": 2,
+    "source_directory": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2\\Api_LTDD_CuoiKy-master\\src\\main\\java\\com\\example\\demo",
+    "total_files": 0,
+    "total_classes": 0,
     "analysis_date": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2",
     "custom_nodes": 0,
     "custom_edges": 0
   },
-  "files": {
-    "StringUtils": {
-      "classes": [
-        "StringUtils"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "Address": [
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize"
-        ]
-      },
-      "is_custom": false
-    },
-    "Address": {
-      "classes": [
-        "Address"
-      ],
-      "outgoing_calls": {
-        "StringUtils": [
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize"
-        ]
-      },
-      "incoming_calls": {},
-      "is_custom": false
-    }
-  },
+  "files": {},
   "statistics": {
     "most_connected_files": [],
     "method_call_summary": {}

@@ -549,13 +549,10 @@
                 </div>
                 <img src="dependencies.png" alt="Java Dependency Graph" usemap="#JavaDependencies" id="dependencyGraph">
                 <map id="JavaDependencies" name="JavaDependencies">
-<area shape="rect" id="node1" href="javascript:showNodeInfo(&#39;StringUtils&#39;)" title="StringUtils\n(StringUtils)" alt="" coords="500,16,615,69"/>
-<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;Address&#39;)" title="Address\n(Address)" alt="" coords="311,16,410,69"/>
-<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;Address&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="410,40,484,40,484,45,410,45"/>
-<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;Address&#39;, &#39;StringUtils&#39;)" title="sanitize" alt="" coords="434,29,476,43"/>
-<area shape="poly" id="node3" href="javascript:showNodeInfo(&#39;HTML_Add_New_Address&#39;)" title="Add New Address\n(HTML Function)" alt="" coords="238,43,232,31,216,21,190,12,157,7,122,5,86,7,53,12,28,21,11,31,5,43,11,54,28,64,53,73,86,78,122,80,157,78,190,73,216,64,232,54"/>
-<area shape="poly" id="edge2" href="javascript:showEdgeInfo(&#39;HTML_Add_New_Address&#39;, &#39;Address&#39;)" title="calls" alt="" coords="238,40,296,40,296,45,238,45"/>
-<area shape="rect" id="edge2-label" href="javascript:showEdgeInfo(&#39;HTML_Add_New_Address&#39;, &#39;Address&#39;)" title="calls" alt="" coords="262,29,287,43"/>
+<area shape="poly" id="node1" href="javascript:showNodeInfo(&#39;HTML_createReview&#39;)" title="createReview()\n(HTML Function)" alt="" coords="228,43,222,31,207,21,182,12,151,7,117,5,82,7,51,12,27,21,11,31,5,43,11,54,27,64,51,73,82,78,117,80,151,78,182,73,207,64,222,54"/>
+<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;Java_ReviewController&#39;)" title="ReviewController\n(Java Component)" alt="" coords="301,16,471,69"/>
+<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;HTML_createReview&#39;, &#39;Java_ReviewController&#39;)" title="calls" alt="" coords="228,40,285,40,285,45,228,45"/>
+<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;HTML_createReview&#39;, &#39;Java_ReviewController&#39;)" title="calls" alt="" coords="252,29,277,43"/>
 </map>
 
             </div>
@@ -574,57 +571,14 @@
     <script>
         let metadata = {
   "project_info": {
-    "source_directory": "java-test-project2",
-    "total_files": 2,
-    "total_classes": 2,
+    "source_directory": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2\\Api_LTDD_CuoiKy-master\\src\\main\\java\\com\\example\\demo",
+    "total_files": 0,
+    "total_classes": 0,
     "analysis_date": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2",
     "custom_nodes": 0,
     "custom_edges": 0
   },
-  "files": {
-    "StringUtils": {
-      "classes": [
-        "StringUtils"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "Address": [
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize"
-        ]
-      },
-      "is_custom": false
-    },
-    "Address": {
-      "classes": [
-        "Address"
-      ],
-      "outgoing_calls": {
-        "StringUtils": [
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize",
-          "sanitize"
-        ]
-      },
-      "incoming_calls": {},
-      "is_custom": false
-    }
-  },
+  "files": {},
   "statistics": {
     "most_connected_files": [],
     "method_call_summary": {}

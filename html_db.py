@@ -49,14 +49,14 @@ class HTMLFunctionDatabase:
         return psycopg2.connect(**{k: v for k, v in self.db_config.items() if k != 'schema'})
     
     def get_all_functions(self) -> List[Dict[str, Any]]:
-        """Lấy tất cả HTML/JS functions từ PostgreSQL database"""
+        """Lấy tất cả HTML/JS functions từ PostgreSQL database với controller info"""
         try:
             conn = self.get_connection()
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             schema = self.db_config['schema']
             cursor.execute(f'''
-                SELECT function_id, function_name
+                SELECT function_id, function_name, controller
                 FROM {schema}.html_function
                 ORDER BY function_name
             ''')
@@ -67,9 +67,10 @@ class HTMLFunctionDatabase:
                     'id': f'html_{row["function_id"]}',  # Prefix để phân biệt với Java functions
                     'function_id': row['function_id'],
                     'name': row['function_name'],
-                    'file': f'Frontend/{row["function_name"]}',  # Giả định đường dẫn
+                    'controller': row.get('controller', 'Unknown'),
+                    'file': f'Frontend/{row["function_name"]} -> {row.get("controller", "Unknown")}',
                     'type': 'html',
-                    'description': f'HTML/JS function: {row["function_name"]}',
+                    'description': f'HTML/JS function: {row["function_name"]} calls {row.get("controller", "Unknown")}',
                     'dependencies': 1  # Sẽ có dependency đến Java controller
                 })
             
@@ -123,7 +124,7 @@ class HTMLFunctionDatabase:
             return []
     
     def get_function_by_id(self, function_id: str) -> Dict[str, Any]:
-        """Lấy function specific"""
+        """Lấy function specific với controller info"""
         try:
             conn = self.get_connection()
             cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -133,7 +134,7 @@ class HTMLFunctionDatabase:
             
             schema = self.db_config['schema']
             cursor.execute(f'''
-                SELECT function_id, function_name
+                SELECT function_id, function_name, controller
                 FROM {schema}.html_function
                 WHERE function_id = %s
             ''', (clean_id,))
@@ -144,9 +145,10 @@ class HTMLFunctionDatabase:
                     'id': f'html_{row["function_id"]}',
                     'function_id': row['function_id'],
                     'name': row['function_name'],
-                    'file': f'Frontend/{row["function_name"]}',
+                    'controller': row.get('controller', 'Unknown'),
+                    'file': f'Frontend/{row["function_name"]} -> {row.get("controller", "Unknown")}',
                     'type': 'html',
-                    'description': f'HTML/JS function: {row["function_name"]}',
+                    'description': f'HTML/JS function: {row["function_name"]} calls {row.get("controller", "Unknown")}',
                     'dependencies': 1
                 }
             else:
@@ -159,75 +161,92 @@ class HTMLFunctionDatabase:
             print(f"❌ Error loading HTML function by ID: {e}")
             return None
     
-    def add_function(self, function_data: Dict[str, str]) -> bool:
-        """Thêm function mới"""
+    def get_controller_mappings_for_html(self, selected_html_functions: List[str]) -> Dict[str, str]:
+        """
+        Lấy mapping chính xác từ HTML functions đến Java controllers từ database
+        """
+        mappings = {}
+        
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            for html_func_id in selected_html_functions:
+                if html_func_id.startswith('html_'):
+                    clean_id = html_func_id.replace('html_', '')
+                    
+                    # Lấy controller từ database
+                    schema = self.db_config['schema']
+                    cursor.execute(f'''
+                        SELECT controller, function_name
+                        FROM {schema}.html_function
+                        WHERE function_id = %s
+                    ''', (clean_id,))
+                    
+                    row = cursor.fetchone()
+                    if row and row['controller']:
+                        mappings[html_func_id] = row['controller']
+                        print(f"🔗 {html_func_id} → {row['controller']} (from {row['function_name']})")
+                    else:
+                        print(f"⚠️ No controller mapping found for {html_func_id}")
+            
+            conn.close()
+            
+        except Exception as e:
+            print(f"❌ Error getting controller mappings: {e}")
+        
+        return mappings
+
+    def clear_all_functions(self):
+        """Clear all HTML functions from database"""
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
             
             schema = self.db_config['schema']
+            
+            # Clear functions
+            cursor.execute(f'DELETE FROM {schema}.html_function')
+            print("   🧹 Cleared HTML functions")
+            
+            conn.commit()
+            conn.close()
+            print("✅ Database cleared successfully")
+            
+        except Exception as e:
+            print(f"❌ Error clearing database: {e}")
+            
+    def add_function(self, name: str, file: str, func_type: str, description: str) -> bool:
+        """Add HTML function to database with existing schema"""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            schema = self.db_config['schema']
+            
+            # Get next function_id
+            cursor.execute(f'SELECT COALESCE(MAX(function_id), 0) + 1 FROM {schema}.html_function')
+            next_id = cursor.fetchone()[0]
+            
+            # Insert with existing schema (function_id, function_name only)
             cursor.execute(f'''
                 INSERT INTO {schema}.html_function (function_id, function_name)
                 VALUES (%s, %s)
-                ON CONFLICT (function_id) DO UPDATE SET
-                function_name = EXCLUDED.function_name
-            ''', (
-                function_data['function_id'],
-                function_data['function_name']
-            ))
+            ''', (next_id, f"{name} - {description}"))
             
             conn.commit()
             conn.close()
             return True
+            
         except Exception as e:
-            print(f"❌ Error adding function: {e}")
+            print(f"❌ Error adding function {name}: {e}")
             return False
-    
-    def get_controller_mappings_for_html(self, selected_html_functions: List[str]) -> Dict[str, str]:
-        """
-        Tạo mapping chính xác từ HTML functions đến Java controllers/services
-        Dựa trên Java project structure thực tế
-        """
-        mappings = {}
-        
-        for html_func_id in selected_html_functions:
-            if html_func_id.startswith('html_'):
-                clean_id = html_func_id.replace('html_', '')
-                
-                # Lấy function name từ database để mapping chính xác
-                function_data = self.get_function_by_id(html_func_id)
-                if not function_data:
-                    continue
-                    
-                function_name = function_data['name'].lower()
-                
-                # Mapping logic dựa trên function name thực tế
-                if any(keyword in function_name for keyword in ['user', 'login', 'registration', 'profile']):
-                    mappings[html_func_id] = 'UserController'
-                elif any(keyword in function_name for keyword in ['order', 'cart', 'checkout']):
-                    mappings[html_func_id] = 'OrderController'
-                elif any(keyword in function_name for keyword in ['product', 'search', 'catalog']):
-                    mappings[html_func_id] = 'Product'  # Product model class
-                elif any(keyword in function_name for keyword in ['payment', 'billing']):
-                    mappings[html_func_id] = 'PaymentService'
-                elif any(keyword in function_name for keyword in ['notification', 'alert']):
-                    mappings[html_func_id] = 'NotificationService'
-                elif any(keyword in function_name for keyword in ['address']):
-                    mappings[html_func_id] = 'Address'  # Address model via UserService
-                elif any(keyword in function_name for keyword in ['dashboard', 'management', 'admin']):
-                    # Dashboard functions map to multiple components
-                    if 'user' in function_name:
-                        mappings[html_func_id] = 'UserRepository'
-                    elif 'order' in function_name:
-                        mappings[html_func_id] = 'OrderRepository'
-                    elif 'product' in function_name:
-                        mappings[html_func_id] = 'ProductRepository'
-                    else:
-                        mappings[html_func_id] = 'UserController'  # Default for general admin
-                else:
-                    mappings[html_func_id] = 'UserController'  # Default fallback
-        
-        return mappings
+            
+    def add_controller_mapping(self, html_func_id: str, controller_name: str) -> bool:
+        """Skip controller mapping as table doesn't exist yet"""
+        # For now, just return True since the table doesn't exist
+        # The mapping will be handled in the analyzer logic
+        return True
 
 if __name__ == "__main__":
     # Test database connection

@@ -89,9 +89,26 @@ class EnhancedJavaDependencyAnalyzer:
         constructor_pattern = r'new\s+([A-Z][a-zA-Z0-9_]*)\s*\('
         constructors = re.findall(constructor_pattern, cleaned_content)
         
+        # Enhanced analysis for service calls and field access
+        service_call_pattern = r'([a-z][a-zA-Z0-9_]*Service|[a-z][a-zA-Z0-9_]*Repository)\.([a-z][a-zA-Z0-9_]*)\s*\('
+        service_calls = re.findall(service_call_pattern, cleaned_content)
+        
         for caller, method_name in method_calls:
             if caller in self.classes and self.classes[caller] != java_file:
                 target_file = self.classes[caller]
+                self.method_calls[java_file][target_file].append(method_name)
+                
+        # Process service calls (reviewService.createReview -> ReviewService)
+        for service_var, method_name in service_calls:
+            # Convert variable name to class name (reviewService -> ReviewService)
+            service_class = service_var[0].upper() + service_var[1:]
+            if service_class.endswith('Service'):
+                service_class = service_class[:-7] + 'Service'  # Normalize naming
+            elif service_class.endswith('Repository'):
+                service_class = service_class[:-10] + 'Repository'  # Normalize naming
+                
+            if service_class in self.classes and self.classes[service_class] != java_file:
+                target_file = self.classes[service_class]
                 self.method_calls[java_file][target_file].append(method_name)
         
         for class_name in constructors:
