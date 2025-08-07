@@ -1,116 +1,170 @@
 {
   "project_info": {
     "source_directory": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2\\Api_LTDD_CuoiKy-master\\src\\main\\java\\com\\example\\demo",
-    "total_files": 5,
-    "total_classes": 6,
+    "total_files": 7,
+    "total_classes": 14,
     "analysis_date": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2",
     "custom_nodes": 0,
     "custom_edges": 0
   },
   "files": {
-    "UserService": {
+    "ResponseDTO": {
       "classes": [
-        "UserService"
+        "ResponseDTO"
       ],
-      "outgoing_calls": {
-        "UserEntity": [
-          "builder"
-        ],
-        "UserRepository": [
-          "findByEmail",
-          "findByEmail"
-        ]
-      },
+      "outgoing_calls": {},
       "incoming_calls": {
-        "UserController": [
-          "register",
-          "login",
-          "getUserById",
-          "deleteUserById",
-          "forgotPassword",
-          "resetPassword",
-          "updateUserInfo"
+        "CartController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "OrderController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "ReviewController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
         ]
       },
       "is_custom": false
     },
-    "UserController": {
+    "CartController": {
       "classes": [
-        "UserController"
+        "CartController"
       ],
       "outgoing_calls": {
-        "UserEntity": [
-          "builder"
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
         ],
-        "UserRepository": [
-          "save"
-        ],
-        "UserService": [
-          "register",
-          "login",
-          "getUserById",
-          "deleteUserById",
-          "forgotPassword",
-          "resetPassword",
-          "updateUserInfo"
-        ],
-        "AuthService": [
-          "verifyUser"
+        "CartService": [
+          "getCartByUserId",
+          "addItemToCart",
+          "updateCartItem",
+          "removeItemFromCart",
+          "clearCart"
         ]
       },
       "incoming_calls": {},
       "is_custom": false
     },
-    "UserEntity": {
+    "CartService": {
       "classes": [
-        "UserEntity"
+        "CartService"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "UserController": [
-          "builder"
-        ],
-        "UserService": [
-          "builder"
+        "CartController": [
+          "getCartByUserId",
+          "addItemToCart",
+          "updateCartItem",
+          "removeItemFromCart",
+          "clearCart"
         ]
       },
       "is_custom": false
     },
-    "AuthService": {
+    "OrderController": {
       "classes": [
-        "AuthService"
+        "OrderController"
       ],
       "outgoing_calls": {
-        "UserRepository": [
-          "findByEmail",
-          "save"
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "OrderService": [
+          "checkout",
+          "getOrderById",
+          "getOrdersByUserId",
+          "getOrdersByUserId",
+          "updateOrderStatus",
+          "cancelOrder"
         ]
       },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "ReviewService": {
+      "classes": [
+        "ReviewService"
+      ],
+      "outgoing_calls": {},
       "incoming_calls": {
-        "UserController": [
-          "verifyUser"
+        "ReviewController": [
+          "getAllReviews",
+          "getReviewById",
+          "getReviewsByProductId",
+          "getReviewsByUserId",
+          "createReview",
+          "updateReview",
+          "deleteReview"
         ]
       },
       "is_custom": false
     },
-    "UserRepository": {
+    "OrderService": {
       "classes": [
-        "UserRepository"
+        "OrderService"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "UserController": [
-          "save"
-        ],
-        "AuthService": [
-          "findByEmail",
-          "save"
-        ],
-        "UserService": [
-          "findByEmail",
-          "findByEmail"
+        "OrderController": [
+          "checkout",
+          "getOrderById",
+          "getOrdersByUserId",
+          "getOrdersByUserId",
+          "updateOrderStatus",
+          "cancelOrder"
         ]
       },
+      "is_custom": false
+    },
+    "ReviewController": {
+      "classes": [
+        "ReviewController"
+      ],
+      "outgoing_calls": {
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "ReviewService": [
+          "getAllReviews",
+          "getReviewById",
+          "getReviewsByProductId",
+          "getReviewsByUserId",
+          "createReview",
+          "updateReview",
+          "deleteReview"
+        ]
+      },
+      "incoming_calls": {},
       "is_custom": false
     }
   },

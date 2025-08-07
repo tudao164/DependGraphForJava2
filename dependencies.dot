@@ -4,22 +4,27 @@ digraph JavaDependencies {
     edge [fontname="Arial", fontsize=9, color=darkblue];
     graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
 
-    "UserService" [label="UserService\n(UserService)", URL="javascript:showNodeInfo('UserService')", fillcolor="lightblue"];
-    "UserController" [label="UserController\n(UserController)", URL="javascript:showNodeInfo('UserController')", fillcolor="lightblue"];
-    "UserEntity" [label="UserEntity\n(UserEntity)", URL="javascript:showNodeInfo('UserEntity')", fillcolor="lightblue"];
-    "AuthService" [label="AuthService\n(AuthService)", URL="javascript:showNodeInfo('AuthService')", fillcolor="lightblue"];
-    "UserRepository" [label="UserRepository\n(UserRepository)", URL="javascript:showNodeInfo('UserRepository')", fillcolor="lightblue"];
+    "ResponseDTO" [label="ResponseDTO\n(ResponseDTO)", URL="javascript:showNodeInfo('ResponseDTO')", fillcolor="lightblue"];
+    "CartController" [label="CartController\n(CartController)", URL="javascript:showNodeInfo('CartController')", fillcolor="lightblue"];
+    "CartService" [label="CartService\n(CartService)", URL="javascript:showNodeInfo('CartService')", fillcolor="lightblue"];
+    "OrderController" [label="OrderController\n(OrderController)", URL="javascript:showNodeInfo('OrderController')", fillcolor="lightblue"];
+    "ReviewService" [label="ReviewService\n(ReviewService)", URL="javascript:showNodeInfo('ReviewService')", fillcolor="lightblue"];
+    "OrderService" [label="OrderService\n(OrderService)", URL="javascript:showNodeInfo('OrderService')", fillcolor="lightblue"];
+    "ReviewController" [label="ReviewController\n(ReviewController)", URL="javascript:showNodeInfo('ReviewController')", fillcolor="lightblue"];
 
     // Dependencies with method calls
-    "UserController" -> "UserEntity" [label="builder", URL="javascript:showEdgeInfo('UserController', 'UserEntity')"];
-    "UserController" -> "UserRepository" [label="save", URL="javascript:showEdgeInfo('UserController', 'UserRepository')"];
-    "UserController" -> "UserService" [label="deleteUserById\nforgotPassword\ngetUserById\n+ 4 more", URL="javascript:showEdgeInfo('UserController', 'UserService')"];
-    "UserController" -> "AuthService" [label="verifyUser", URL="javascript:showEdgeInfo('UserController', 'AuthService')"];
-    "AuthService" -> "UserRepository" [label="findByEmail\nsave", URL="javascript:showEdgeInfo('AuthService', 'UserRepository')"];
-    "UserService" -> "UserEntity" [label="builder", URL="javascript:showEdgeInfo('UserService', 'UserEntity')"];
-    "UserService" -> "UserRepository" [label="findByEmail", URL="javascript:showEdgeInfo('UserService', 'UserRepository')"];
+    "CartController" -> "ResponseDTO" [label="success", URL="javascript:showEdgeInfo('CartController', 'ResponseDTO')"];
+    "CartController" -> "CartService" [label="addItemToCart\nclearCart\ngetCartByUserId\n+ 2 more", URL="javascript:showEdgeInfo('CartController', 'CartService')"];
+    "OrderController" -> "ResponseDTO" [label="success", URL="javascript:showEdgeInfo('OrderController', 'ResponseDTO')"];
+    "OrderController" -> "OrderService" [label="cancelOrder\ncheckout\ngetOrderById\n+ 2 more", URL="javascript:showEdgeInfo('OrderController', 'OrderService')"];
+    "ReviewController" -> "ResponseDTO" [label="success", URL="javascript:showEdgeInfo('ReviewController', 'ResponseDTO')"];
+    "ReviewController" -> "ReviewService" [label="createReview\ndeleteReview\ngetAllReviews\n+ 4 more", URL="javascript:showEdgeInfo('ReviewController', 'ReviewService')"];
 
     // HTML Function Nodes
-    "HTML_forgotPassword" [label="forgotPassword()\n(HTML Function)", URL="javascript:showNodeInfo('HTML_forgotPassword')", fillcolor="lightgreen", shape="ellipse"];
-    "HTML_forgotPassword" -> "UserController" [label="calls", URL="javascript:showEdgeInfo('HTML_forgotPassword', 'UserController')", color="green", style="bold"];
+    "HTML_addToCart" [label="addToCart()\n(HTML Function)", URL="javascript:showNodeInfo('HTML_addToCart')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_addToCart" -> "CartController" [label="calls", URL="javascript:showEdgeInfo('HTML_addToCart', 'CartController')", color="green", style="bold"];
+    "HTML_checkout" [label="checkout()\n(HTML Function)", URL="javascript:showNodeInfo('HTML_checkout')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_checkout" -> "OrderController" [label="calls", URL="javascript:showEdgeInfo('HTML_checkout', 'OrderController')", color="green", style="bold"];
+    "HTML_createReview" [label="createReview()\n(HTML Function)", URL="javascript:showNodeInfo('HTML_createReview')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_createReview" -> "ReviewController" [label="calls", URL="javascript:showEdgeInfo('HTML_createReview', 'ReviewController')", color="green", style="bold"];
 }

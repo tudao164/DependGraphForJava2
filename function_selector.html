@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chọn Functions để Vẽ Dependency Graph</title>
+    <title>Chọn HTML Functions để Vẽ Dependency Graph</title>
     <style>
         * {
             margin: 0;
@@ -324,20 +324,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎯 Chọn Functions để Vẽ Graph</h1>
-            <p>Chọn các classes và methods mà bạn muốn hiển thị trong dependency graph</p>
+            <h1>� HTML Function Selector</h1>
+            <p>Chọn các HTML/JavaScript functions để tạo dependency graph với Java components</p>
         </div>
 
         <div class="controls">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Tìm kiếm functions...">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm HTML functions...">
                 <span class="search-icon">🔍</span>
             </div>
             <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all">Tất cả</button>
-                <button class="filter-btn" data-filter="class">Classes</button>
-                <button class="filter-btn" data-filter="method">Methods</button>
-                <button class="filter-btn" data-filter="service">Services</button>
+                <button class="filter-btn active" data-filter="all">Tất cả HTML Functions</button>
+                <button class="filter-btn" data-filter="html">HTML Functions</button>
             </div>
         </div>
 
@@ -375,18 +373,19 @@
         let selectedFunctions = new Set();
         let currentFilter = 'all';
 
-        // Load functions từ server
+        // Load HTML functions từ database
         async function loadFunctions() {
             try {
-                const response = await fetch('/api/functions');
+                const response = await fetch('/api/html-functions');
                 const data = await response.json();
                 
                 if (data.success) {
                     allFunctions = data.functions;
                     updateFunctionGrid();
                     updateCounts();
+                    console.log(`✅ Loaded ${data.functions.length} HTML functions from database`);
                 } else {
-                    showError('Không thể tải danh sách functions');
+                    showError('Không thể tải danh sách HTML functions');
                 }
             } catch (error) {
                 showError('Lỗi kết nối: ' + error.message);
