@@ -1,13 +1,119 @@
 {
   "project_info": {
     "source_directory": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2\\Api_LTDD_CuoiKy-master\\src\\main\\java\\com\\example\\demo",
-    "total_files": 0,
-    "total_classes": 0,
+    "total_files": 5,
+    "total_classes": 6,
     "analysis_date": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2",
     "custom_nodes": 0,
     "custom_edges": 0
   },
-  "files": {},
+  "files": {
+    "UserService": {
+      "classes": [
+        "UserService"
+      ],
+      "outgoing_calls": {
+        "UserEntity": [
+          "builder"
+        ],
+        "UserRepository": [
+          "findByEmail",
+          "findByEmail"
+        ]
+      },
+      "incoming_calls": {
+        "UserController": [
+          "register",
+          "login",
+          "getUserById",
+          "deleteUserById",
+          "forgotPassword",
+          "resetPassword",
+          "updateUserInfo"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserController": {
+      "classes": [
+        "UserController"
+      ],
+      "outgoing_calls": {
+        "UserEntity": [
+          "builder"
+        ],
+        "UserRepository": [
+          "save"
+        ],
+        "UserService": [
+          "register",
+          "login",
+          "getUserById",
+          "deleteUserById",
+          "forgotPassword",
+          "resetPassword",
+          "updateUserInfo"
+        ],
+        "AuthService": [
+          "verifyUser"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "UserEntity": {
+      "classes": [
+        "UserEntity"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "builder"
+        ],
+        "UserService": [
+          "builder"
+        ]
+      },
+      "is_custom": false
+    },
+    "AuthService": {
+      "classes": [
+        "AuthService"
+      ],
+      "outgoing_calls": {
+        "UserRepository": [
+          "findByEmail",
+          "save"
+        ]
+      },
+      "incoming_calls": {
+        "UserController": [
+          "verifyUser"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserRepository": {
+      "classes": [
+        "UserRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "save"
+        ],
+        "AuthService": [
+          "findByEmail",
+          "save"
+        ],
+        "UserService": [
+          "findByEmail",
+          "findByEmail"
+        ]
+      },
+      "is_custom": false
+    }
+  },
   "statistics": {
     "most_connected_files": [],
     "method_call_summary": {}

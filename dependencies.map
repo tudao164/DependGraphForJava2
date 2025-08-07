@@ -1,6 +1,24 @@
 <map id="JavaDependencies" name="JavaDependencies">
-<area shape="poly" id="node1" href="javascript:showNodeInfo(&#39;HTML_createReview&#39;)" title="createReview()\n(HTML Function)" alt="" coords="228,43,222,31,207,21,182,12,151,7,117,5,82,7,51,12,27,21,11,31,5,43,11,54,27,64,51,73,82,78,117,80,151,78,182,73,207,64,222,54"/>
-<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;Java_ReviewController&#39;)" title="ReviewController\n(Java Component)" alt="" coords="301,16,471,69"/>
-<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;HTML_createReview&#39;, &#39;Java_ReviewController&#39;)" title="calls" alt="" coords="228,40,285,40,285,45,228,45"/>
-<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;HTML_createReview&#39;, &#39;Java_ReviewController&#39;)" title="calls" alt="" coords="252,29,277,43"/>
+<area shape="rect" id="node1" href="javascript:showNodeInfo(&#39;UserService&#39;)" title="UserService\n(UserService)" alt="" coords="585,73,716,126"/>
+<area shape="rect" id="node3" href="javascript:showNodeInfo(&#39;UserEntity&#39;)" title="UserEntity\n(UserEntity)" alt="" coords="849,19,966,71"/>
+<area shape="poly" id="edge6" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserEntity&#39;)" title="builder" alt="" coords="716,83,833,58,835,63,717,88"/>
+<area shape="rect" id="edge6-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserEntity&#39;)" title="builder" alt="" coords="753,54,791,68"/>
+<area shape="rect" id="node5" href="javascript:showNodeInfo(&#39;UserRepository&#39;)" title="UserRepository\n(UserRepository)" alt="" coords="829,137,986,190"/>
+<area shape="poly" id="edge7" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserRepository&#39;)" title="findByEmail" alt="" coords="717,113,814,138,813,143,716,119"/>
+<area shape="rect" id="edge7-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserRepository&#39;)" title="findByEmail" alt="" coords="740,108,805,122"/>
+<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;UserController&#39;)" title="UserController\n(UserController)" alt="" coords="302,111,452,163"/>
+<area shape="poly" id="edge3" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserService&#39;)" title="deleteUserById\nforgotPassword\ngetUserById\n+ 4 more" alt="" coords="452,124,569,108,570,113,453,130"/>
+<area shape="rect" id="edge3-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserService&#39;)" title="deleteUserById\nforgotPassword\ngetUserById\n+ 4 more" alt="" coords="476,57,561,113"/>
+<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserEntity&#39;)" title="builder" alt="" coords="398,108,431,76,452,61,475,49,521,35,569,25,666,17,758,20,834,29,833,34,757,25,666,22,570,30,522,40,477,54,455,65,434,80,401,112"/>
+<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserEntity&#39;)" title="builder" alt="" coords="631,5,669,19"/>
+<area shape="rect" id="node4" href="javascript:showNodeInfo(&#39;AuthService&#39;)" title="AuthService\n(AuthService)" alt="" coords="585,212,715,265"/>
+<area shape="poly" id="edge4" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;AuthService&#39;)" title="verifyUser" alt="" coords="417,162,477,194,523,210,570,222,569,227,522,215,475,199,415,166"/>
+<area shape="rect" id="edge4-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;AuthService&#39;)" title="verifyUser" alt="" coords="491,182,546,196"/>
+<area shape="poly" id="edge2" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserRepository&#39;)" title="save" alt="" coords="452,141,585,150,814,159,814,164,584,155,452,146"/>
+<area shape="rect" id="edge2-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserRepository&#39;)" title="save" alt="" coords="637,138,663,152"/>
+<area shape="poly" id="edge5" href="javascript:showEdgeInfo(&#39;AuthService&#39;, &#39;UserRepository&#39;)" title="findByEmail\nsave" alt="" coords="715,228,804,208,840,194,842,199,806,213,716,233"/>
+<area shape="rect" id="edge5-label" href="javascript:showEdgeInfo(&#39;AuthService&#39;, &#39;UserRepository&#39;)" title="findByEmail\nsave" alt="" coords="740,182,805,210"/>
+<area shape="poly" id="node6" href="javascript:showNodeInfo(&#39;HTML_forgotPassword&#39;)" title="forgotPassword()\n(HTML Function)" alt="" coords="229,137,224,126,208,115,183,107,152,102,117,100,83,102,51,107,27,115,11,126,5,137,11,149,27,159,51,167,83,172,117,174,152,172,183,167,208,159,224,149"/>
+<area shape="poly" id="edge8" href="javascript:showEdgeInfo(&#39;HTML_forgotPassword&#39;, &#39;UserController&#39;)" title="calls" alt="" coords="230,134,287,134,287,140,230,140"/>
+<area shape="rect" id="edge8-label" href="javascript:showEdgeInfo(&#39;HTML_forgotPassword&#39;, &#39;UserController&#39;)" title="calls" alt="" coords="253,123,278,137"/>
 </map>

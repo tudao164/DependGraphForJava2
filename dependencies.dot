@@ -4,11 +4,22 @@ digraph JavaDependencies {
     edge [fontname="Arial", fontsize=9, color=darkblue];
     graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
 
+    "UserService" [label="UserService\n(UserService)", URL="javascript:showNodeInfo('UserService')", fillcolor="lightblue"];
+    "UserController" [label="UserController\n(UserController)", URL="javascript:showNodeInfo('UserController')", fillcolor="lightblue"];
+    "UserEntity" [label="UserEntity\n(UserEntity)", URL="javascript:showNodeInfo('UserEntity')", fillcolor="lightblue"];
+    "AuthService" [label="AuthService\n(AuthService)", URL="javascript:showNodeInfo('AuthService')", fillcolor="lightblue"];
+    "UserRepository" [label="UserRepository\n(UserRepository)", URL="javascript:showNodeInfo('UserRepository')", fillcolor="lightblue"];
 
     // Dependencies with method calls
+    "UserController" -> "UserEntity" [label="builder", URL="javascript:showEdgeInfo('UserController', 'UserEntity')"];
+    "UserController" -> "UserRepository" [label="save", URL="javascript:showEdgeInfo('UserController', 'UserRepository')"];
+    "UserController" -> "UserService" [label="deleteUserById\nforgotPassword\ngetUserById\n+ 4 more", URL="javascript:showEdgeInfo('UserController', 'UserService')"];
+    "UserController" -> "AuthService" [label="verifyUser", URL="javascript:showEdgeInfo('UserController', 'AuthService')"];
+    "AuthService" -> "UserRepository" [label="findByEmail\nsave", URL="javascript:showEdgeInfo('AuthService', 'UserRepository')"];
+    "UserService" -> "UserEntity" [label="builder", URL="javascript:showEdgeInfo('UserService', 'UserEntity')"];
+    "UserService" -> "UserRepository" [label="findByEmail", URL="javascript:showEdgeInfo('UserService', 'UserRepository')"];
 
     // HTML Function Nodes
-    "HTML_createReview" [label="createReview()\n(HTML Function)", URL="javascript:showNodeInfo('HTML_createReview')", fillcolor="lightgreen", shape="ellipse"];
-    "Java_ReviewController" [label="ReviewController\n(Java Component)", URL="javascript:showNodeInfo('Java_ReviewController')", fillcolor="lightyellow"];
-    "HTML_createReview" -> "Java_ReviewController" [label="calls", URL="javascript:showEdgeInfo('HTML_createReview', 'Java_ReviewController')", color="green", style="bold"];
+    "HTML_forgotPassword" [label="forgotPassword()\n(HTML Function)", URL="javascript:showNodeInfo('HTML_forgotPassword')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_forgotPassword" -> "UserController" [label="calls", URL="javascript:showEdgeInfo('HTML_forgotPassword', 'UserController')", color="green", style="bold"];
 }
