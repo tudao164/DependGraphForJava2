@@ -4,21 +4,13 @@ digraph JavaDependencies {
     edge [fontname="Arial", fontsize=9, color=darkblue];
     graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
 
-    "Order" [label="Order\n(Order)", URL="javascript:showNodeInfo('Order')", fillcolor="lightblue"];
-    "OrderService" [label="OrderService\n(OrderService)", URL="javascript:showNodeInfo('OrderService')", fillcolor="lightblue"];
-    "OrderDTO" [label="OrderDTO\n(OrderDTO)", URL="javascript:showNodeInfo('OrderDTO')", fillcolor="lightblue"];
-    "OrderController" [label="OrderController\n(OrderController)", URL="javascript:showNodeInfo('OrderController')", fillcolor="lightblue"];
     "StringUtils" [label="StringUtils\n(StringUtils)", URL="javascript:showNodeInfo('StringUtils')", fillcolor="lightblue"];
-    "InvalidInputException" [label="InvalidInputException\n(InvalidInputException)", URL="javascript:showNodeInfo('InvalidInputException')", fillcolor="lightblue"];
+    "Address" [label="Address\n(Address)", URL="javascript:showNodeInfo('Address')", fillcolor="lightblue"];
 
     // Dependencies with method calls
-    "OrderController" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('OrderController', 'StringUtils')"];
-    "OrderController" -> "InvalidInputException" [label="new InvalidInputException()", URL="javascript:showEdgeInfo('OrderController', 'InvalidInputException')"];
-    "OrderController" -> "OrderDTO" [label="new OrderDTO()", URL="javascript:showEdgeInfo('OrderController', 'OrderDTO')"];
-    "OrderService" -> "StringUtils" [label="isEmpty", URL="javascript:showEdgeInfo('OrderService', 'StringUtils')"];
-    "OrderService" -> "Order" [label="new Order()", URL="javascript:showEdgeInfo('OrderService', 'Order')"];
+    "Address" -> "StringUtils" [label="sanitize", URL="javascript:showEdgeInfo('Address', 'StringUtils')"];
 
     // HTML Function Nodes
-    "HTML_Add_to_Cart" [label="Add to Cart\n(HTML Function)", URL="javascript:showNodeInfo('HTML_Add_to_Cart')", fillcolor="lightgreen", shape="ellipse"];
-    "HTML_Add_to_Cart" -> "OrderController" [label="calls", URL="javascript:showEdgeInfo('HTML_Add_to_Cart', 'OrderController')", color="green", style="bold"];
+    "HTML_Add_New_Address" [label="Add New Address\n(HTML Function)", URL="javascript:showNodeInfo('HTML_Add_New_Address')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_Add_New_Address" -> "Address" [label="calls", URL="javascript:showEdgeInfo('HTML_Add_New_Address', 'Address')", color="green", style="bold"];
 }
