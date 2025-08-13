@@ -1,26 +1,58 @@
 {
   "project_info": {
-    "source_directory": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2\\Api_LTDD_CuoiKy-master\\src\\main\\java\\com\\example\\demo",
-    "total_files": 7,
-    "total_classes": 14,
-    "analysis_date": "D:\\ThucTap\\GenerateGraph2\\DependGraphForJava2",
+    "source_directory": "Api_LTDD_CuoiKy-master\\src\\main\\java",
+    "total_files": 6,
+    "total_classes": 6,
+    "analysis_date": "D:\\ThucTap\\GenerateGraph3\\DependGraphForJava2",
     "custom_nodes": 0,
     "custom_edges": 0
   },
   "files": {
+    "OrderService": {
+      "classes": [
+        "OrderService"
+      ],
+      "outgoing_calls": {
+        "CheckoutRequestDTO": [
+          "field: checkoutRequest"
+        ],
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO"
+        ]
+      },
+      "incoming_calls": {
+        "OrderController": [
+          "checkout",
+          "getOrderById",
+          "getOrdersByUserId",
+          "getOrdersByUserId",
+          "updateOrderStatus",
+          "cancelOrder",
+          "field: orderService"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderDTO": {
+      "classes": [
+        "OrderDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
+        ]
+      },
+      "is_custom": false
+    },
     "ResponseDTO": {
       "classes": [
         "ResponseDTO"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "CartController": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ],
         "OrderController": [
           "success",
           "success",
@@ -28,54 +60,6 @@
           "success",
           "success",
           "success"
-        ],
-        "ReviewController": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ]
-      },
-      "is_custom": false
-    },
-    "CartController": {
-      "classes": [
-        "CartController"
-      ],
-      "outgoing_calls": {
-        "ResponseDTO": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ],
-        "CartService": [
-          "getCartByUserId",
-          "addItemToCart",
-          "updateCartItem",
-          "removeItemFromCart",
-          "clearCart"
-        ]
-      },
-      "incoming_calls": {},
-      "is_custom": false
-    },
-    "CartService": {
-      "classes": [
-        "CartService"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "CartController": [
-          "getCartByUserId",
-          "addItemToCart",
-          "updateCartItem",
-          "removeItemFromCart",
-          "clearCart"
         ]
       },
       "is_custom": false
@@ -99,72 +83,52 @@
           "getOrdersByUserId",
           "getOrdersByUserId",
           "updateOrderStatus",
-          "cancelOrder"
+          "cancelOrder",
+          "field: orderService"
+        ],
+        "OrderDTO": [
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
+        ],
+        "CheckoutRequestDTO": [
+          "field: checkoutRequest"
+        ],
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO"
         ]
       },
       "incoming_calls": {},
       "is_custom": false
     },
-    "ReviewService": {
+    "OrderStatusUpdateDTO": {
       "classes": [
-        "ReviewService"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "ReviewController": [
-          "getAllReviews",
-          "getReviewById",
-          "getReviewsByProductId",
-          "getReviewsByUserId",
-          "createReview",
-          "updateReview",
-          "deleteReview"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderService": {
-      "classes": [
-        "OrderService"
+        "OrderStatusUpdateDTO"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
         "OrderController": [
-          "checkout",
-          "getOrderById",
-          "getOrdersByUserId",
-          "getOrdersByUserId",
-          "updateOrderStatus",
-          "cancelOrder"
+          "field: statusUpdateDTO"
+        ],
+        "OrderService": [
+          "field: statusUpdateDTO"
         ]
       },
       "is_custom": false
     },
-    "ReviewController": {
+    "CheckoutRequestDTO": {
       "classes": [
-        "ReviewController"
+        "CheckoutRequestDTO"
       ],
-      "outgoing_calls": {
-        "ResponseDTO": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "field: checkoutRequest"
         ],
-        "ReviewService": [
-          "getAllReviews",
-          "getReviewById",
-          "getReviewsByProductId",
-          "getReviewsByUserId",
-          "createReview",
-          "updateReview",
-          "deleteReview"
+        "OrderService": [
+          "field: checkoutRequest"
         ]
       },
-      "incoming_calls": {},
       "is_custom": false
     }
   },

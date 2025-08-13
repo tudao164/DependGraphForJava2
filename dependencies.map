@@ -1,30 +1,25 @@
 <map id="JavaDependencies" name="JavaDependencies">
-<area shape="rect" id="node1" href="javascript:showNodeInfo(&#39;ResponseDTO&#39;)" title="ResponseDTO\n(ResponseDTO)" alt="" coords="609,236,763,289"/>
-<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;CartController&#39;)" title="CartController\n(CartController)" alt="" coords="313,188,459,241"/>
-<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="460,224,594,245,593,251,459,229"/>
-<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="518,219,562,233"/>
-<area shape="rect" id="node3" href="javascript:showNodeInfo(&#39;CartService&#39;)" title="CartService\n(CartService)" alt="" coords="622,159,750,212"/>
-<area shape="poly" id="edge2" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;CartService&#39;)" title="addItemToCart\nclearCart\ngetCartByUserId\n+ 2 more" alt="" coords="459,205,607,190,607,196,460,210"/>
-<area shape="rect" id="edge2-label" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;CartService&#39;)" title="addItemToCart\nclearCart\ngetCartByUserId\n+ 2 more" alt="" coords="495,140,585,196"/>
-<area shape="rect" id="node4" href="javascript:showNodeInfo(&#39;OrderController&#39;)" title="OrderController\n(OrderController)" alt="" coords="307,50,465,102"/>
-<area shape="poly" id="edge3" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="466,79,498,85,530,96,561,112,587,133,596,144,600,156,601,178,601,200,611,223,612,224,608,227,607,225,596,201,596,178,595,157,591,147,583,137,558,116,528,101,496,91,465,84"/>
-<area shape="rect" id="edge3-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="518,74,562,88"/>
-<area shape="rect" id="node6" href="javascript:showNodeInfo(&#39;OrderService&#39;)" title="OrderService\n(OrderService)" alt="" coords="616,27,756,80"/>
-<area shape="poly" id="edge4" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderService&#39;)" title="cancelOrder\ncheckout\ngetOrderById\n+ 2 more" alt="" coords="466,67,600,57,600,62,466,73"/>
-<area shape="rect" id="edge4-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderService&#39;)" title="cancelOrder\ncheckout\ngetOrderById\n+ 2 more" alt="" coords="504,5,576,61"/>
-<area shape="rect" id="node5" href="javascript:showNodeInfo(&#39;ReviewService&#39;)" title="ReviewService\n(ReviewService)" alt="" coords="610,336,762,389"/>
-<area shape="rect" id="node7" href="javascript:showNodeInfo(&#39;ReviewController&#39;)" title="ReviewController\n(ReviewController)" alt="" coords="301,320,471,373"/>
-<area shape="poly" id="edge5" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="452,317,494,303,593,278,595,283,496,308,454,322"/>
-<area shape="rect" id="edge5-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="518,269,562,283"/>
-<area shape="poly" id="edge6" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewService&#39;)" title="createReview\ndeleteReview\ngetAllReviews\n+ 4 more" alt="" coords="472,357,495,359,594,362,594,367,495,364,471,362"/>
-<area shape="rect" id="edge6-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewService&#39;)" title="createReview\ndeleteReview\ngetAllReviews\n+ 4 more" alt="" coords="501,305,579,361"/>
-<area shape="poly" id="node8" href="javascript:showNodeInfo(&#39;HTML_addToCart&#39;)" title="addToCart()\n(HTML Function)" alt="" coords="228,215,222,203,207,193,182,185,151,179,117,177,82,179,51,185,27,193,11,203,5,215,11,226,27,237,51,245,82,250,117,252,151,250,182,245,207,237,222,226"/>
-<area shape="poly" id="edge7" href="javascript:showEdgeInfo(&#39;HTML_addToCart&#39;, &#39;CartController&#39;)" title="calls" alt="" coords="228,212,298,212,298,217,228,217"/>
-<area shape="rect" id="edge7-label" href="javascript:showEdgeInfo(&#39;HTML_addToCart&#39;, &#39;CartController&#39;)" title="calls" alt="" coords="252,201,277,215"/>
-<area shape="poly" id="node9" href="javascript:showNodeInfo(&#39;HTML_checkout&#39;)" title="checkout()\n(HTML Function)" alt="" coords="228,76,222,65,207,54,182,46,151,41,117,39,82,41,51,46,27,54,11,65,5,76,11,88,27,98,51,106,82,111,117,113,151,111,182,106,207,98,222,88"/>
-<area shape="poly" id="edge8" href="javascript:showEdgeInfo(&#39;HTML_checkout&#39;, &#39;OrderController&#39;)" title="calls" alt="" coords="228,73,291,73,291,79,228,79"/>
-<area shape="rect" id="edge8-label" href="javascript:showEdgeInfo(&#39;HTML_checkout&#39;, &#39;OrderController&#39;)" title="calls" alt="" coords="252,62,277,76"/>
-<area shape="poly" id="node10" href="javascript:showNodeInfo(&#39;HTML_createReview&#39;)" title="createReview()\n(HTML Function)" alt="" coords="228,347,222,335,207,325,182,317,151,311,117,309,82,311,51,317,27,325,11,335,5,347,11,358,27,369,51,377,82,382,117,384,151,382,182,377,207,369,222,358"/>
-<area shape="poly" id="edge9" href="javascript:showEdgeInfo(&#39;HTML_createReview&#39;, &#39;ReviewController&#39;)" title="calls" alt="" coords="228,344,285,344,285,349,228,349"/>
-<area shape="rect" id="edge9-label" href="javascript:showEdgeInfo(&#39;HTML_createReview&#39;, &#39;ReviewController&#39;)" title="calls" alt="" coords="252,333,277,347"/>
+<area shape="rect" id="node1" href="javascript:showNodeInfo(&#39;OrderService&#39;)" title="OrderService\n(OrderService)" alt="" coords="627,210,767,262"/>
+<area shape="rect" id="node5" href="javascript:showNodeInfo(&#39;OrderStatusUpdateDTO&#39;)" title="OrderStatusUpdateDTO\n(OrderStatusUpdateDTO)" alt="" coords="948,147,1176,200"/>
+<area shape="poly" id="edge7" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="767,221,932,193,932,198,768,227"/>
+<area shape="rect" id="edge7-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="798,183,924,197"/>
+<area shape="rect" id="node6" href="javascript:showNodeInfo(&#39;CheckoutRequestDTO&#39;)" title="CheckoutRequestDTO\n(CheckoutRequestDTO)" alt="" coords="954,230,1169,282"/>
+<area shape="poly" id="edge6" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="768,237,939,247,938,252,767,243"/>
+<area shape="rect" id="edge6-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="799,228,923,242"/>
+<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;OrderDTO&#39;)" title="OrderDTO\n(OrderDTO)" alt="" coords="637,55,757,108"/>
+<area shape="rect" id="node3" href="javascript:showNodeInfo(&#39;ResponseDTO&#39;)" title="ResponseDTO\n(ResponseDTO)" alt="" coords="620,132,774,185"/>
+<area shape="rect" id="node4" href="javascript:showNodeInfo(&#39;OrderController&#39;)" title="OrderController\n(OrderController)" alt="" coords="301,128,459,181"/>
+<area shape="poly" id="edge2" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderService&#39;)" title="cancelOrder\ncheckout\nfield: orderService\n+ 3 more" alt="" coords="416,179,448,200,484,216,548,231,612,236,611,241,547,236,482,221,446,205,414,184"/>
+<area shape="rect" id="edge2-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderService&#39;)" title="cancelOrder\ncheckout\nfield: orderService\n+ 3 more" alt="" coords="490,163,589,219"/>
+<area shape="poly" id="edge3" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderDTO&#39;)" title="field: cancelledOrder\nfield: order\nfield: updatedOrder" alt="" coords="459,134,622,96,623,101,460,139"/>
+<area shape="rect" id="edge3-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderDTO&#39;)" title="field: cancelledOrder\nfield: order\nfield: updatedOrder" alt="" coords="483,63,596,105"/>
+<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="460,153,605,155,604,160,460,158"/>
+<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="518,142,562,156"/>
+<area shape="poly" id="edge5" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="399,126,434,88,457,70,482,55,559,26,593,19,625,17,692,23,774,40,838,58,901,83,1005,137,1003,141,898,88,837,63,773,45,691,28,625,22,594,24,561,31,484,60,460,74,438,92,403,130"/>
+<area shape="rect" id="edge5-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="634,5,760,19"/>
+<area shape="poly" id="edge4" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="408,179,443,211,485,240,550,271,621,286,703,294,786,294,866,287,938,278,939,283,867,293,786,299,702,299,620,291,548,276,482,245,439,215,405,183"/>
+<area shape="rect" id="edge4-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="635,275,759,289"/>
+<area shape="poly" id="node7" href="javascript:showNodeInfo(&#39;HTML_cancelOrder&#39;)" title="cancelOrder\n(HTML Function)" alt="" coords="228,155,222,143,207,133,182,125,151,119,117,117,82,119,51,125,27,133,11,143,5,155,11,166,27,177,51,185,82,190,117,192,151,190,182,185,207,177,222,166"/>
+<area shape="poly" id="edge8" href="javascript:showEdgeInfo(&#39;HTML_cancelOrder&#39;, &#39;OrderController&#39;)" title="calls" alt="" coords="229,152,285,152,285,157,229,157"/>
+<area shape="rect" id="edge8-label" href="javascript:showEdgeInfo(&#39;HTML_cancelOrder&#39;, &#39;OrderController&#39;)" title="calls" alt="" coords="252,141,277,155"/>
 </map>

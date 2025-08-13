@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Enhanced analyzer với HTML nodes support
+Enhanced analyzer với HTML nodes support và advanced dependency detection
 """
 
-from analyzer import EnhancedJavaDependencyAnalyzer
+from enhanced_analyzer import SuperEnhancedJavaDependencyAnalyzer
 from html_db import HTMLFunctionDatabase
 
-class HTMLAwareAnalyzer(EnhancedJavaDependencyAnalyzer):
+class HTMLAwareAnalyzer(SuperEnhancedJavaDependencyAnalyzer):
     def __init__(self, source_directory: str):
         super().__init__(source_directory)
         # HTML functions integration

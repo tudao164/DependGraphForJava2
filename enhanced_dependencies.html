@@ -1,0 +1,3446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Dependency Graph - Interactive View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .info-card .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            min-height: 80vh;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group h4 {
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 3px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #718096, #4a5568);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #fc8181, #f56565);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #68d391, #48bb78);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .graph-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            overflow: auto;
+            max-height: 80vh;
+        }
+
+        .graph-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .graph-container img:hover {
+            transform: scale(1.02);
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            max-width: 500px;
+            max-height: 70vh;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .info-panel.show {
+            display: block;
+            animation: fadeInScale 0.3s ease;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .info-panel h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .info-panel .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .info-panel .close:hover {
+            color: #f56565;
+        }
+
+        .method-list {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .method-list h4 {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .method-item {
+            background: white;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            backdrop-filter: blur(10px);
+            display: none;
+            z-index: 1001;
+        }
+
+        .status-bar.show {
+            display: block;
+            animation: slideInUp 0.3s ease;
+        }
+
+        .status-bar.error {
+            background: rgba(245, 101, 101, 0.9);
+        }
+
+        .status-bar.success {
+            background: rgba(72, 187, 120, 0.9);
+        }
+
+        .status-bar.info {
+            background: rgba(102, 126, 234, 0.9);
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .color-picker-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.2);
+            border-color: #4a5568;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .zoom-controls button {
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: #667eea;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 2px;
+            font-size: 1.1em;
+            transition: background 0.3s ease;
+        }
+
+        .zoom-controls button:hover {
+            background: #5a67d8;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+            
+            .info-panel {
+                max-width: 95%;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>☕ Java Dependency Graph</h1>
+            <div class="header-info" id="headerInfo">
+                <div class="info-card">
+                    <div class="number" id="totalFiles">0</div>
+                    <div class="label">Files</div>
+                </div>
+                <div class="info-card">
+                    <div class="number" id="totalClasses">0</div>
+                    <div class="label">Classes</div>
+                </div>
+                <div class="info-card">
+                    <div class="number" id="totalConnections">0</div>
+                    <div class="label">Dependencies</div>
+                </div>
+                <div class="info-card">
+                    <div class="number" id="hiddenElements">0</div>
+                    <div class="label">Hidden</div>
+                </div>
+                <div class="info-card">
+                    <div class="number" id="customNodes">0</div>
+                    <div class="label">Custom Nodes</div>
+                </div>
+                <div class="info-card">
+                    <div class="number" id="customEdges">0</div>
+                    <div class="label">Custom Edges</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <h3>🎛️ Graph Controls</h3>
+                
+                <div class="control-group">
+                    <h4>Node Management</h4>
+                    <div class="input-group">
+                        <label for="nodeSelect">Select Node:</label>
+                        <select id="nodeSelect">
+                            <option value="">Choose a node...</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-danger" onclick="hideSelectedNode()">Hide Node</button>
+                    <button class="btn btn-success" onclick="showSelectedNode()">Show Node</button>
+                    <button class="btn btn-danger" onclick="deleteSelectedNode()">Delete Node</button>
+                </div>
+
+                <div class="control-group">
+                    <h4>Add Custom Node</h4>
+                    <div class="input-group">
+                        <label for="newNodeName">Node Name:</label>
+                        <input type="text" id="newNodeName" placeholder="Enter node name">
+                    </div>
+                    <div class="input-group">
+                        <label for="newNodeClasses">Classes (comma-separated):</label>
+                        <input type="text" id="newNodeClasses" placeholder="Class1,Class2">
+                    </div>
+                    <div class="input-group">
+                        <label for="newNodeColor">Color:</label>
+                        <select id="newNodeColor">
+                            <option value="lightblue">Light Blue</option>
+                            <option value="lightgreen">Light Green</option>
+                            <option value="lightcoral">Light Coral</option>
+                            <option value="lightyellow">Light Yellow</option>
+                            <option value="lightpink">Light Pink</option>
+                            <option value="lightgray">Light Gray</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="addCustomNode()">Add Node</button>
+                </div>
+
+                <div class="control-group">
+                    <h4>Edge Management</h4>
+                    <div class="input-group">
+                        <label for="sourceSelect">Source Node:</label>
+                        <select id="sourceSelect">
+                            <option value="">Choose source...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="targetSelect">Target Node:</label>
+                        <select id="targetSelect">
+                            <option value="">Choose target...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="edgeMethods">Methods (comma-separated):</label>
+                        <input type="text" id="edgeMethods" placeholder="method1,method2">
+                    </div>
+                    <button class="btn btn-success" onclick="addEdge()">Add Edge</button>
+                    <button class="btn btn-danger" onclick="hideSelectedEdge()">Hide Edge</button>
+                    <button class="btn btn-success" onclick="showSelectedEdge()">Show Edge</button>
+                    <button class="btn btn-danger" onclick="deleteSelectedEdge()">Delete Edge</button>
+                </div>
+
+                <div class="control-group">
+                    <h4>Node Coloring</h4>
+                    <div class="input-group">
+                        <label for="colorNodeSelect">Select Node:</label>
+                        <select id="colorNodeSelect">
+                            <option value="">Choose a node...</option>
+                        </select>
+                    </div>
+                    <div class="color-picker-container">
+                        <div class="color-option" style="background-color: lightblue" onclick="setNodeColor('lightblue')"></div>
+                        <div class="color-option" style="background-color: lightgreen" onclick="setNodeColor('lightgreen')"></div>
+                        <div class="color-option" style="background-color: lightcoral" onclick="setNodeColor('lightcoral')"></div>
+                        <div class="color-option" style="background-color: lightyellow" onclick="setNodeColor('lightyellow')"></div>
+                        <div class="color-option" style="background-color: lightpink" onclick="setNodeColor('lightpink')"></div>
+                        <div class="color-option" style="background-color: lightgray" onclick="setNodeColor('lightgray')"></div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="resetNodeColor()" style="margin-top: 10px;">Reset Color</button>
+                </div>
+
+                <div class="control-group">
+                    <h4>Graph Actions</h4>
+                    <button class="btn" onclick="regenerateGraph()">🔄 Regenerate Graph</button>
+                    <button class="btn btn-secondary" onclick="resetAllEditing()">↩️ Reset All</button>
+                    <button class="btn btn-secondary" onclick="exportSettings()">💾 Export Settings</button>
+                    <button class="btn btn-secondary" onclick="exportToPNG()">🖼️ Export to PNG</button>
+                </div>
+
+                <div class="control-group">
+                    <h4>Legend</h4>
+                    <div style="font-size: 0.8em; line-height: 1.6;">
+                        <div>🔵 Node = Java File</div>
+                        <div>➡️ Arrow = Dependency</div>
+                        <div>📝 Label = Method Calls</div>
+                        <div>👆 Click = Show Details</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="graph-container">
+                <div class="zoom-controls">
+                    <button onclick="zoomIn()">+</button>
+                    <button onclick="zoomOut()">-</button>
+                    <button onclick="resetZoom()">⌂</button>
+                </div>
+                <img src="enhanced_dependencies.png" alt="Java Dependency Graph" usemap="#JavaDependencies" id="dependencyGraph">
+                <map id="JavaDependencies" name="JavaDependencies">
+<area shape="rect" id="node1" href="javascript:showNodeInfo(&#39;Product&#39;)" title="Product\n(Product)" alt="" coords="2494,2099,2589,2152"/>
+<area shape="rect" id="node50" href="javascript:showNodeInfo(&#39;Category&#39;)" title="Category\n(Category)" alt="" coords="2961,3743,3067,3796"/>
+<area shape="poly" id="edge120" href="javascript:showEdgeInfo(&#39;Product&#39;, &#39;Category&#39;)" title="field: category" alt="" coords="2562,2151,2603,2221,2644,2310,2719,2519,2786,2735,2844,2950,2894,3156,2969,3508,3009,3727,3003,3728,2964,3509,2889,3157,2839,2951,2781,2736,2714,2521,2640,2312,2598,2224,2557,2153"/>
+<area shape="rect" id="edge120-label" href="javascript:showEdgeInfo(&#39;Product&#39;, &#39;Category&#39;)" title="field: category" alt="" coords="2724,2373,2800,2387"/>
+<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;OrderItemDTO&#39;)" title="OrderItemDTO\n(OrderItemDTO)" alt="" coords="1980,675,2136,728"/>
+<area shape="rect" id="node3" href="javascript:showNodeInfo(&#39;OrderItem&#39;)" title="OrderItem\n(OrderItem)" alt="" coords="2000,934,2116,986"/>
+<area shape="poly" id="edge119" href="javascript:showEdgeInfo(&#39;OrderItem&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="2118,976,2152,991,2186,1008,2263,1053,2323,1091,2349,1112,2373,1139,2396,1171,2419,1212,2429,1243,2436,1282,2440,1374,2440,1468,2443,1540,2465,1698,2491,1853,2534,2084,2529,2085,2486,1854,2460,1699,2438,1540,2435,1468,2435,1374,2430,1282,2424,1244,2414,1215,2392,1174,2369,1142,2345,1116,2320,1095,2260,1058,2183,1013,2150,995,2116,981"/>
+<area shape="rect" id="edge119-label" href="javascript:showEdgeInfo(&#39;OrderItem&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="2278,1013,2348,1027"/>
+<area shape="rect" id="node14" href="javascript:showNodeInfo(&#39;Order&#39;)" title="Order\n(Order, OrderStatus)" alt="" coords="2448,416,2635,469"/>
+<area shape="poly" id="edge118" href="javascript:showEdgeInfo(&#39;OrderItem&#39;, &#39;Order&#39;)" title="field: order" alt="" coords="2115,945,2150,931,2183,913,2243,863,2298,807,2349,747,2395,685,2469,570,2518,481,2523,484,2474,572,2399,688,2353,750,2302,810,2246,867,2186,917,2153,936,2117,950"/>
+<area shape="rect" id="edge118-label" href="javascript:showEdgeInfo(&#39;OrderItem&#39;, &#39;Order&#39;)" title="field: order" alt="" coords="2284,655,2342,669"/>
+<area shape="rect" id="node4" href="javascript:showNodeInfo(&#39;UserEntity&#39;)" title="UserEntity\n(UserEntity)" alt="" coords="2956,1271,3072,1324"/>
+<area shape="rect" id="node5" href="javascript:showNodeInfo(&#39;ForgotPasswordRequest&#39;)" title="ForgotPasswordRequest\n(ForgotPasswordRequest)" alt="" coords="1062,4919,1293,4972"/>
+<area shape="rect" id="node6" href="javascript:showNodeInfo(&#39;UpdateUserRequest&#39;)" title="UpdateUserRequest\n(UpdateUserRequest)" alt="" coords="1960,4923,2156,4976"/>
+<area shape="rect" id="node7" href="javascript:showNodeInfo(&#39;OrderRepository&#39;)" title="OrderRepository\n(OrderRepository)" alt="" coords="2230,231,2396,284"/>
+<area shape="poly" id="edge128" href="javascript:showEdgeInfo(&#39;OrderRepository&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2397,272,2506,304,2568,327,2633,356,2697,391,2758,433,2813,481,2860,537,2890,597,2917,680,2941,780,2961,889,2993,1101,3011,1255,3006,1256,2988,1101,2956,890,2936,781,2912,682,2885,599,2856,540,2810,485,2755,437,2694,396,2631,361,2566,332,2504,309,2396,277"/>
+<area shape="rect" id="edge128-label" href="javascript:showEdgeInfo(&#39;OrderRepository&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2515,273,2568,287"/>
+<area shape="rect" id="node8" href="javascript:showNodeInfo(&#39;OrderServiceImpl&#39;)" title="OrderServiceImpl\n(OrderServiceImpl)" alt="" coords="1090,690,1265,742"/>
+<area shape="poly" id="edge80" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Product&#39;)" title="chain: multiply()...\nfield: product" alt="" coords="1266,701,1359,697,1411,700,1465,706,1519,719,1571,738,1619,764,1660,800,1677,825,1682,850,1679,875,1673,900,1667,925,1664,949,1669,972,1684,996,1710,1015,1738,1021,1766,1019,1795,1013,1824,1007,1853,1005,1882,1012,1909,1033,1921,1056,1926,1088,1924,1166,1921,1245,1924,1276,1934,1299,1962,1326,1992,1340,2024,1346,2057,1348,2091,1349,2124,1355,2157,1369,2187,1397,2199,1419,2203,1441,2197,1482,2193,1522,2197,1541,2211,1560,2235,1577,2259,1584,2285,1583,2311,1579,2338,1574,2365,1573,2364,1578,2338,1579,2312,1584,2286,1589,2259,1589,2232,1582,2207,1563,2192,1543,2187,1522,2192,1482,2198,1441,2194,1421,2183,1400,2154,1374,2123,1360,2090,1354,2057,1353,2023,1352,1990,1346,1958,1330,1929,1302,1919,1278,1916,1245,1918,1166,1920,1088,1916,1058,1905,1037,1880,1017,1853,1011,1825,1012,1796,1018,1767,1024,1737,1026,1708,1019,1680,999,1664,974,1659,949,1661,924,1668,899,1674,874,1676,850,1672,827,1656,803,1616,769,1569,742,1518,724,1465,712,1411,705,1359,702,1266,706"/>
+<area shape="poly" id="edge80" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Product&#39;)" title="chain: multiply()...\nfield: product" alt="" coords="2365,1573,2392,1579,2419,1597,2444,1633,2466,1686,2485,1751,2501,1824,2525,1969,2539,2083,2533,2084,2520,1970,2496,1825,2480,1753,2461,1688,2439,1636,2415,1601,2390,1584,2364,1578"/>
+<area shape="rect" id="edge80-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Product&#39;)" title="chain: multiply()...\nfield: product" alt="" coords="2010,1272,2106,1300"/>
+<area shape="poly" id="edge72" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderItemDTO&#39;)" title="field: dto\nnew OrderItemDTO()" alt="" coords="1265,699,1391,683,1551,668,1729,662,1819,663,1908,669,1965,678,1965,683,1907,675,1819,669,1729,667,1551,674,1391,688,1266,705"/>
+<area shape="rect" id="edge72-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderItemDTO&#39;)" title="field: dto\nnew OrderItemDTO()" alt="" coords="1738,636,1851,664"/>
+<area shape="poly" id="edge69" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderItem&#39;)" title="field: orderItem\nnew OrderItem()" alt="" coords="1266,730,1457,766,1683,804,1799,810,1863,817,1890,825,1909,836,1922,855,1923,875,1924,894,1933,913,1958,932,1986,944,1984,949,1955,936,1929,917,1918,896,1918,875,1917,857,1906,839,1888,830,1862,823,1799,816,1682,809,1456,771,1265,736"/>
+<area shape="rect" id="edge69-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderItem&#39;)" title="field: orderItem\nnew OrderItem()" alt="" coords="1751,779,1839,807"/>
+<area shape="poly" id="edge78" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="1202,688,1276,614,1388,515,1455,462,1527,412,1603,366,1681,327,1714,315,1744,310,1795,309,1846,308,1874,302,1906,290,1918,279,1930,268,2004,241,2065,231,2129,230,2209,227,2313,221,2417,227,2533,234,2583,243,2643,266,2715,299,2770,331,2815,374,2860,439,2891,509,2918,605,2942,720,2963,843,2994,1083,3012,1255,3007,1256,2989,1084,2957,844,2937,721,2913,606,2886,510,2856,441,2811,378,2767,336,2713,304,2641,271,2581,248,2532,239,2417,232,2313,227,2209,232,2129,235,2066,236,2005,246,1933,273,1921,283,1909,294,1876,307,1847,313,1795,315,1744,315,1716,321,1683,332,1606,370,1530,416,1458,467,1392,519,1280,618,1206,691"/>
+<area shape="rect" id="edge78-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2286,210,2339,224"/>
+<area shape="poly" id="edge66" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderRepository&#39;)" title="field: orderRepository\nfindById\nfindByUserOrderByOrderDateDesc\n+ 1 more" alt="" coords="1211,687,1290,629,1403,553,1537,476,1609,442,1682,414,1716,405,1747,403,1801,409,1826,411,1851,409,1878,401,1906,383,1915,371,1917,356,1919,340,1929,325,1961,303,1996,285,2070,262,2145,251,2214,248,2214,253,2146,256,2071,267,1998,290,1964,307,1933,329,1924,342,1922,357,1920,372,1909,387,1880,406,1852,414,1826,416,1800,414,1746,409,1716,410,1683,419,1611,447,1540,481,1406,558,1293,633,1214,692"/>
+<area shape="rect" id="edge66-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderRepository&#39;)" title="field: orderRepository\nfindById\nfindByUserOrderByOrderDateDesc\n+ 1 more" alt="" coords="1700,329,1890,385"/>
+<area shape="rect" id="node10" href="javascript:showNodeInfo(&#39;Cart&#39;)" title="Cart\n(Cart)" alt="" coords="2505,1207,2577,1260"/>
+<area shape="poly" id="edge79" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Cart&#39;)" title="chain: clear()...\nchain: isEmpty()...\nfield: cart\n+ 1 more" alt="" coords="1266,718,1648,744,1824,760,1881,768,1909,777,1919,788,1923,801,1922,826,1921,851,1924,861,1933,871,1964,893,1994,907,2023,914,2053,916,2112,907,2170,890,2230,872,2291,862,2322,863,2354,869,2386,882,2418,902,2450,931,2476,967,2497,1005,2513,1046,2532,1126,2541,1192,2536,1192,2527,1127,2508,1048,2492,1008,2472,969,2446,935,2415,906,2383,886,2352,874,2321,868,2291,867,2231,877,2172,895,2113,912,2053,921,2023,919,1992,912,1961,897,1930,875,1920,864,1916,851,1917,826,1918,802,1914,791,1906,781,1880,773,1823,765,1648,749,1266,724"/>
+<area shape="rect" id="edge79-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Cart&#39;)" title="chain: clear()...\nchain: isEmpty()...\nfield: cart\n+ 1 more" alt="" coords="2010,817,2106,873"/>
+<area shape="poly" id="edge68" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Order&#39;)" title="chain: add()...\nchain: stream()...\nenum&#45;access: OrderStatus.DELIVERED\n+ 12 more" alt="" coords="1265,691,1456,646,1682,600,1823,579,1934,569,2044,558,2184,535,2316,504,2436,471,2438,477,2317,510,2185,540,2045,563,1934,574,1824,585,1683,605,1457,651,1266,697"/>
+<area shape="rect" id="edge68-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Order&#39;)" title="chain: add()...\nchain: stream()...\nenum&#45;access: OrderStatus.DELIVERED\n+ 12 more" alt="" coords="1950,481,2166,537"/>
+<area shape="rect" id="node21" href="javascript:showNodeInfo(&#39;IUserRepository&#39;)" title="IUserRepository\n(IUserRepository)" alt="" coords="1977,3987,2139,4040"/>
+<area shape="poly" id="edge76" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;IUserRepository&#39;)" title="field: userRepository" alt="" coords="1267,737,1364,772,1418,797,1474,826,1528,861,1579,901,1624,948,1661,1000,1668,1030,1672,1086,1675,1263,1668,1772,1664,2042,1663,2279,1669,2454,1676,2508,1684,2534,1710,2553,1737,2558,1765,2555,1794,2547,1824,2539,1853,2536,1882,2542,1909,2563,1918,2587,1924,2634,1930,2785,1930,3222,1925,3662,1927,3815,1929,3864,1934,3889,1948,3914,1965,3937,2006,3976,2003,3980,1961,3940,1943,3917,1929,3890,1924,3864,1921,3815,1920,3662,1924,3222,1925,2785,1919,2634,1913,2588,1905,2566,1880,2547,1853,2541,1825,2544,1795,2552,1766,2560,1736,2564,1707,2558,1680,2537,1671,2509,1664,2455,1658,2279,1658,2042,1662,1772,1669,1263,1667,1086,1662,1031,1656,1003,1620,951,1575,905,1525,865,1471,831,1416,801,1362,777,1265,742"/>
+<area shape="rect" id="edge76-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;IUserRepository&#39;)" title="field: userRepository" alt="" coords="1739,2521,1851,2535"/>
+<area shape="rect" id="node22" href="javascript:showNodeInfo(&#39;OrderNotFoundException&#39;)" title="OrderNotFoundException\n(OrderNotFoundException)" alt="" coords="1939,598,2177,650"/>
+<area shape="poly" id="edge70" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderNotFoundException&#39;)" title="new OrderNotFoundException()" alt="" coords="1265,695,1456,659,1569,641,1682,628,1806,621,1923,619,1923,624,1806,626,1683,633,1569,647,1457,664,1266,700"/>
+<area shape="rect" id="edge70-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderNotFoundException&#39;)" title="new OrderNotFoundException()" alt="" coords="1708,608,1881,622"/>
+<area shape="rect" id="node24" href="javascript:showNodeInfo(&#39;OrderStatusUpdateDTO&#39;)" title="OrderStatusUpdateDTO\n(OrderStatusUpdateDTO)" alt="" coords="1944,99,2172,152"/>
+<area shape="poly" id="edge82" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO\nif&#45;condition: statusUpdateDTO.getStatus()" alt="" coords="1201,688,1275,611,1388,505,1455,448,1527,392,1603,340,1681,294,1714,280,1745,272,1799,268,1825,266,1851,261,1877,250,1905,230,1914,219,1917,207,1920,193,1929,180,1959,157,1962,162,1933,183,1925,196,1922,208,1919,221,1909,234,1880,255,1852,266,1826,272,1800,274,1746,278,1716,285,1684,299,1606,344,1530,396,1458,452,1391,509,1279,614,1205,691"/>
+<area shape="rect" id="edge82-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO\nif&#45;condition: statusUpdateDTO.getStatus()" alt="" coords="1682,204,1907,232"/>
+<area shape="rect" id="node25" href="javascript:showNodeInfo(&#39;ProductRepository&#39;)" title="ProductRepository\n(ProductRepository)" alt="" coords="1967,1938,2149,1990"/>
+<area shape="poly" id="edge77" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;ProductRepository&#39;)" title="field: productRepository" alt="" coords="1250,741,1340,781,1449,838,1505,872,1560,911,1613,953,1660,1000,1669,1013,1673,1024,1676,1035,1684,1047,1714,1072,1744,1087,1803,1104,1832,1112,1860,1124,1886,1144,1910,1175,1917,1195,1921,1225,1925,1312,1920,1547,1916,1782,1921,1868,1926,1897,1934,1915,1955,1935,1952,1939,1929,1918,1921,1898,1916,1868,1911,1782,1915,1547,1920,1312,1916,1226,1912,1196,1905,1177,1882,1148,1857,1129,1830,1117,1802,1109,1742,1092,1711,1076,1680,1051,1672,1038,1668,1026,1664,1015,1656,1003,1609,957,1557,915,1502,877,1446,842,1338,785,1248,745"/>
+<area shape="rect" id="edge77-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;ProductRepository&#39;)" title="field: productRepository" alt="" coords="1730,1035,1859,1049"/>
+<area shape="rect" id="node26" href="javascript:showNodeInfo(&#39;CartItemRepository&#39;)" title="CartItemRepository\n(CartItemRepository)" alt="" coords="1963,1207,2153,1260"/>
+<area shape="poly" id="edge75" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;CartItemRepository&#39;)" title="field: cartItemRepository" alt="" coords="1221,741,1302,791,1414,854,1545,918,1614,946,1683,970,1733,976,1800,977,1864,981,1890,988,1909,999,1926,1023,1931,1046,1930,1070,1925,1093,1919,1116,1916,1140,1920,1163,1933,1186,1952,1203,1948,1207,1929,1190,1915,1165,1911,1140,1914,1116,1919,1092,1924,1069,1926,1047,1921,1025,1906,1003,1888,993,1863,987,1799,982,1733,981,1682,975,1612,951,1543,923,1412,859,1300,796,1218,745"/>
+<area shape="rect" id="edge75-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;CartItemRepository&#39;)" title="field: cartItemRepository" alt="" coords="1729,959,1860,973"/>
+<area shape="rect" id="node31" href="javascript:showNodeInfo(&#39;CartRepository&#39;)" title="CartRepository\n(CartRepository)" alt="" coords="1981,752,2135,805"/>
+<area shape="poly" id="edge65" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;CartRepository&#39;)" title="field: cartRepository\nfindByUser\nsave" alt="" coords="1266,712,1552,716,1729,725,1908,743,1967,753,1966,759,1907,748,1729,730,1551,721,1266,717"/>
+<area shape="rect" id="edge65-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;CartRepository&#39;)" title="field: cartRepository\nfindByUser\nsave" alt="" coords="1741,683,1849,725"/>
+<area shape="rect" id="node34" href="javascript:showNodeInfo(&#39;UserNotFoundException&#39;)" title="UserNotFoundException\n(UserNotFoundException)" alt="" coords="1943,2582,2173,2634"/>
+<area shape="poly" id="edge67" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;UserNotFoundException&#39;)" title="new UserNotFoundException()" alt="" coords="1267,739,1362,775,1416,800,1470,830,1524,865,1575,904,1621,949,1661,1000,1673,1027,1676,1054,1668,1103,1663,1126,1662,1149,1668,1171,1684,1194,1711,1212,1738,1217,1767,1214,1796,1207,1825,1199,1854,1196,1882,1203,1910,1224,1918,1248,1923,1297,1928,1451,1924,1896,1918,2342,1922,2497,1927,2545,1934,2568,1934,2569,1930,2572,1929,2571,1922,2546,1917,2497,1913,2342,1918,1896,1923,1451,1918,1297,1913,1250,1905,1227,1880,1208,1854,1202,1826,1204,1797,1212,1768,1219,1738,1222,1709,1217,1680,1197,1663,1174,1657,1150,1658,1126,1663,1102,1671,1054,1668,1029,1656,1003,1617,953,1572,908,1521,869,1468,835,1413,805,1360,780,1265,744"/>
+<area shape="rect" id="edge67-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;UserNotFoundException&#39;)" title="new UserNotFoundException()" alt="" coords="1711,1181,1879,1195"/>
+<area shape="rect" id="node37" href="javascript:showNodeInfo(&#39;OrderService&#39;)" title="OrderService\n(OrderService)" alt="" coords="315,644,456,697"/>
+<area shape="poly" id="edge73" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderService&#39;)" title="implements OrderService\nimplements: OrderService" alt="" coords="1090,714,471,678,471,673,1090,708"/>
+<area shape="rect" id="edge73-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderService&#39;)" title="implements OrderService\nimplements: OrderService" alt="" coords="508,648,649,676"/>
+<area shape="rect" id="node43" href="javascript:showNodeInfo(&#39;OrderItemRepository&#39;)" title="OrderItemRepository\n(OrderItemRepository)" alt="" coords="1957,416,2159,469"/>
+<area shape="poly" id="edge74" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderItemRepository&#39;)" title="field: orderItemRepository" alt="" coords="1240,687,1434,610,1557,568,1682,532,1745,522,1796,520,1846,517,1906,501,1918,494,1930,486,1959,473,1961,478,1933,490,1921,498,1908,506,1846,522,1796,526,1746,527,1683,537,1558,573,1436,615,1241,692"/>
+<area shape="rect" id="edge74-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderItemRepository&#39;)" title="field: orderItemRepository" alt="" coords="1725,489,1865,503"/>
+<area shape="rect" id="node45" href="javascript:showNodeInfo(&#39;CheckoutRequestDTO&#39;)" title="CheckoutRequestDTO\n(CheckoutRequestDTO)" alt="" coords="1950,1023,2166,1076"/>
+<area shape="poly" id="edge81" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="1232,741,1316,781,1427,831,1553,881,1683,922,1717,929,1747,930,1800,926,1825,926,1851,928,1879,937,1909,954,1919,965,1922,976,1926,987,1933,997,1956,1013,1953,1018,1929,1001,1921,989,1917,977,1914,967,1906,958,1877,942,1850,934,1825,931,1800,932,1747,936,1716,934,1682,927,1551,886,1425,836,1314,786,1230,745"/>
+<area shape="rect" id="edge81-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="1733,911,1857,925"/>
+<area shape="rect" id="node47" href="javascript:showNodeInfo(&#39;OrderDTO&#39;)" title="OrderDTO\n(OrderDTO)" alt="" coords="1998,339,2118,392"/>
+<area shape="poly" id="edge71" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderDTO&#39;)" title="chain: getId()...\nfield: orderDTO\nnew OrderDTO()" alt="" coords="1225,687,1309,642,1420,588,1548,533,1682,487,1716,480,1747,479,1801,483,1826,485,1851,482,1877,473,1906,456,1915,444,1917,431,1920,417,1929,402,1954,385,1982,374,1984,379,1957,390,1933,406,1925,419,1922,432,1920,447,1909,460,1880,478,1852,487,1826,490,1801,489,1747,484,1717,485,1683,492,1550,538,1423,593,1311,647,1228,691"/>
+<area shape="rect" id="edge71-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderDTO&#39;)" title="chain: getId()...\nfield: orderDTO\nnew OrderDTO()" alt="" coords="1750,416,1840,458"/>
+<area shape="rect" id="node62" href="javascript:showNodeInfo(&#39;UserRepository&#39;)" title="UserRepository\n(UserRepository)" alt="" coords="1979,3824,2137,3877"/>
+<area shape="poly" id="edge64" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;UserRepository&#39;)" title="findById" alt="" coords="1267,737,1364,772,1418,797,1474,827,1528,861,1579,902,1624,948,1661,1000,1668,1054,1671,1166,1670,1486,1670,1805,1675,1915,1679,1949,1685,1965,1710,1984,1736,1991,1765,1989,1794,1982,1824,1976,1854,1974,1883,1981,1910,2003,1915,2028,1919,2083,1924,2271,1928,2829,1929,3388,1930,3578,1934,3660,1951,3703,1974,3744,2024,3811,2020,3814,1970,3746,1946,3705,1929,3661,1925,3578,1923,3388,1923,2829,1919,2271,1914,2084,1910,2028,1905,2006,1880,1986,1853,1979,1825,1981,1796,1988,1766,1994,1736,1996,1707,1989,1680,1968,1674,1950,1670,1915,1665,1805,1665,1486,1666,1166,1663,1055,1656,1002,1619,951,1575,906,1525,866,1471,831,1416,802,1362,777,1265,742"/>
+<area shape="rect" id="edge64-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;UserRepository&#39;)" title="findById" alt="" coords="1773,1952,1817,1966"/>
+<area shape="rect" id="node9" href="javascript:showNodeInfo(&#39;ProductService&#39;)" title="ProductService\n(ProductService)" alt="" coords="1980,2323,2136,2376"/>
+<area shape="rect" id="node20" href="javascript:showNodeInfo(&#39;ProductServiceImpl&#39;)" title="ProductServiceImpl\n(ProductServiceImpl)" alt="" coords="1082,2599,1273,2652"/>
+<area shape="poly" id="edge138" href="javascript:showEdgeInfo(&#39;ProductService&#39;, &#39;ProductServiceImpl&#39;)" title="implemented&#45;by: ProductServiceImpl" alt="" coords="1984,2379,1908,2401,1845,2411,1795,2414,1745,2417,1683,2429,1561,2466,1441,2511,1248,2595,1246,2590,1439,2506,1559,2461,1682,2424,1745,2412,1794,2409,1844,2406,1907,2396,1983,2374"/>
+<area shape="rect" id="edge138-label" href="javascript:showEdgeInfo(&#39;ProductService&#39;, &#39;ProductServiceImpl&#39;)" title="implemented&#45;by: ProductServiceImpl" alt="" coords="1695,2384,1895,2398"/>
+<area shape="rect" id="node52" href="javascript:showNodeInfo(&#39;ProductDTO&#39;)" title="ProductDTO\n(ProductDTO)" alt="" coords="2474,2323,2608,2376"/>
+<area shape="poly" id="edge137" href="javascript:showEdgeInfo(&#39;ProductService&#39;, &#39;ProductDTO&#39;)" title="field: productDTO" alt="" coords="2136,2347,2459,2347,2459,2352,2136,2352"/>
+<area shape="rect" id="edge137-label" href="javascript:showEdgeInfo(&#39;ProductService&#39;, &#39;ProductDTO&#39;)" title="field: productDTO" alt="" coords="2265,2335,2360,2349"/>
+<area shape="poly" id="edge114" href="javascript:showEdgeInfo(&#39;Cart&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2578,1236,2941,1285,2940,1290,2577,1241"/>
+<area shape="rect" id="edge114-label" href="javascript:showEdgeInfo(&#39;Cart&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2736,1237,2788,1251"/>
+<area shape="rect" id="node11" href="javascript:showNodeInfo(&#39;ProductController&#39;)" title="ProductController\n(ProductController)" alt="" coords="1091,2228,1264,2281"/>
+<area shape="poly" id="edge16" href="javascript:showEdgeInfo(&#39;ProductController&#39;, &#39;Product&#39;)" title="field: createdProduct\nfield: product\nfield: updatedProduct" alt="" coords="1265,2241,1447,2212,1553,2191,1658,2164,1682,2155,1753,2144,1847,2136,2073,2127,2478,2122,2478,2128,2073,2132,1847,2142,1754,2150,1683,2160,1659,2169,1554,2196,1448,2217,1265,2247"/>
+<area shape="rect" id="edge16-label" href="javascript:showEdgeInfo(&#39;ProductController&#39;, &#39;Product&#39;)" title="field: createdProduct\nfield: product\nfield: updatedProduct" alt="" coords="2000,2085,2116,2127"/>
+<area shape="poly" id="edge15" href="javascript:showEdgeInfo(&#39;ProductController&#39;, &#39;ProductService&#39;)" title="createProduct\ndeleteProduct\nfield: productService\n+ 5 more" alt="" coords="1265,2258,1550,2281,1729,2298,1908,2320,1965,2329,1964,2334,1907,2325,1728,2304,1550,2286,1264,2263"/>
+<area shape="rect" id="edge15-label" href="javascript:showEdgeInfo(&#39;ProductController&#39;, &#39;ProductService&#39;)" title="createProduct\ndeleteProduct\nfield: productService\n+ 5 more" alt="" coords="1739,2241,1850,2297"/>
+<area shape="rect" id="node41" href="javascript:showNodeInfo(&#39;ResponseDTO&#39;)" title="ResponseDTO\n(ResponseDTO)" alt="" coords="1981,3018,2135,3070"/>
+<area shape="poly" id="edge14" href="javascript:showEdgeInfo(&#39;ProductController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="1252,2279,1348,2324,1403,2354,1461,2389,1518,2430,1572,2476,1620,2528,1661,2585,1673,2614,1678,2641,1672,2691,1667,2715,1666,2739,1671,2764,1685,2791,1708,2821,1733,2842,1758,2856,1784,2865,1842,2884,1874,2897,1909,2918,1967,2962,2018,3005,2015,3009,1964,2966,1906,2922,1872,2902,1840,2889,1782,2870,1755,2860,1729,2846,1704,2825,1680,2794,1666,2766,1661,2739,1662,2714,1666,2690,1672,2642,1668,2616,1656,2588,1616,2532,1568,2480,1514,2434,1458,2394,1401,2358,1345,2328,1249,2284"/>
+<area shape="rect" id="edge14-label" href="javascript:showEdgeInfo(&#39;ProductController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="1773,2779,1817,2793"/>
+<area shape="poly" id="edge17" href="javascript:showEdgeInfo(&#39;ProductController&#39;, &#39;ProductDTO&#39;)" title="field: productDTO" alt="" coords="1265,2248,1682,2233,1795,2229,1908,2233,2061,2252,2214,2277,2459,2328,2458,2333,2213,2282,2061,2257,1907,2239,1795,2235,1682,2239,1265,2253"/>
+<area shape="rect" id="edge17-label" href="javascript:showEdgeInfo(&#39;ProductController&#39;, &#39;ProductDTO&#39;)" title="field: productDTO" alt="" coords="2010,2225,2106,2239"/>
+<area shape="rect" id="node12" href="javascript:showNodeInfo(&#39;CartServiceImpl&#39;)" title="CartServiceImpl\n(CartServiceImpl)" alt="" coords="1096,1523,1259,1576"/>
+<area shape="poly" id="edge56" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;Product&#39;)" title="chain: multiply()...\nfield: product" alt="" coords="1259,1574,1451,1634,1566,1666,1683,1695,1778,1707,1939,1723,2096,1745,2154,1757,2186,1771,2200,1791,2202,1811,2203,1832,2211,1854,2240,1892,2273,1929,2345,1995,2418,2049,2482,2090,2479,2095,2415,2054,2342,1999,2269,1933,2236,1896,2206,1856,2197,1833,2197,1812,2195,1793,2183,1776,2152,1763,2096,1750,1938,1729,1778,1712,1682,1700,1565,1671,1449,1639,1258,1579"/>
+<area shape="rect" id="edge56-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;Product&#39;)" title="chain: multiply()...\nfield: product" alt="" coords="2010,1698,2106,1726"/>
+<area shape="poly" id="edge55" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="1239,1520,1434,1441,1557,1397,1682,1359,1805,1329,1931,1313,2076,1302,2224,1293,2513,1286,2763,1288,2941,1292,2941,1297,2763,1293,2513,1292,2224,1299,2076,1307,1932,1319,1806,1334,1683,1364,1558,1402,1436,1446,1241,1525"/>
+<area shape="rect" id="edge55-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2286,1276,2339,1290"/>
+<area shape="poly" id="edge48" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;Cart&#39;)" title="chain: add()...\nchain: clear()...\nchain: remove()...\n+ 4 more" alt="" coords="1201,1521,1274,1447,1386,1348,1453,1298,1525,1251,1602,1210,1682,1178,1751,1164,1840,1158,1940,1160,2047,1168,2256,1190,2417,1211,2491,1222,2490,1227,2416,1216,2255,1195,2047,1173,1940,1166,1840,1164,1752,1169,1683,1183,1604,1214,1528,1255,1456,1302,1389,1353,1278,1450,1205,1525"/>
+<area shape="rect" id="edge48-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;Cart&#39;)" title="chain: add()...\nchain: clear()...\nchain: remove()...\n+ 4 more" alt="" coords="2011,1107,2105,1163"/>
+<area shape="rect" id="node16" href="javascript:showNodeInfo(&#39;CartService&#39;)" title="CartService\n(CartService)" alt="" coords="1994,1411,2122,1464"/>
+<area shape="poly" id="edge53" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartService&#39;)" title="implements CartService\nimplements: CartService" alt="" coords="1248,1520,1334,1490,1441,1456,1561,1424,1682,1401,1745,1394,1795,1392,1908,1401,1980,1414,1979,1419,1907,1407,1795,1397,1745,1399,1683,1407,1562,1430,1443,1461,1336,1495,1250,1525"/>
+<area shape="rect" id="edge53-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartService&#39;)" title="implements CartService\nimplements: CartService" alt="" coords="1728,1367,1861,1395"/>
+<area shape="rect" id="node18" href="javascript:showNodeInfo(&#39;CartItemDTO&#39;)" title="CartItemDTO\n(CartItemDTO)" alt="" coords="2470,1475,2612,1528"/>
+<area shape="poly" id="edge57" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartItemDTO&#39;)" title="field: cartItemDTO" alt="" coords="1259,1535,1452,1512,1682,1492,1839,1489,2054,1490,2455,1497,2454,1502,2054,1495,1839,1494,1682,1497,1452,1517,1260,1541"/>
+<area shape="rect" id="edge57-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartItemDTO&#39;)" title="field: cartItemDTO" alt="" coords="2010,1478,2106,1492"/>
+<area shape="poly" id="edge54" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;IUserRepository&#39;)" title="field: userRepository" alt="" coords="1260,1571,1358,1608,1413,1635,1470,1666,1525,1703,1577,1746,1623,1795,1661,1850,1665,1878,1668,1941,1671,2153,1670,2776,1671,3399,1676,3609,1680,3671,1685,3697,1709,3717,1735,3725,1763,3724,1792,3719,1822,3714,1852,3712,1881,3719,1909,3740,1923,3758,1929,3776,1928,3811,1924,3848,1926,3867,1934,3888,1949,3913,1968,3936,2009,3975,2005,3979,1964,3940,1945,3916,1929,3891,1921,3869,1919,3848,1923,3811,1924,3777,1918,3760,1905,3743,1879,3724,1851,3717,1823,3719,1793,3724,1764,3730,1735,3730,1707,3722,1680,3699,1674,3672,1670,3609,1666,3399,1665,2776,1665,2153,1663,1941,1660,1879,1656,1852,1619,1798,1574,1750,1522,1708,1467,1671,1411,1639,1356,1613,1258,1576"/>
+<area shape="rect" id="edge54-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;IUserRepository&#39;)" title="field: userRepository" alt="" coords="1739,3684,1851,3698"/>
+<area shape="poly" id="edge45" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;ProductRepository&#39;)" title="field: productRepository\nfindById" alt="" coords="1241,1574,1330,1618,1440,1680,1555,1757,1610,1802,1660,1849,1668,1860,1672,1871,1676,1880,1684,1889,1730,1909,1798,1926,1953,1951,1952,1956,1797,1932,1728,1914,1681,1893,1671,1883,1667,1873,1663,1863,1656,1853,1606,1806,1552,1762,1437,1684,1328,1622,1239,1579"/>
+<area shape="rect" id="edge45-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;ProductRepository&#39;)" title="field: productRepository\nfindById" alt="" coords="1730,1863,1859,1891"/>
+<area shape="poly" id="edge46" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartItemRepository&#39;)" title="delete\nfield: cartItemRepository\nfindByCartAndProduct\n+ 1 more" alt="" coords="1222,1520,1305,1474,1417,1416,1546,1358,1682,1310,1744,1296,1794,1292,1844,1289,1907,1279,1967,1262,1968,1267,1908,1284,1845,1294,1794,1297,1745,1301,1683,1315,1548,1363,1419,1421,1308,1478,1225,1525"/>
+<area shape="rect" id="edge46-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartItemRepository&#39;)" title="delete\nfield: cartItemRepository\nfindByCartAndProduct\n+ 1 more" alt="" coords="1729,1225,1860,1281"/>
+<area shape="poly" id="edge44" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartRepository&#39;)" title="field: cartRepository\nfindByUser\nsave" alt="" coords="1216,1521,1308,1449,1430,1341,1493,1276,1554,1205,1609,1129,1656,1050,1663,1030,1665,1011,1661,976,1661,943,1667,926,1681,909,1709,890,1737,883,1765,886,1793,892,1821,899,1849,902,1877,898,1906,883,1915,870,1918,855,1920,839,1929,822,1966,798,1969,803,1933,826,1925,840,1923,856,1920,872,1909,887,1879,903,1849,908,1820,904,1792,897,1764,891,1737,889,1711,895,1684,913,1672,928,1666,944,1666,976,1670,1011,1668,1031,1661,1052,1614,1132,1558,1209,1497,1280,1433,1345,1312,1453,1219,1525"/>
+<area shape="rect" id="edge44-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartRepository&#39;)" title="field: cartRepository\nfindByUser\nsave" alt="" coords="1741,843,1849,885"/>
+<area shape="poly" id="edge47" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;UserNotFoundException&#39;)" title="new UserNotFoundException()" alt="" coords="1260,1571,1358,1609,1413,1635,1469,1667,1525,1704,1577,1747,1623,1795,1661,1850,1667,1869,1671,1900,1674,1986,1667,2219,1663,2341,1663,2450,1670,2533,1676,2560,1684,2576,1695,2582,1714,2587,1774,2595,1928,2603,1928,2609,1773,2600,1713,2592,1693,2587,1680,2580,1671,2562,1664,2533,1658,2450,1658,2341,1662,2219,1669,1986,1666,1900,1662,1870,1656,1852,1619,1798,1573,1750,1522,1708,1467,1672,1410,1640,1355,1614,1258,1576"/>
+<area shape="rect" id="edge47-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;UserNotFoundException&#39;)" title="new UserNotFoundException()" alt="" coords="1711,2564,1879,2578"/>
+<area shape="rect" id="node35" href="javascript:showNodeInfo(&#39;CartItem&#39;)" title="CartItem\n(CartItem)" alt="" coords="2006,1627,2110,1680"/>
+<area shape="poly" id="edge50" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartItem&#39;)" title="field: cartItem\nfield: newCartItem\nnew CartItem()" alt="" coords="1260,1553,1626,1584,1908,1612,1992,1631,1991,1637,1907,1617,1626,1589,1259,1559"/>
+<area shape="rect" id="edge50-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartItem&#39;)" title="field: cartItem\nfield: newCartItem\nnew CartItem()" alt="" coords="1746,1551,1844,1593"/>
+<area shape="rect" id="node49" href="javascript:showNodeInfo(&#39;CartDTO&#39;)" title="CartDTO\n(CartDTO)" alt="" coords="2005,1786,2111,1838"/>
+<area shape="poly" id="edge51" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartDTO&#39;)" title="chain: getId()...\nfield: cartDTO\nnew CartDTO()" alt="" coords="1226,1574,1309,1619,1420,1675,1549,1730,1616,1754,1683,1774,1741,1785,1823,1793,1989,1806,1989,1811,1822,1799,1741,1790,1682,1779,1614,1759,1547,1735,1418,1680,1306,1624,1223,1579"/>
+<area shape="rect" id="edge51-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartDTO&#39;)" title="chain: getId()...\nfield: cartDTO\nnew CartDTO()" alt="" coords="1754,1735,1836,1777"/>
+<area shape="rect" id="node57" href="javascript:showNodeInfo(&#39;CartItemResponseDTO&#39;)" title="CartItemResponseDTO\n(CartItemResponseDTO)" alt="" coords="1946,1550,2170,1602"/>
+<area shape="poly" id="edge52" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartItemResponseDTO&#39;)" title="field: dto\nnew CartItemResponseDTO()" alt="" coords="1259,1539,1384,1531,1546,1525,1726,1526,1908,1539,1940,1544,1939,1549,1907,1544,1726,1531,1546,1530,1384,1536,1259,1545"/>
+<area shape="rect" id="edge52-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;CartItemResponseDTO&#39;)" title="field: dto\nnew CartItemResponseDTO()" alt="" coords="1714,1500,1875,1528"/>
+<area shape="rect" id="node60" href="javascript:showNodeInfo(&#39;ProductNotFoundException&#39;)" title="ProductNotFoundException\n(ProductNotFoundException)" alt="" coords="1931,2504,2185,2557"/>
+<area shape="poly" id="edge49" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;ProductNotFoundException&#39;)" title="new ProductNotFoundException()" alt="" coords="1260,1572,1357,1610,1412,1637,1468,1669,1523,1705,1575,1748,1622,1796,1661,1850,1671,1879,1674,1919,1670,2014,1667,2108,1672,2145,1684,2171,1709,2193,1736,2203,1765,2205,1794,2202,1824,2200,1854,2201,1882,2212,1909,2234,1928,2265,1934,2294,1931,2323,1925,2352,1918,2380,1914,2409,1918,2439,1933,2469,1959,2494,1956,2498,1929,2472,1913,2440,1909,2409,1912,2380,1919,2351,1926,2323,1928,2295,1923,2267,1905,2238,1880,2216,1853,2207,1824,2205,1795,2207,1765,2210,1735,2208,1707,2198,1680,2174,1667,2146,1662,2108,1665,2014,1669,1919,1666,1881,1656,1852,1618,1799,1572,1752,1520,1710,1465,1673,1409,1642,1355,1615,1258,1577"/>
+<area shape="rect" id="edge49-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;ProductNotFoundException&#39;)" title="new ProductNotFoundException()" alt="" coords="1703,2159,1887,2173"/>
+<area shape="poly" id="edge43" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;UserRepository&#39;)" title="findById" alt="" coords="1260,1571,1358,1609,1413,1635,1470,1667,1525,1704,1577,1746,1623,1795,1661,1850,1666,1872,1669,1913,1672,2044,1670,2421,1669,2796,1674,2925,1679,2965,1685,2985,1709,3006,1736,3015,1764,3016,1794,3013,1824,3009,1854,3010,1883,3020,1909,3043,1917,3058,1922,3083,1929,3154,1930,3348,1927,3544,1929,3617,1934,3659,1952,3702,1975,3743,2025,3811,2020,3814,1970,3746,1947,3705,1929,3661,1923,3617,1922,3544,1925,3348,1924,3154,1917,3084,1912,3060,1905,3046,1880,3024,1853,3015,1825,3014,1795,3018,1765,3022,1735,3021,1706,3011,1680,2988,1673,2966,1669,2926,1664,2796,1665,2420,1667,2044,1664,1913,1661,1872,1656,1852,1619,1798,1573,1750,1522,1708,1467,1671,1411,1640,1356,1614,1259,1576"/>
+<area shape="rect" id="edge43-label" href="javascript:showEdgeInfo(&#39;CartServiceImpl&#39;, &#39;UserRepository&#39;)" title="findById" alt="" coords="1773,2972,1817,2986"/>
+<area shape="rect" id="node13" href="javascript:showNodeInfo(&#39;CategoryNotFoundException&#39;)" title="CategoryNotFoundException\n(CategoryNotFoundException)" alt="" coords="2882,4003,3146,4056"/>
+<area shape="poly" id="edge117" href="javascript:showEdgeInfo(&#39;Order&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2576,468,2636,522,2712,599,2791,692,2828,743,2860,795,2892,856,2919,921,2962,1051,2992,1168,3009,1256,3004,1257,2986,1170,2957,1053,2914,923,2887,858,2856,797,2824,746,2787,696,2708,603,2632,526,2573,472"/>
+<area shape="rect" id="edge117-label" href="javascript:showEdgeInfo(&#39;Order&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2736,545,2788,559"/>
+<area shape="rect" id="node15" href="javascript:showNodeInfo(&#39;AppException&#39;)" title="AppException\n(AppException)" alt="" coords="1986,4459,2130,4512"/>
+<area shape="rect" id="node51" href="javascript:showNodeInfo(&#39;ErrorCode&#39;)" title="ErrorCode\n(ErrorCode)" alt="" coords="2483,4300,2600,4353"/>
+<area shape="poly" id="edge123" href="javascript:showEdgeInfo(&#39;AppException&#39;, &#39;ErrorCode&#39;)" title="field: errorCode" alt="" coords="2131,4489,2194,4490,2267,4485,2343,4472,2416,4446,2444,4430,2469,4409,2511,4364,2515,4367,2473,4413,2447,4434,2418,4451,2344,4477,2268,4490,2194,4495,2130,4494"/>
+<area shape="rect" id="edge123-label" href="javascript:showEdgeInfo(&#39;AppException&#39;, &#39;ErrorCode&#39;)" title="field: errorCode" alt="" coords="2270,4435,2355,4449"/>
+<area shape="poly" id="edge130" href="javascript:showEdgeInfo(&#39;CartService&#39;, &#39;CartServiceImpl&#39;)" title="implemented&#45;by: CartServiceImpl" alt="" coords="1994,1439,1851,1441,1683,1452,1572,1468,1462,1487,1274,1528,1273,1523,1461,1482,1572,1462,1682,1447,1851,1435,1994,1434"/>
+<area shape="rect" id="edge130-label" href="javascript:showEdgeInfo(&#39;CartService&#39;, &#39;CartServiceImpl&#39;)" title="implemented&#45;by: CartServiceImpl" alt="" coords="1704,1423,1885,1437"/>
+<area shape="poly" id="edge129" href="javascript:showEdgeInfo(&#39;CartService&#39;, &#39;CartItemDTO&#39;)" title="field: cartItemDTO" alt="" coords="2122,1442,2417,1480,2455,1486,2454,1491,2416,1485,2122,1448"/>
+<area shape="rect" id="edge129-label" href="javascript:showEdgeInfo(&#39;CartService&#39;, &#39;CartItemDTO&#39;)" title="field: cartItemDTO" alt="" coords="2264,1442,2361,1456"/>
+<area shape="rect" id="node17" href="javascript:showNodeInfo(&#39;CategoryDTO&#39;)" title="CategoryDTO\n(CategoryDTO)" alt="" coords="2942,5051,3087,5104"/>
+<area shape="rect" id="node19" href="javascript:showNodeInfo(&#39;Review&#39;)" title="Review\n(Review)" alt="" coords="2012,3103,2104,3156"/>
+<area shape="poly" id="edge121" href="javascript:showEdgeInfo(&#39;Review&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="2104,3122,2147,3108,2166,3097,2183,3081,2198,3055,2203,3030,2202,3005,2197,2981,2191,2955,2189,2929,2193,2901,2206,2872,2230,2844,2257,2826,2285,2815,2313,2808,2341,2802,2368,2791,2392,2774,2414,2746,2428,2708,2435,2657,2435,2533,2430,2407,2431,2353,2438,2310,2452,2269,2471,2230,2510,2163,2515,2166,2476,2232,2457,2271,2443,2311,2437,2353,2436,2407,2440,2533,2440,2657,2434,2709,2419,2749,2396,2778,2370,2796,2343,2807,2314,2814,2286,2821,2259,2831,2234,2848,2211,2875,2198,2903,2194,2929,2197,2954,2202,2979,2207,3005,2208,3030,2203,3057,2187,3084,2170,3101,2149,3113,2105,3127"/>
+<area shape="rect" id="edge121-label" href="javascript:showEdgeInfo(&#39;Review&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="2278,2733,2348,2747"/>
+<area shape="poly" id="edge122" href="javascript:showEdgeInfo(&#39;Review&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2103,3122,2146,3108,2166,3097,2183,3081,2194,3061,2198,3041,2193,3001,2188,2960,2193,2939,2207,2918,2232,2898,2257,2889,2283,2887,2309,2889,2361,2892,2388,2886,2415,2871,2522,2782,2565,2739,2602,2696,2633,2653,2661,2610,2705,2521,2740,2425,2773,2319,2810,2201,2855,2066,2889,1963,2918,1856,2963,1646,2991,1465,3006,1339,3012,1340,2997,1465,2968,1647,2924,1858,2895,1964,2861,2068,2815,2202,2778,2321,2745,2427,2710,2523,2665,2613,2638,2656,2606,2699,2569,2742,2525,2786,2418,2876,2390,2891,2362,2898,2308,2895,2283,2893,2258,2894,2234,2903,2211,2922,2198,2941,2193,2960,2198,3000,2203,3041,2199,3063,2187,3084,2169,3101,2148,3113,2105,3127"/>
+<area shape="rect" id="edge122-label" href="javascript:showEdgeInfo(&#39;Review&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2515,2634,2568,2648"/>
+<area shape="poly" id="edge86" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;Product&#39;)" title="field: entity\nfield: existingProduct\nfield: product\n+ 1 more" alt="" coords="1274,2639,1462,2668,1683,2693,1807,2700,1931,2700,1971,2703,2005,2708,2063,2721,2091,2724,2119,2723,2149,2716,2183,2700,2236,2667,2275,2632,2303,2595,2324,2555,2361,2463,2384,2411,2414,2354,2516,2164,2521,2167,2419,2356,2388,2413,2366,2465,2329,2557,2307,2598,2279,2636,2239,2671,2186,2705,2151,2721,2119,2728,2090,2729,2063,2726,2004,2714,1970,2708,1931,2705,1807,2705,1682,2699,1462,2674,1273,2645"/>
+<area shape="rect" id="edge86-label" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;Product&#39;)" title="field: entity\nfield: existingProduct\nfield: product\n+ 1 more" alt="" coords="2002,2647,2114,2703"/>
+<area shape="poly" id="edge88" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;ProductService&#39;)" title="implements ProductService\nimplements: ProductService" alt="" coords="1219,2596,1301,2547,1413,2487,1544,2427,1613,2400,1682,2379,1735,2369,1807,2361,1964,2351,1965,2356,1808,2367,1735,2374,1683,2384,1615,2406,1546,2432,1416,2492,1304,2552,1222,2601"/>
+<area shape="rect" id="edge88-label" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;ProductService&#39;)" title="implements ProductService\nimplements: ProductService" alt="" coords="1719,2329,1871,2357"/>
+<area shape="poly" id="edge87" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;CategoryNotFoundException&#39;)" title="new CategoryNotFoundException()" alt="" coords="1231,2650,1426,2744,1553,2798,1683,2844,1778,2863,1939,2890,2097,2922,2154,2938,2186,2954,2199,2975,2201,2996,2201,3017,2211,3038,2235,3062,2261,3077,2287,3085,2314,3091,2340,3097,2367,3106,2393,3121,2419,3147,2430,3171,2431,3194,2432,3215,2443,3237,2467,3258,2492,3270,2517,3275,2543,3277,2570,3280,2596,3286,2621,3299,2644,3322,2659,3347,2665,3369,2665,3412,2660,3456,2661,3480,2669,3507,2700,3582,2739,3656,2781,3726,2826,3793,2912,3908,2980,3990,2976,3993,2908,3911,2821,3796,2777,3729,2734,3658,2696,3584,2663,3509,2656,3481,2654,3456,2659,3412,2660,3370,2654,3349,2640,3326,2617,3303,2594,3291,2569,3285,2543,3283,2516,3280,2490,3275,2464,3263,2439,3240,2426,3217,2426,3194,2425,3172,2414,3150,2390,3125,2365,3111,2339,3102,2312,3096,2286,3090,2259,3081,2232,3066,2206,3041,2196,3018,2195,2997,2194,2977,2183,2958,2152,2943,2096,2927,1938,2896,1778,2868,1682,2849,1551,2803,1424,2749,1229,2655"/>
+<area shape="rect" id="edge87-label" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;CategoryNotFoundException&#39;)" title="new CategoryNotFoundException()" alt="" coords="2217,3025,2409,3039"/>
+<area shape="poly" id="edge83" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;ProductRepository&#39;)" title="deleteById\nexistsById\nfield: productRepository\n+ 6 more" alt="" coords="1247,2596,1342,2551,1454,2486,1511,2445,1565,2399,1614,2348,1656,2292,1665,2273,1668,2256,1666,2222,1664,2188,1669,2170,1680,2152,1707,2126,1734,2111,1762,2103,1790,2100,1847,2091,1876,2079,1905,2058,1913,2048,1917,2037,1920,2025,1929,2013,1953,1996,1956,2000,1933,2017,1925,2027,1922,2038,1918,2050,1909,2062,1879,2084,1849,2096,1791,2105,1763,2109,1736,2116,1710,2130,1684,2155,1674,2172,1669,2189,1671,2222,1674,2256,1670,2275,1661,2295,1618,2351,1569,2403,1514,2449,1457,2490,1344,2556,1249,2601"/>
+<area shape="rect" id="edge83-label" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;ProductRepository&#39;)" title="deleteById\nexistsById\nfield: productRepository\n+ 6 more" alt="" coords="1730,2004,1859,2060"/>
+<area shape="poly" id="edge89" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;Category&#39;)" title="field: category" alt="" coords="1236,2650,1431,2734,1555,2779,1683,2818,1758,2833,1824,2839,1938,2837,1993,2837,2050,2843,2113,2857,2186,2883,2264,2921,2339,2966,2410,3016,2479,3072,2544,3131,2606,3192,2718,3319,2814,3445,2893,3560,2954,3657,2994,3728,2990,3731,2949,3660,2889,3563,2810,3448,2714,3323,2602,3196,2541,3134,2476,3076,2407,3021,2336,2970,2261,2926,2184,2888,2112,2862,2049,2848,1992,2843,1938,2843,1824,2844,1758,2838,1682,2823,1554,2784,1429,2739,1234,2655"/>
+<area shape="rect" id="edge89-label" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;Category&#39;)" title="field: category" alt="" coords="2275,2887,2351,2901"/>
+<area shape="poly" id="edge90" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;ProductDTO&#39;)" title="field: dto\nfield: productDTO\nif&#45;condition: dto.getCategoryId()" alt="" coords="1242,2596,1327,2563,1436,2524,1558,2487,1682,2458,1758,2445,1822,2440,1933,2439,2044,2440,2108,2436,2184,2427,2330,2400,2458,2369,2460,2374,2331,2406,2185,2433,2109,2441,2044,2445,1933,2444,1823,2445,1758,2451,1683,2463,1559,2492,1438,2529,1329,2568,1244,2601"/>
+<area shape="rect" id="edge90-label" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;ProductDTO&#39;)" title="field: dto\nfield: productDTO\nif&#45;condition: dto.getCategoryId()" alt="" coords="1972,2388,2144,2430"/>
+<area shape="rect" id="node55" href="javascript:showNodeInfo(&#39;CategoryRepository&#39;)" title="CategoryRepository\n(CategoryRepository)" alt="" coords="2918,4318,3110,4370"/>
+<area shape="poly" id="edge84" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;CategoryRepository&#39;)" title="field: categoryRepository\nfindById" alt="" coords="1274,2645,1363,2673,1465,2713,1517,2739,1568,2768,1616,2801,1660,2838,1669,2851,1672,2864,1675,2875,1684,2885,1713,2901,1740,2908,1767,2908,1793,2905,1847,2902,1877,2907,1909,2922,1918,2930,1922,2939,1926,2947,1933,2954,1968,2970,2001,2975,2033,2974,2065,2970,2095,2967,2126,2969,2156,2980,2187,3004,2201,3026,2206,3049,2204,3072,2199,3095,2193,3117,2191,3138,2196,3159,2211,3180,2235,3196,2260,3201,2285,3199,2311,3192,2338,3186,2365,3183,2392,3188,2418,3205,2430,3219,2434,3235,2432,3265,2430,3294,2424,3295,2427,3264,2429,3235,2425,3222,2415,3209,2390,3193,2365,3188,2339,3191,2313,3198,2286,3204,2259,3207,2233,3201,2207,3183,2191,3161,2186,3139,2188,3116,2193,3094,2199,3071,2201,3050,2196,3028,2183,3007,2154,2984,2125,2974,2096,2972,2065,2975,2034,2979,2001,2980,1966,2975,1930,2958,1921,2950,1917,2941,1913,2933,1906,2926,1875,2912,1847,2907,1793,2911,1767,2914,1740,2913,1711,2906,1681,2889,1671,2877,1667,2865,1664,2853,1656,2842,1613,2805,1565,2772,1515,2743,1463,2718,1361,2678,1273,2650"/>
+<area shape="poly" id="edge84" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;CategoryRepository&#39;)" title="field: categoryRepository\nfindById" alt="" coords="2430,3294,2433,3308,2443,3322,2466,3340,2491,3347,2517,3348,2543,3345,2569,3342,2595,3343,2621,3352,2644,3373,2651,3389,2657,3413,2662,3482,2662,3672,2659,3864,2661,3935,2669,3975,2687,4008,2708,4033,2729,4051,2752,4067,2803,4097,2831,4118,2860,4145,2931,4228,2987,4303,2983,4307,2927,4231,2856,4149,2828,4122,2800,4102,2750,4071,2726,4056,2704,4036,2683,4011,2663,3977,2656,3935,2653,3864,2656,3672,2657,3482,2651,3413,2646,3390,2640,3376,2618,3357,2594,3349,2570,3348,2544,3350,2517,3353,2490,3353,2464,3345,2439,3326,2428,3311,2424,3295"/>
+<area shape="rect" id="edge84-label" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;CategoryRepository&#39;)" title="field: categoryRepository\nfindById" alt="" coords="2245,3153,2380,3181"/>
+<area shape="poly" id="edge85" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;ProductNotFoundException&#39;)" title="new ProductNotFoundException()" alt="" coords="1274,2628,1443,2636,1640,2641,1812,2638,1872,2631,1906,2621,1915,2610,1918,2597,1920,2582,1929,2568,1933,2564,1937,2568,1933,2571,1925,2584,1923,2598,1920,2613,1909,2626,1873,2636,1813,2643,1640,2646,1443,2641,1273,2634"/>
+<area shape="rect" id="edge85-label" href="javascript:showEdgeInfo(&#39;ProductServiceImpl&#39;, &#39;ProductNotFoundException&#39;)" title="new ProductNotFoundException()" alt="" coords="1703,2609,1887,2623"/>
+<area shape="rect" id="node23" href="javascript:showNodeInfo(&#39;ReviewDTO&#39;)" title="ReviewDTO\n(ReviewDTO)" alt="" coords="2476,3387,2607,3440"/>
+<area shape="poly" id="edge113" href="javascript:showEdgeInfo(&#39;OrderStatusUpdateDTO&#39;, &#39;Order&#39;)" title="nested&#45;type: Order.OrderStatus" alt="" coords="2173,108,2236,109,2301,118,2334,127,2364,140,2393,157,2419,178,2433,198,2440,217,2441,237,2438,256,2433,296,2435,317,2443,340,2466,375,2495,404,2491,408,2462,378,2438,343,2430,319,2428,296,2433,255,2436,237,2435,218,2429,200,2415,182,2390,161,2362,145,2332,132,2300,123,2235,114,2173,113"/>
+<area shape="rect" id="edge113-label" href="javascript:showEdgeInfo(&#39;OrderStatusUpdateDTO&#39;, &#39;Order&#39;)" title="nested&#45;type: Order.OrderStatus" alt="" coords="2229,96,2397,110"/>
+<area shape="poly" id="edge125" href="javascript:showEdgeInfo(&#39;CartItemRepository&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="2113,1258,2153,1288,2172,1307,2187,1328,2197,1353,2200,1376,2195,1419,2192,1459,2197,1479,2211,1500,2234,1521,2259,1530,2285,1533,2311,1532,2339,1531,2366,1533,2393,1543,2419,1564,2444,1604,2466,1661,2485,1732,2501,1809,2525,1964,2539,2083,2534,2084,2520,1965,2496,1810,2480,1733,2461,1663,2439,1606,2415,1567,2390,1548,2365,1539,2339,1536,2312,1537,2285,1538,2258,1536,2232,1525,2207,1504,2192,1482,2187,1460,2190,1419,2195,1376,2192,1354,2182,1331,2168,1310,2150,1292,2110,1262"/>
+<area shape="rect" id="edge125-label" href="javascript:showEdgeInfo(&#39;CartItemRepository&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="2278,1488,2348,1502"/>
+<area shape="poly" id="edge124" href="javascript:showEdgeInfo(&#39;CartItemRepository&#39;, &#39;Cart&#39;)" title="field: cart" alt="" coords="2153,1231,2490,1231,2490,1236,2153,1236"/>
+<area shape="rect" id="edge124-label" href="javascript:showEdgeInfo(&#39;CartItemRepository&#39;, &#39;Cart&#39;)" title="field: cart" alt="" coords="2288,1219,2337,1233"/>
+<area shape="rect" id="node27" href="javascript:showNodeInfo(&#39;RegisterRequest&#39;)" title="RegisterRequest\n(RegisterRequest)" alt="" coords="1974,4846,2142,4898"/>
+<area shape="rect" id="node28" href="javascript:showNodeInfo(&#39;CategoryServiceImpl&#39;)" title="CategoryServiceImpl\n(CategoryServiceImpl)" alt="" coords="2441,4663,2642,4716"/>
+<area shape="poly" id="edge59" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;CategoryNotFoundException&#39;)" title="new CategoryNotFoundException()" alt="" coords="2561,4661,2601,4601,2622,4564,2639,4526,2648,4492,2649,4464,2652,4436,2664,4403,2695,4349,2731,4296,2813,4201,2895,4122,2964,4064,2967,4068,2899,4126,2817,4205,2736,4300,2699,4351,2668,4405,2657,4437,2655,4465,2653,4493,2645,4528,2627,4567,2606,4604,2565,4664"/>
+<area shape="rect" id="edge59-label" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;CategoryNotFoundException&#39;)" title="new CategoryNotFoundException()" alt="" coords="2666,4153,2858,4167"/>
+<area shape="poly" id="edge63" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;CategoryDTO&#39;)" title="field: categoryDTO\nfield: dto\nif&#45;condition: dto.getParentId()" alt="" coords="2577,4714,2971,5039,2967,5043,2574,4718"/>
+<area shape="rect" id="edge63-label" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;CategoryDTO&#39;)" title="field: categoryDTO\nfield: dto\nif&#45;condition: dto.getParentId()" alt="" coords="2684,4752,2840,4794"/>
+<area shape="rect" id="node48" href="javascript:showNodeInfo(&#39;CategoryService&#39;)" title="CategoryService\n(CategoryService)" alt="" coords="1975,5051,2141,5104"/>
+<area shape="poly" id="edge62" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;CategoryService&#39;)" title="implements CategoryService\nimplements: CategoryService" alt="" coords="2490,4719,2426,4757,2351,4810,2275,4876,2241,4913,2211,4952,2202,4973,2201,4993,2199,5013,2187,5034,2157,5056,2154,5052,2183,5030,2194,5011,2196,4993,2197,4972,2206,4949,2237,4909,2271,4872,2347,4806,2423,4753,2487,4714"/>
+<area shape="rect" id="edge62-label" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;CategoryService&#39;)" title="implements CategoryService\nimplements: CategoryService" alt="" coords="2233,4734,2393,4762"/>
+<area shape="poly" id="edge61" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;Category&#39;)" title="chain: equals()...\nfield: category\nfield: entity\n+ 5 more" alt="" coords="2563,4661,2604,4601,2624,4565,2639,4526,2646,4490,2649,4444,2648,4336,2649,4228,2654,4182,2664,4146,2683,4111,2715,4069,2799,3974,2892,3880,2971,3805,2974,3809,2896,3883,2803,3978,2719,4072,2688,4114,2668,4148,2659,4183,2654,4228,2654,4336,2654,4444,2652,4491,2645,4528,2629,4567,2608,4604,2567,4664"/>
+<area shape="rect" id="edge61-label" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;Category&#39;)" title="chain: equals()...\nfield: category\nfield: entity\n+ 5 more" alt="" coords="2717,3863,2807,3919"/>
+<area shape="poly" id="edge58" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;CategoryRepository&#39;)" title="deleteById\nexistsById\nfield: categoryRepository\n+ 7 more" alt="" coords="2578,4660,2963,4377,2966,4382,2581,4665"/>
+<area shape="rect" id="edge58-label" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;CategoryRepository&#39;)" title="deleteById\nexistsById\nfield: categoryRepository\n+ 7 more" alt="" coords="2694,4410,2830,4466"/>
+<area shape="rect" id="node56" href="javascript:showNodeInfo(&#39;DuplicateCategoryException&#39;)" title="DuplicateCategoryException\n(DuplicateCategoryException)" alt="" coords="2884,4663,3144,4716"/>
+<area shape="poly" id="edge60" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;DuplicateCategoryException&#39;)" title="new DuplicateCategoryException()" alt="" coords="2642,4687,2869,4687,2869,4692,2642,4692"/>
+<area shape="rect" id="edge60-label" href="javascript:showEdgeInfo(&#39;CategoryServiceImpl&#39;, &#39;DuplicateCategoryException&#39;)" title="new DuplicateCategoryException()" alt="" coords="2667,4675,2857,4689"/>
+<area shape="rect" id="node29" href="javascript:showNodeInfo(&#39;ReviewServiceImpl&#39;)" title="ReviewServiceImpl\n(ReviewServiceImpl)" alt="" coords="1084,3371,1271,3424"/>
+<area shape="poly" id="edge99" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="1272,3396,1442,3395,1640,3391,1812,3380,1872,3371,1906,3359,1916,3347,1918,3334,1920,3318,1929,3302,1962,3275,1995,3258,2027,3248,2059,3242,2091,3236,2122,3226,2152,3209,2183,3180,2193,3161,2195,3143,2196,3123,2206,3101,2233,3074,2260,3056,2316,3037,2343,3028,2369,3016,2393,2997,2414,2968,2425,2925,2430,2850,2432,2643,2431,2435,2433,2357,2438,2310,2452,2269,2471,2229,2510,2163,2515,2166,2475,2232,2457,2271,2443,2311,2438,2357,2437,2435,2438,2643,2436,2850,2430,2926,2419,2971,2397,3001,2372,3020,2345,3033,2318,3042,2263,3061,2236,3078,2211,3104,2201,3124,2200,3143,2198,3163,2187,3184,2156,3213,2124,3231,2092,3241,2060,3247,2028,3253,1997,3263,1965,3279,1933,3306,1925,3320,1923,3335,1920,3350,1909,3364,1874,3376,1813,3385,1640,3396,1442,3401,1272,3401"/>
+<area shape="rect" id="edge99-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="2023,3168,2093,3182"/>
+<area shape="poly" id="edge100" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="1272,3392,1442,3384,1641,3371,1814,3352,1873,3340,1906,3326,1914,3317,1917,3307,1916,3285,1916,3261,1920,3250,1930,3239,1961,3218,1992,3204,2022,3196,2052,3194,2110,3201,2167,3218,2225,3236,2285,3248,2316,3249,2348,3245,2381,3237,2415,3221,2514,3162,2592,3102,2653,3039,2701,2972,2741,2897,2777,2812,2855,2606,2872,2554,2888,2491,2917,2335,2942,2152,2963,1956,2993,1586,3008,1339,3013,1340,2998,1587,2968,1957,2947,2152,2922,2335,2893,2492,2877,2556,2861,2608,2782,2814,2746,2899,2705,2975,2657,3043,2596,3106,2517,3166,2418,3226,2383,3242,2349,3251,2316,3254,2284,3253,2224,3241,2165,3223,2109,3206,2052,3199,2023,3201,1994,3209,1964,3223,1933,3243,1925,3253,1921,3262,1922,3284,1922,3308,1918,3319,1909,3330,1875,3345,1814,3357,1641,3376,1443,3389,1272,3397"/>
+<area shape="rect" id="edge100-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2286,3209,2339,3223"/>
+<area shape="poly" id="edge95" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;Review&#39;)" title="field: entity\nfield: existingReview\nfield: review\n+ 1 more" alt="" coords="1271,3377,1398,3349,1558,3310,1733,3260,1906,3202,1997,3160,1999,3165,1908,3207,1735,3265,1560,3315,1400,3354,1272,3382"/>
+<area shape="rect" id="edge95-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;Review&#39;)" title="field: entity\nfield: existingReview\nfield: review\n+ 1 more" alt="" coords="1739,3148,1851,3204"/>
+<area shape="poly" id="edge101" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewDTO&#39;)" title="field: dto\nfield: reviewDTO" alt="" coords="1272,3396,2460,3410,2460,3415,1271,3401"/>
+<area shape="rect" id="edge101-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewDTO&#39;)" title="field: dto\nfield: reviewDTO" alt="" coords="2013,3379,2103,3407"/>
+<area shape="poly" id="edge92" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ProductRepository&#39;)" title="field: productRepository\nfindById" alt="" coords="1271,3386,1367,3367,1420,3352,1473,3333,1526,3308,1575,3278,1619,3241,1656,3197,1663,3181,1667,3154,1671,3075,1666,2858,1662,2641,1667,2562,1672,2535,1680,2517,1707,2494,1735,2484,1765,2483,1795,2487,1825,2490,1853,2489,1880,2480,1905,2458,1915,2442,1921,2422,1927,2369,1925,2307,1919,2239,1912,2171,1909,2108,1914,2053,1920,2031,1929,2013,1952,1991,1956,1995,1933,2016,1925,2033,1919,2054,1915,2108,1918,2171,1924,2239,1930,2307,1932,2370,1927,2423,1920,2444,1909,2462,1883,2485,1854,2494,1824,2495,1794,2492,1765,2489,1736,2489,1709,2499,1684,2520,1677,2536,1672,2563,1667,2641,1671,2858,1676,3075,1672,3154,1668,3182,1661,3200,1623,3245,1578,3282,1528,3313,1475,3338,1421,3357,1368,3372,1272,3391"/>
+<area shape="rect" id="edge92-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ProductRepository&#39;)" title="field: productRepository\nfindById" alt="" coords="1730,2432,1859,2460"/>
+<area shape="rect" id="node33" href="javascript:showNodeInfo(&#39;ReviewNotFoundException&#39;)" title="ReviewNotFoundException\n(ReviewNotFoundException)" alt="" coords="1933,4106,2183,4158"/>
+<area shape="poly" id="edge94" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewNotFoundException&#39;)" title="new ReviewNotFoundException()" alt="" coords="1225,3422,1319,3487,1378,3532,1440,3584,1502,3643,1562,3708,1616,3779,1661,3854,1670,3880,1673,3905,1667,3949,1664,3970,1664,3990,1670,4011,1684,4032,1699,4045,1720,4057,1778,4078,1847,4096,1918,4110,1917,4115,1846,4101,1776,4083,1718,4061,1696,4049,1680,4036,1665,4013,1659,3991,1658,3970,1661,3948,1667,3905,1665,3881,1656,3856,1611,3782,1558,3712,1499,3647,1436,3588,1375,3536,1316,3491,1222,3427"/>
+<area shape="rect" id="edge94-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewNotFoundException&#39;)" title="new ReviewNotFoundException()" alt="" coords="1703,4020,1886,4034"/>
+<area shape="poly" id="edge97" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;UserNotFoundException&#39;)" title="new UserNotFoundException()" alt="" coords="1271,3385,1366,3365,1418,3350,1471,3330,1524,3306,1573,3276,1618,3240,1656,3197,1664,3178,1667,3151,1666,3083,1665,3015,1670,2987,1680,2968,1708,2948,1737,2942,1767,2945,1796,2952,1825,2959,1853,2962,1879,2956,1905,2938,1917,2915,1922,2882,1919,2798,1915,2713,1918,2678,1929,2652,1938,2642,1942,2646,1934,2655,1924,2679,1920,2713,1924,2798,1927,2883,1922,2917,1909,2941,1882,2961,1853,2967,1824,2965,1794,2957,1766,2950,1738,2947,1710,2953,1684,2971,1675,2989,1670,3015,1671,3082,1673,3151,1669,3179,1661,3200,1622,3244,1576,3280,1526,3310,1473,3335,1420,3355,1367,3370,1273,3390"/>
+<area shape="rect" id="edge97-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;UserNotFoundException&#39;)" title="new UserNotFoundException()" alt="" coords="1711,2925,1879,2939"/>
+<area shape="rect" id="node58" href="javascript:showNodeInfo(&#39;ReviewRepository&#39;)" title="ReviewRepository\n(ReviewRepository)" alt="" coords="1969,3463,2147,3516"/>
+<area shape="poly" id="edge91" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewRepository&#39;)" title="deleteById\nexistsById\nfield: reviewRepository\n+ 6 more" alt="" coords="1272,3417,1461,3454,1572,3472,1683,3485,1824,3492,1953,3491,1953,3497,1824,3498,1682,3491,1571,3478,1460,3460,1271,3422"/>
+<area shape="rect" id="edge91-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewRepository&#39;)" title="deleteById\nexistsById\nfield: reviewRepository\n+ 6 more" alt="" coords="1733,3432,1857,3488"/>
+<area shape="poly" id="edge96" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ProductNotFoundException&#39;)" title="new ProductNotFoundException()" alt="" coords="1271,3385,1366,3366,1419,3351,1473,3332,1525,3307,1574,3277,1619,3240,1656,3197,1664,3181,1670,3161,1674,3111,1666,2988,1661,2924,1659,2864,1664,2814,1671,2794,1680,2777,1706,2754,1735,2743,1764,2740,1793,2742,1823,2745,1852,2743,1879,2734,1905,2712,1917,2695,1921,2678,1917,2642,1913,2606,1917,2587,1929,2568,1931,2566,1935,2569,1933,2571,1922,2589,1918,2606,1922,2642,1926,2678,1922,2697,1909,2716,1882,2738,1853,2748,1823,2750,1793,2748,1764,2746,1736,2748,1709,2758,1684,2780,1675,2796,1669,2815,1664,2865,1666,2924,1671,2987,1679,3111,1675,3162,1669,3183,1661,3200,1623,3244,1578,3281,1528,3312,1475,3337,1421,3356,1368,3372,1272,3391"/>
+<area shape="rect" id="edge96-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ProductNotFoundException&#39;)" title="new ProductNotFoundException()" alt="" coords="1703,2700,1887,2714"/>
+<area shape="rect" id="node61" href="javascript:showNodeInfo(&#39;ReviewService&#39;)" title="ReviewService\n(ReviewService)" alt="" coords="1982,3595,2134,3648"/>
+<area shape="poly" id="edge98" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewService&#39;)" title="implements ReviewService\nimplements: ReviewService" alt="" coords="1205,3422,1278,3497,1389,3596,1455,3646,1528,3694,1604,3735,1683,3767,1745,3785,1796,3793,1846,3787,1906,3767,1944,3746,1977,3718,2006,3688,2029,3659,2033,3662,2010,3691,1981,3722,1947,3750,1908,3772,1847,3793,1796,3798,1744,3791,1681,3772,1602,3740,1525,3698,1452,3651,1385,3600,1274,3501,1201,3426"/>
+<area shape="rect" id="edge98-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewService&#39;)" title="implements ReviewService\nimplements: ReviewService" alt="" coords="1719,3741,1870,3769"/>
+<area shape="poly" id="edge93" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;UserRepository&#39;)" title="field: userRepository\nfindById" alt="" coords="1201,3423,1271,3507,1322,3562,1381,3621,1448,3680,1522,3737,1601,3787,1683,3827,1734,3839,1806,3846,1964,3850,1964,3855,1806,3851,1733,3844,1681,3832,1598,3792,1519,3741,1445,3684,1378,3625,1318,3565,1267,3510,1197,3426"/>
+<area shape="rect" id="edge93-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;UserRepository&#39;)" title="field: userRepository\nfindById" alt="" coords="1739,3801,1851,3829"/>
+<area shape="rect" id="node30" href="javascript:showNodeInfo(&#39;UserResponse&#39;)" title="UserResponse\n(UserResponse)" alt="" coords="1982,4536,2134,4589"/>
+<area shape="poly" id="edge126" href="javascript:showEdgeInfo(&#39;CartRepository&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2136,786,2270,813,2345,835,2418,863,2505,908,2591,959,2673,1014,2751,1070,2884,1177,2976,1259,2973,1263,2880,1181,2748,1075,2670,1018,2588,963,2503,912,2416,868,2343,840,2269,818,2134,791"/>
+<area shape="rect" id="edge126-label" href="javascript:showEdgeInfo(&#39;CartRepository&#39;, &#39;UserEntity&#39;)" title="field: user" alt="" coords="2515,866,2568,880"/>
+<area shape="rect" id="node32" href="javascript:showNodeInfo(&#39;ApiResponse&#39;)" title="ApiResponse\n(ApiResponse)" alt="" coords="1988,4223,2128,4276"/>
+<area shape="poly" id="edge116" href="javascript:showEdgeInfo(&#39;CartItem&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="2111,1667,2179,1693,2262,1733,2345,1786,2384,1818,2419,1853,2459,1910,2491,1973,2515,2033,2531,2083,2526,2085,2510,2035,2486,1975,2455,1913,2415,1856,2381,1821,2342,1790,2259,1737,2177,1698,2109,1672"/>
+<area shape="rect" id="edge116-label" href="javascript:showEdgeInfo(&#39;CartItem&#39;, &#39;Product&#39;)" title="field: product" alt="" coords="2278,1696,2348,1710"/>
+<area shape="poly" id="edge115" href="javascript:showEdgeInfo(&#39;CartItem&#39;, &#39;Cart&#39;)" title="field: cart" alt="" coords="2110,1656,2179,1658,2261,1649,2303,1639,2344,1625,2382,1604,2415,1578,2426,1564,2431,1552,2434,1526,2433,1497,2438,1462,2477,1359,2517,1273,2522,1275,2482,1361,2443,1463,2438,1497,2439,1526,2437,1553,2430,1567,2419,1581,2385,1609,2346,1630,2305,1645,2262,1654,2179,1663,2110,1662"/>
+<area shape="rect" id="edge115-label" href="javascript:showEdgeInfo(&#39;CartItem&#39;, &#39;Cart&#39;)" title="field: cart" alt="" coords="2288,1565,2337,1579"/>
+<area shape="rect" id="node36" href="javascript:showNodeInfo(&#39;OrderController&#39;)" title="OrderController\n(OrderController)" alt="" coords="5,644,164,697"/>
+<area shape="poly" id="edge13" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="101,642,179,532,239,457,311,376,394,294,487,216,588,148,641,119,696,95,779,66,865,43,952,26,1041,14,1130,7,1219,4,1393,8,1558,22,1709,44,1840,69,1944,92,1943,98,1838,74,1708,49,1558,28,1393,13,1219,9,1130,12,1041,20,953,32,866,49,781,71,698,100,644,124,591,152,490,220,398,298,315,380,243,461,183,536,105,646"/>
+<area shape="rect" id="edge13-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="516,97,642,111"/>
+<area shape="poly" id="edge10" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderService&#39;)" title="cancelOrder\ncheckout\nfield: orderService\n+ 3 more" alt="" coords="164,668,300,668,300,673,164,673"/>
+<area shape="rect" id="edge10-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderService&#39;)" title="cancelOrder\ncheckout\nfield: orderService\n+ 3 more" alt="" coords="188,615,287,671"/>
+<area shape="poly" id="edge9" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="88,698,90,812,101,999,127,1242,147,1379,173,1522,207,1671,248,1822,297,1974,356,2124,425,2270,504,2410,595,2542,646,2603,699,2662,758,2720,815,2769,870,2810,924,2843,978,2871,1031,2893,1085,2910,1141,2924,1256,2944,1383,2960,1523,2979,1683,3008,1756,3021,1831,3031,1966,3040,1965,3045,1831,3036,1756,3027,1682,3013,1522,2984,1382,2965,1256,2949,1140,2929,1084,2915,1030,2898,976,2876,921,2848,867,2814,811,2773,754,2724,695,2666,642,2607,591,2545,500,2413,420,2273,351,2126,292,1976,243,1824,202,1672,168,1523,142,1379,121,1243,96,1000,85,812,83,698"/>
+<area shape="rect" id="edge9-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="556,2377,600,2391"/>
+<area shape="poly" id="edge12" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="122,695,216,763,354,850,434,895,520,938,608,975,698,1004,868,1043,1043,1068,1220,1083,1391,1088,1554,1087,1702,1081,1935,1062,1935,1067,1702,1086,1554,1092,1391,1094,1219,1088,1043,1073,867,1048,696,1009,606,980,517,943,432,900,351,855,213,767,119,700"/>
+<area shape="rect" id="edge12-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="516,910,640,924"/>
+<area shape="poly" id="edge11" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderDTO&#39;)" title="field: cancelledOrder\nfield: order\nfield: updatedOrder" alt="" coords="123,642,187,607,405,519,592,450,759,396,917,354,1077,320,1251,291,1682,235,1747,222,1800,210,1825,208,1851,211,1879,219,1909,235,1920,247,1924,260,1926,273,1933,286,1958,309,1987,329,1984,333,1955,314,1929,290,1921,275,1918,261,1915,250,1906,240,1876,224,1850,216,1825,213,1801,215,1748,227,1683,240,1251,296,1078,325,918,359,760,401,593,455,407,524,189,612,125,646"/>
+<area shape="rect" id="edge11-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderDTO&#39;)" title="field: cancelledOrder\nfield: order\nfield: updatedOrder" alt="" coords="522,384,635,426"/>
+<area shape="poly" id="edge136" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderServiceImpl&#39;)" title="implemented&#45;by: OrderServiceImpl" alt="" coords="452,695,485,704,564,716,645,724,806,731,954,729,1074,722,1075,728,954,734,806,736,644,729,563,721,483,709,451,700"/>
+<area shape="rect" id="edge136-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderServiceImpl&#39;)" title="implemented&#45;by: OrderServiceImpl" alt="" coords="484,692,673,706"/>
+<area shape="poly" id="edge135" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;Order&#39;)" title="field: status\nnested&#45;type: Order.OrderStatus" alt="" coords="439,642,635,549,775,488,936,422,1113,357,1299,295,1491,242,1682,201,1745,192,1795,189,1845,192,1908,201,2022,229,2166,274,2309,324,2418,368,2488,406,2485,410,2416,373,2307,329,2165,279,2021,234,1907,207,1844,198,1795,194,1745,197,1683,207,1492,247,1301,300,1114,362,938,427,777,493,637,554,441,646"/>
+<area shape="rect" id="edge135-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;Order&#39;)" title="field: status\nnested&#45;type: Order.OrderStatus" alt="" coords="1711,164,1879,192"/>
+<area shape="poly" id="edge134" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="386,644,394,545,412,411,424,343,440,281,459,230,483,195,589,173,697,153,869,138,1045,127,1391,115,1697,114,1928,118,1928,124,1697,120,1391,121,1046,132,870,143,697,159,590,178,485,200,464,232,445,282,430,344,417,411,400,546,391,645"/>
+<area shape="rect" id="edge134-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="1115,103,1241,117"/>
+<area shape="poly" id="edge133" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="423,696,453,715,485,731,659,800,809,850,943,886,1071,912,1339,952,1497,975,1683,1004,1813,1023,1935,1036,1935,1042,1812,1028,1682,1009,1496,980,1338,958,1070,918,942,891,807,855,657,805,483,736,450,719,421,700"/>
+<area shape="rect" id="edge133-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="1116,807,1240,821"/>
+<area shape="rect" id="node38" href="javascript:showNodeInfo(&#39;AuthService&#39;)" title="AuthService\n(AuthService)" alt="" coords="1112,3951,1243,4004"/>
+<area shape="poly" id="edge42" href="javascript:showEdgeInfo(&#39;AuthService&#39;, &#39;UserEntity&#39;)" title="chain: equals()...\nfield: foundUser\nif&#45;condition: foundUser.getOtp()" alt="" coords="1243,3976,1450,3974,1725,3964,1866,3953,1995,3937,2104,3916,2148,3902,2183,3887,2268,3840,2337,3796,2394,3752,2444,3706,2489,3655,2534,3597,2640,3451,2721,3330,2775,3230,2815,3124,2855,2983,2887,2829,2915,2622,2939,2381,2960,2125,2992,1646,3008,1339,3014,1339,2997,1647,2966,2125,2945,2381,2920,2622,2892,2830,2861,2985,2820,3125,2780,3232,2726,3333,2644,3454,2539,3600,2493,3658,2447,3709,2397,3756,2340,3800,2270,3845,2186,3892,2150,3907,2106,3921,1996,3943,1866,3958,1726,3969,1450,3980,1243,3981"/>
+<area shape="rect" id="edge42-label" href="javascript:showEdgeInfo(&#39;AuthService&#39;, &#39;UserEntity&#39;)" title="chain: equals()...\nfield: foundUser\nif&#45;condition: foundUser.getOtp()" alt="" coords="2228,3695,2397,3737"/>
+<area shape="poly" id="edge41" href="javascript:showEdgeInfo(&#39;AuthService&#39;, &#39;IUserRepository&#39;)" title="@Autowired: userRepository\nfield: userRepository" alt="" coords="1243,3981,1440,3996,1682,4009,1961,4012,1961,4017,1682,4015,1439,4001,1243,3986"/>
+<area shape="rect" id="edge41-label" href="javascript:showEdgeInfo(&#39;AuthService&#39;, &#39;IUserRepository&#39;)" title="@Autowired: userRepository\nfield: userRepository" alt="" coords="1717,3984,1873,4012"/>
+<area shape="poly" id="edge40" href="javascript:showEdgeInfo(&#39;AuthService&#39;, &#39;UserRepository&#39;)" title="findByEmail\nsave" alt="" coords="1243,3973,1586,3955,1772,3939,1849,3929,1907,3918,1953,3902,1996,3882,1998,3887,1955,3907,1908,3923,1850,3934,1773,3944,1586,3961,1243,3978"/>
+<area shape="rect" id="edge40-label" href="javascript:showEdgeInfo(&#39;AuthService&#39;, &#39;UserRepository&#39;)" title="findByEmail\nsave" alt="" coords="1762,3892,1827,3920"/>
+<area shape="rect" id="node39" href="javascript:showNodeInfo(&#39;GlobalExceptionHandler&#39;)" title="GlobalExceptionHandler\n(RatingNotFoundException, GlobalExceptionHandler, DuplicateRatingException, UnauthorizedRatingActionException)" alt="" coords="697,4200,1658,4253"/>
+<area shape="poly" id="edge37" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;AppException&#39;)" title="field: e" alt="" coords="1227,4251,1310,4296,1421,4350,1550,4404,1683,4448,1758,4463,1834,4474,1970,4482,1970,4488,1833,4479,1757,4469,1682,4453,1548,4409,1419,4355,1308,4301,1224,4256"/>
+<area shape="rect" id="edge37-label" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;AppException&#39;)" title="field: e" alt="" coords="1777,4436,1813,4450"/>
+<area shape="poly" id="edge34" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;ApiResponse&#39;)" title="builder\nchain: getCode()...\nchain: getMessage()...\n+ 1 more" alt="" coords="1408,4251,1649,4267,1779,4269,1907,4265,1972,4259,1972,4265,1908,4271,1779,4275,1649,4273,1408,4256"/>
+<area shape="rect" id="edge34-label" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;ApiResponse&#39;)" title="builder\nchain: getCode()...\nchain: getMessage()...\n+ 1 more" alt="" coords="1735,4212,1855,4268"/>
+<area shape="poly" id="edge39" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;ReviewNotFoundException&#39;)" title="field: ex" alt="" coords="1658,4211,1784,4198,1907,4178,1971,4161,1973,4166,1908,4183,1785,4203,1659,4216"/>
+<area shape="rect" id="edge39-label" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;ReviewNotFoundException&#39;)" title="field: ex" alt="" coords="1774,4167,1816,4181"/>
+<area shape="poly" id="edge38" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;UserNotFoundException&#39;)" title="field: ex" alt="" coords="1476,4197,1527,4179,1576,4155,1619,4124,1656,4085,1663,4070,1668,4044,1673,3968,1670,3759,1666,3548,1670,3471,1674,3443,1680,3425,1705,3395,1733,3376,1763,3365,1794,3358,1825,3352,1854,3342,1881,3324,1905,3294,1911,3278,1915,3252,1918,3177,1915,2973,1912,2769,1917,2695,1922,2669,1929,2652,1937,2643,1941,2646,1934,2655,1927,2670,1922,2695,1918,2770,1920,2973,1923,3177,1920,3253,1916,3279,1910,3297,1885,3328,1857,3346,1826,3357,1795,3364,1765,3370,1735,3381,1708,3399,1685,3428,1679,3445,1675,3471,1672,3548,1676,3759,1678,3968,1673,4045,1668,4071,1661,4088,1623,4128,1578,4159,1529,4184,1478,4202"/>
+<area shape="rect" id="edge38-label" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;UserNotFoundException&#39;)" title="field: ex" alt="" coords="1774,3281,1816,3295"/>
+<area shape="poly" id="edge35" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;ResponseDTO&#39;)" title="error" alt="" coords="1473,4197,1525,4179,1574,4155,1618,4124,1656,4085,1665,4069,1671,4049,1676,3997,1672,3934,1666,3867,1659,3800,1657,3738,1662,3686,1669,3665,1680,3649,1708,3629,1737,3623,1766,3626,1796,3634,1825,3642,1853,3645,1880,3639,1905,3620,1911,3609,1916,3588,1920,3527,1919,3358,1916,3188,1919,3125,1929,3089,1946,3072,1966,3060,1969,3065,1949,3077,1934,3092,1925,3126,1921,3188,1924,3358,1926,3528,1921,3589,1916,3610,1909,3624,1882,3644,1853,3650,1824,3647,1794,3639,1765,3631,1737,3628,1710,3634,1684,3653,1674,3668,1667,3687,1662,3738,1664,3800,1671,3867,1678,3934,1681,3997,1677,4050,1670,4071,1660,4088,1622,4128,1577,4159,1527,4184,1475,4202"/>
+<area shape="rect" id="edge35-label" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;ResponseDTO&#39;)" title="error" alt="" coords="1782,3608,1808,3622"/>
+<area shape="poly" id="edge36" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;ErrorCode&#39;)" title="field: errorCode" alt="" coords="1446,4251,1683,4275,1807,4288,1932,4299,2229,4315,2468,4323,2467,4328,2229,4320,1931,4305,1806,4294,1682,4280,1446,4256"/>
+<area shape="rect" id="edge36-label" href="javascript:showEdgeInfo(&#39;GlobalExceptionHandler&#39;, &#39;ErrorCode&#39;)" title="field: errorCode" alt="" coords="2016,4288,2100,4302"/>
+<area shape="rect" id="node40" href="javascript:showNodeInfo(&#39;VerifyRequest&#39;)" title="VerifyRequest\n(VerifyRequest)" alt="" coords="1105,4484,1250,4537"/>
+<area shape="rect" id="node42" href="javascript:showNodeInfo(&#39;EmailService&#39;)" title="EmailService\n(EmailService)" alt="" coords="1988,4614,2128,4666"/>
+<area shape="poly" id="edge127" href="javascript:showEdgeInfo(&#39;OrderItemRepository&#39;, &#39;Order&#39;)" title="field: order" alt="" coords="2160,440,2432,440,2432,445,2160,445"/>
+<area shape="rect" id="edge127-label" href="javascript:showEdgeInfo(&#39;OrderItemRepository&#39;, &#39;Order&#39;)" title="field: order" alt="" coords="2284,429,2342,443"/>
+<area shape="rect" id="node44" href="javascript:showNodeInfo(&#39;CartController&#39;)" title="CartController\n(CartController)" alt="" coords="1105,1863,1250,1916"/>
+<area shape="poly" id="edge2" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;CartService&#39;)" title="addItemToCart\nclearCart\nfield: cartService\n+ 3 more" alt="" coords="1250,1862,1444,1798,1682,1727,1717,1720,1750,1718,1806,1719,1832,1717,1856,1710,1880,1697,1905,1674,1920,1651,1925,1628,1923,1604,1918,1580,1912,1556,1910,1531,1914,1506,1929,1480,1952,1460,1978,1448,1980,1452,1954,1465,1933,1483,1920,1508,1915,1531,1918,1555,1923,1579,1929,1603,1931,1628,1925,1653,1909,1678,1884,1701,1858,1715,1833,1722,1806,1724,1750,1723,1718,1725,1683,1732,1445,1803,1251,1867"/>
+<area shape="rect" id="edge2-label" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;CartService&#39;)" title="addItemToCart\nclearCart\nfield: cartService\n+ 3 more" alt="" coords="1750,1620,1840,1676"/>
+<area shape="poly" id="edge4" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;CartItemDTO&#39;)" title="field: cartItemDTO" alt="" coords="1251,1893,1445,1907,1682,1919,1849,1920,1954,1917,2064,1910,2172,1898,2271,1880,2355,1854,2388,1838,2415,1819,2444,1790,2468,1756,2487,1719,2503,1681,2524,1605,2534,1543,2539,1544,2529,1606,2508,1682,2492,1721,2472,1759,2448,1793,2418,1823,2391,1842,2357,1859,2273,1885,2173,1904,2064,1916,1954,1923,1849,1926,1682,1924,1445,1912,1250,1898"/>
+<area shape="rect" id="edge4-label" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;CartItemDTO&#39;)" title="field: cartItemDTO" alt="" coords="2010,1886,2106,1900"/>
+<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="1252,1912,1349,1955,1405,1984,1463,2019,1520,2059,1574,2105,1621,2157,1661,2215,1668,2246,1670,2299,1670,2442,1671,2584,1675,2635,1685,2662,1709,2682,1735,2690,1762,2689,1790,2684,1818,2678,1848,2676,1878,2681,1909,2698,1931,2738,1967,2821,2043,3002,2038,3004,1963,2823,1926,2740,1905,2702,1877,2686,1848,2681,1819,2684,1791,2689,1762,2694,1734,2695,1707,2686,1680,2665,1670,2636,1665,2584,1664,2442,1665,2299,1662,2247,1656,2217,1617,2160,1570,2109,1517,2063,1460,2023,1403,1989,1347,1959,1250,1917"/>
+<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="1773,2649,1817,2663"/>
+<area shape="poly" id="edge3" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;CartDTO&#39;)" title="field: cart\nfield: updatedCart" alt="" coords="1250,1884,1538,1867,1722,1852,1907,1833,1989,1822,1990,1827,1908,1839,1722,1858,1538,1872,1251,1889"/>
+<area shape="rect" id="edge3-label" href="javascript:showEdgeInfo(&#39;CartController&#39;, &#39;CartDTO&#39;)" title="field: cart\nfield: updatedCart" alt="" coords="1746,1808,1843,1836"/>
+<area shape="rect" id="node46" href="javascript:showNodeInfo(&#39;ResetPasswordRequest&#39;)" title="ResetPasswordRequest\n(ResetPasswordRequest)" alt="" coords="1945,4691,2171,4744"/>
+<area shape="poly" id="edge112" href="javascript:showEdgeInfo(&#39;OrderDTO&#39;, &#39;Order&#39;)" title="nested&#45;type: Order.OrderStatus" alt="" coords="2119,372,2417,420,2433,423,2432,428,2416,425,2118,377"/>
+<area shape="rect" id="edge112-label" href="javascript:showEdgeInfo(&#39;OrderDTO&#39;, &#39;Order&#39;)" title="nested&#45;type: Order.OrderStatus" alt="" coords="2229,376,2397,390"/>
+<area shape="poly" id="edge131" href="javascript:showEdgeInfo(&#39;CategoryService&#39;, &#39;CategoryDTO&#39;)" title="field: categoryDTO" alt="" coords="2141,5075,2926,5075,2926,5080,2141,5080"/>
+<area shape="rect" id="edge131-label" href="javascript:showEdgeInfo(&#39;CategoryService&#39;, &#39;CategoryDTO&#39;)" title="field: categoryDTO" alt="" coords="2491,5063,2592,5077"/>
+<area shape="poly" id="edge132" href="javascript:showEdgeInfo(&#39;CategoryService&#39;, &#39;CategoryServiceImpl&#39;)" title="implemented&#45;by: CategoryServiceImpl" alt="" coords="2141,5058,2298,5019,2368,4994,2396,4981,2415,4968,2440,4942,2461,4913,2495,4848,2517,4784,2530,4730,2536,4732,2522,4786,2500,4851,2466,4916,2444,4946,2418,4972,2398,4986,2370,4999,2299,5024,2142,5064"/>
+<area shape="rect" id="edge132-label" href="javascript:showEdgeInfo(&#39;CategoryService&#39;, &#39;CategoryServiceImpl&#39;)" title="implemented&#45;by: CategoryServiceImpl" alt="" coords="2209,4956,2417,4970"/>
+<area shape="rect" id="node53" href="javascript:showNodeInfo(&#39;CategoryController&#39;)" title="CategoryController\n(CategoryController)" alt="" coords="1086,5060,1270,5113"/>
+<area shape="poly" id="edge8" href="javascript:showEdgeInfo(&#39;CategoryController&#39;, &#39;CategoryDTO&#39;)" title="field: categoryDTO" alt="" coords="1271,5089,1565,5102,1931,5113,2217,5113,2499,5105,2926,5081,2927,5086,2499,5110,2217,5119,1931,5119,1564,5107,1270,5094"/>
+<area shape="rect" id="edge8-label" href="javascript:showEdgeInfo(&#39;CategoryController&#39;, &#39;CategoryDTO&#39;)" title="field: categoryDTO" alt="" coords="2262,5097,2363,5111"/>
+<area shape="poly" id="edge5" href="javascript:showEdgeInfo(&#39;CategoryController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="1271,5106,1364,5119,1415,5120,1468,5118,1521,5109,1571,5094,1617,5070,1656,5037,1663,5024,1668,5001,1672,4931,1668,4738,1663,4544,1668,4474,1673,4450,1680,4434,1708,4414,1737,4408,1766,4412,1796,4419,1825,4427,1853,4430,1880,4425,1905,4406,1913,4384,1918,4337,1923,4187,1919,3751,1914,3314,1918,3162,1922,3114,1929,3089,1946,3072,1966,3060,1968,3064,1949,3076,1934,3092,1927,3115,1923,3162,1919,3314,1924,3751,1928,4187,1923,4338,1918,4385,1909,4409,1882,4430,1853,4436,1824,4433,1794,4425,1765,4417,1737,4414,1710,4419,1684,4438,1678,4451,1673,4475,1669,4544,1673,4738,1678,4931,1673,5001,1668,5025,1660,5040,1620,5075,1573,5099,1522,5115,1469,5123,1415,5126,1363,5124,1270,5112"/>
+<area shape="rect" id="edge5-label" href="javascript:showEdgeInfo(&#39;CategoryController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="1773,4393,1817,4407"/>
+<area shape="poly" id="edge6" href="javascript:showEdgeInfo(&#39;CategoryController&#39;, &#39;CategoryService&#39;)" title="createCategory\ndeleteCategory\nfield: categoryService\n+ 6 more" alt="" coords="1270,5086,1555,5090,1907,5085,1959,5083,1959,5088,1907,5091,1555,5096,1270,5092"/>
+<area shape="rect" id="edge6-label" href="javascript:showEdgeInfo(&#39;CategoryController&#39;, &#39;CategoryService&#39;)" title="createCategory\ndeleteCategory\nfield: categoryService\n+ 6 more" alt="" coords="1736,5032,1853,5088"/>
+<area shape="poly" id="edge7" href="javascript:showEdgeInfo(&#39;CategoryController&#39;, &#39;Category&#39;)" title="field: category\nfield: createdCategory\nfield: updatedCategory" alt="" coords="1270,5074,1682,5029,1939,5020,2097,5008,2153,4999,2183,4986,2194,4966,2199,4937,2199,4862,2196,4784,2198,4752,2206,4727,2230,4691,2255,4662,2281,4639,2309,4620,2367,4592,2426,4571,2485,4551,2542,4523,2569,4504,2594,4480,2618,4451,2640,4416,2647,4379,2650,4314,2647,4136,2647,3959,2652,3895,2657,3873,2664,3859,2686,3838,2707,3827,2729,3823,2752,3823,2801,3826,2828,3825,2857,3820,2945,3792,2947,3797,2859,3825,2828,3831,2800,3832,2752,3828,2730,3828,2709,3832,2689,3843,2668,3862,2662,3874,2657,3896,2652,3959,2653,4136,2655,4314,2652,4380,2644,4418,2622,4455,2598,4484,2572,4508,2545,4527,2487,4556,2428,4576,2369,4597,2312,4624,2284,4643,2258,4666,2234,4695,2211,4729,2204,4753,2201,4784,2204,4862,2204,4938,2199,4968,2186,4990,2155,5004,2098,5014,1940,5026,1683,5035,1271,5079"/>
+<area shape="rect" id="edge7-label" href="javascript:showEdgeInfo(&#39;CategoryController&#39;, &#39;Category&#39;)" title="field: category\nfield: createdCategory\nfield: updatedCategory" alt="" coords="2251,4535,2375,4577"/>
+<area shape="rect" id="node54" href="javascript:showNodeInfo(&#39;LoginRequest&#39;)" title="LoginRequest\n(LoginRequest)" alt="" coords="1986,4768,2130,4821"/>
+<area shape="rect" id="node59" href="javascript:showNodeInfo(&#39;UserService&#39;)" title="UserService\n(UserService)" alt="" coords="1112,4624,1243,4677"/>
+<area shape="poly" id="edge103" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserEntity&#39;)" title="builder\nfield: updatedUser\nfield: user\n+ 2 more" alt="" coords="1244,4661,1336,4671,1390,4672,1447,4669,1504,4660,1559,4644,1611,4620,1656,4586,1667,4573,1670,4559,1668,4529,1665,4498,1669,4482,1681,4467,1698,4460,1733,4454,1844,4441,2163,4416,2482,4390,2591,4377,2625,4370,2640,4363,2646,4352,2652,4332,2658,4271,2661,4102,2659,3929,2660,3865,2663,3826,2683,3761,2707,3707,2732,3662,2759,3622,2811,3537,2835,3484,2855,3419,2875,3331,2893,3222,2924,2957,2950,2648,2971,2322,2998,1716,3009,1339,3015,1339,3003,1716,2976,2322,2956,2649,2930,2957,2898,3223,2880,3332,2861,3421,2840,3486,2816,3539,2763,3625,2737,3665,2712,3710,2688,3762,2669,3827,2665,3865,2665,3929,2667,4102,2664,4271,2657,4333,2651,4354,2644,4367,2626,4375,2592,4382,2482,4396,2163,4421,1844,4446,1734,4459,1700,4465,1684,4472,1674,4485,1670,4498,1673,4528,1676,4559,1671,4575,1660,4590,1614,4625,1561,4649,1505,4665,1447,4674,1390,4677,1336,4676,1244,4666"/>
+<area shape="rect" id="edge103-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserEntity&#39;)" title="builder\nfield: updatedUser\nfield: user\n+ 2 more" alt="" coords="2263,4344,2363,4400"/>
+<area shape="poly" id="edge111" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UpdateUserRequest&#39;)" title="field: request" alt="" coords="1244,4637,1337,4629,1392,4628,1449,4633,1507,4643,1563,4661,1615,4687,1660,4724,1675,4744,1679,4765,1678,4787,1673,4808,1668,4828,1667,4848,1671,4868,1684,4887,1711,4909,1741,4927,1773,4941,1807,4950,1877,4960,1944,4961,1944,4966,1877,4966,1806,4956,1772,4946,1738,4932,1708,4914,1680,4891,1666,4870,1661,4849,1663,4827,1668,4806,1672,4786,1674,4766,1670,4746,1656,4727,1612,4692,1561,4666,1506,4648,1448,4638,1391,4634,1337,4634,1244,4642"/>
+<area shape="rect" id="edge111-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UpdateUserRequest&#39;)" title="field: request" alt="" coords="1760,4875,1830,4889"/>
+<area shape="poly" id="edge105" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;AppException&#39;)" title="new AppException()" alt="" coords="1244,4652,1329,4652,1433,4647,1547,4631,1603,4618,1657,4602,1669,4594,1681,4586,1742,4562,1792,4550,1843,4541,1907,4526,1970,4508,1972,4513,1908,4531,1844,4546,1793,4555,1744,4567,1684,4590,1672,4599,1659,4607,1604,4623,1548,4636,1434,4652,1329,4657,1244,4657"/>
+<area shape="rect" id="edge105-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;AppException&#39;)" title="new AppException()" alt="" coords="1740,4515,1850,4529"/>
+<area shape="poly" id="edge106" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;IUserRepository&#39;)" title="field: userRepository\nif&#45;condition: userRepository.findByEmail()" alt="" coords="1244,4664,1337,4679,1391,4683,1448,4682,1505,4675,1561,4660,1612,4637,1656,4602,1665,4586,1670,4562,1669,4499,1668,4435,1672,4409,1680,4389,1707,4364,1735,4351,1765,4346,1795,4345,1824,4345,1853,4340,1880,4328,1905,4304,1921,4277,1926,4252,1925,4227,1920,4202,1914,4177,1912,4150,1916,4122,1929,4092,1951,4066,1978,4046,1981,4050,1955,4070,1934,4095,1921,4123,1917,4150,1920,4176,1925,4201,1930,4226,1931,4252,1925,4279,1909,4307,1883,4332,1854,4345,1825,4350,1795,4351,1765,4352,1737,4356,1710,4369,1685,4392,1677,4410,1674,4435,1675,4499,1675,4562,1670,4588,1660,4606,1614,4641,1562,4665,1506,4680,1449,4687,1391,4688,1336,4684,1243,4670"/>
+<area shape="rect" id="edge106-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;IUserRepository&#39;)" title="field: userRepository\nif&#45;condition: userRepository.findByEmail()" alt="" coords="1683,4277,1907,4305"/>
+<area shape="poly" id="edge109" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;RegisterRequest&#39;)" title="field: request" alt="" coords="1243,4639,1334,4635,1387,4636,1444,4641,1501,4651,1558,4668,1611,4691,1660,4724,1671,4739,1673,4756,1675,4771,1684,4786,1714,4808,1747,4826,1819,4852,1892,4866,1959,4872,1959,4877,1891,4871,1817,4857,1745,4831,1711,4812,1680,4789,1670,4773,1668,4756,1666,4741,1656,4727,1609,4696,1556,4673,1500,4656,1443,4646,1387,4641,1334,4640,1244,4645"/>
+<area shape="rect" id="edge109-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;RegisterRequest&#39;)" title="field: request" alt="" coords="1760,4773,1830,4787"/>
+<area shape="poly" id="edge102" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserResponse&#39;)" title="builder" alt="" coords="1244,4649,1367,4649,1533,4643,1719,4630,1907,4605,1966,4588,1967,4593,1908,4610,1720,4635,1533,4649,1368,4654,1244,4655"/>
+<area shape="rect" id="edge102-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserResponse&#39;)" title="builder" alt="" coords="1776,4593,1814,4607"/>
+<area shape="poly" id="edge107" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;EmailService&#39;)" title="field: emailService" alt="" coords="1244,4650,1532,4655,1718,4655,1907,4650,1973,4646,1973,4651,1907,4655,1718,4660,1531,4661,1244,4656"/>
+<area shape="rect" id="edge107-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;EmailService&#39;)" title="field: emailService" alt="" coords="1745,4639,1845,4653"/>
+<area shape="poly" id="edge110" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;ResetPasswordRequest&#39;)" title="field: request" alt="" coords="1244,4653,1930,4705,1929,4710,1244,4658"/>
+<area shape="rect" id="edge110-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;ResetPasswordRequest&#39;)" title="field: request" alt="" coords="1760,4676,1830,4690"/>
+<area shape="poly" id="edge108" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;LoginRequest&#39;)" title="field: request" alt="" coords="1244,4658,1659,4723,1971,4777,1970,4782,1658,4728,1243,4663"/>
+<area shape="rect" id="edge108-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;LoginRequest&#39;)" title="field: request" alt="" coords="1760,4717,1830,4731"/>
+<area shape="poly" id="edge104" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserRepository&#39;)" title="findByEmail" alt="" coords="1244,4665,1337,4680,1392,4684,1450,4684,1507,4677,1562,4662,1613,4638,1656,4602,1667,4587,1673,4568,1679,4516,1676,4454,1669,4387,1661,4319,1658,4256,1663,4203,1670,4182,1680,4165,1707,4144,1736,4136,1765,4138,1794,4144,1823,4150,1851,4152,1879,4146,1905,4127,1919,4109,1925,4092,1923,4057,1918,4018,1921,3996,1929,3974,1945,3948,1964,3925,2005,3885,2008,3889,1967,3928,1949,3951,1934,3976,1926,3998,1924,4018,1928,4056,1930,4093,1923,4112,1909,4131,1881,4150,1852,4157,1822,4155,1793,4149,1764,4143,1736,4142,1710,4149,1684,4169,1675,4184,1668,4204,1663,4256,1667,4318,1674,4386,1681,4454,1684,4516,1679,4569,1671,4590,1660,4606,1615,4642,1564,4667,1508,4682,1450,4689,1392,4690,1337,4686,1243,4670"/>
+<area shape="rect" id="edge104-label" href="javascript:showEdgeInfo(&#39;UserService&#39;, &#39;UserRepository&#39;)" title="findByEmail" alt="" coords="1762,4115,1827,4129"/>
+<area shape="poly" id="edge139" href="javascript:showEdgeInfo(&#39;ReviewService&#39;, &#39;ReviewDTO&#39;)" title="field: reviewDTO" alt="" coords="2121,3592,2463,3444,2465,3449,2123,3597"/>
+<area shape="rect" id="edge139-label" href="javascript:showEdgeInfo(&#39;ReviewService&#39;, &#39;ReviewDTO&#39;)" title="field: reviewDTO" alt="" coords="2268,3455,2358,3469"/>
+<area shape="poly" id="edge140" href="javascript:showEdgeInfo(&#39;ReviewService&#39;, &#39;ReviewServiceImpl&#39;)" title="implemented&#45;by: ReviewServiceImpl" alt="" coords="1982,3650,1908,3667,1844,3677,1794,3682,1744,3680,1682,3667,1613,3647,1545,3621,1417,3558,1307,3491,1225,3435,1228,3431,1310,3487,1420,3553,1548,3616,1615,3642,1683,3662,1745,3674,1794,3676,1844,3671,1907,3662,1981,3645"/>
+<area shape="rect" id="edge140-label" href="javascript:showEdgeInfo(&#39;ReviewService&#39;, &#39;ReviewServiceImpl&#39;)" title="implemented&#45;by: ReviewServiceImpl" alt="" coords="1695,3651,1894,3665"/>
+<area shape="rect" id="node63" href="javascript:showNodeInfo(&#39;UserController&#39;)" title="UserController\n(UserController)" alt="" coords="311,4586,460,4638"/>
+<area shape="poly" id="edge22" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserEntity&#39;)" title="builder\nfield: user" alt="" coords="388,4585,481,3888,537,3505,582,3209,625,2911,670,2528,675,2368,681,2270,687,2235,695,2215,765,2150,834,2101,902,2066,970,2044,1037,2032,1105,2029,1174,2032,1245,2041,1391,2067,1547,2093,1631,2100,1718,2103,1810,2098,1907,2084,1931,2078,2002,2064,2059,2058,2115,2049,2184,2028,2255,1998,2325,1963,2393,1922,2459,1878,2582,1780,2694,1677,2792,1574,2874,1478,2984,1335,2988,1338,2878,1482,2796,1578,2698,1681,2586,1785,2462,1882,2396,1927,2328,1967,2258,2003,2186,2033,2116,2054,2060,2063,2003,2070,1932,2083,1908,2089,1811,2103,1718,2108,1630,2106,1547,2098,1390,2073,1244,2047,1174,2038,1105,2034,1038,2037,971,2049,904,2071,837,2106,769,2154,699,2218,692,2236,686,2271,680,2369,676,2528,630,2912,588,3209,542,3506,487,3888,393,4586"/>
+<area shape="rect" id="edge22-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserEntity&#39;)" title="builder\nfield: user" alt="" coords="2032,2003,2084,2031"/>
+<area shape="poly" id="edge31" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;ForgotPasswordRequest&#39;)" title="field: request" alt="" coords="389,4639,393,4696,407,4768,419,4806,436,4842,458,4874,486,4901,526,4922,584,4938,653,4948,731,4954,896,4957,1046,4952,1047,4957,896,4962,731,4959,653,4953,583,4943,524,4927,482,4906,454,4878,431,4844,414,4808,401,4770,388,4696,384,4639"/>
+<area shape="rect" id="edge31-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;ForgotPasswordRequest&#39;)" title="field: request" alt="" coords="544,4889,614,4903"/>
+<area shape="poly" id="edge33" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UpdateUserRequest&#39;)" title="field: request" alt="" coords="388,4639,390,4704,402,4790,414,4835,431,4880,455,4920,486,4955,506,4968,537,4979,630,4997,756,5008,910,5015,1083,5016,1270,5013,1658,4995,1808,4982,1944,4964,1945,4969,1808,4987,1659,5001,1270,5018,1083,5021,909,5020,756,5014,629,5002,536,4984,504,4973,482,4959,451,4923,427,4882,409,4837,397,4791,385,4704,383,4639"/>
+<area shape="rect" id="edge33-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UpdateUserRequest&#39;)" title="field: request" alt="" coords="1143,4984,1213,4998"/>
+<area shape="poly" id="edge26" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;IUserRepository&#39;)" title="field: userRepository" alt="" coords="395,4584,432,4503,495,4393,536,4335,583,4279,636,4228,696,4186,725,4173,770,4161,899,4136,1068,4111,1261,4087,1656,4046,1961,4019,1962,4024,1657,4051,1261,4093,1069,4116,900,4141,771,4166,727,4178,698,4190,640,4232,587,4282,540,4338,499,4396,437,4506,400,4587"/>
+<area shape="rect" id="edge26-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;IUserRepository&#39;)" title="field: userRepository" alt="" coords="1122,4035,1234,4049"/>
+<area shape="poly" id="edge28" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;RegisterRequest&#39;)" title="field: registerRequest" alt="" coords="401,4638,434,4693,458,4722,486,4747,539,4779,585,4795,697,4813,876,4840,1059,4860,1242,4872,1418,4879,1732,4881,1958,4875,1959,4880,1732,4886,1418,4885,1241,4878,1059,4865,875,4846,697,4818,583,4800,536,4784,482,4752,454,4726,430,4696,397,4640"/>
+<area shape="rect" id="edge28-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;RegisterRequest&#39;)" title="field: registerRequest" alt="" coords="1120,4801,1236,4815"/>
+<area shape="poly" id="edge27" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserResponse&#39;)" title="field: user" alt="" coords="460,4594,484,4591,734,4580,1163,4571,1966,4561,1966,4566,1163,4577,734,4585,484,4596,461,4599"/>
+<area shape="rect" id="edge27-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserResponse&#39;)" title="field: user" alt="" coords="1151,4553,1204,4567"/>
+<area shape="poly" id="edge25" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;AuthService&#39;)" title="field: authService\nverifyUser" alt="" coords="384,4585,389,4467,403,4301,415,4217,432,4141,454,4079,467,4055,482,4037,516,4010,552,3987,590,3968,630,3953,714,3933,801,3925,885,3925,965,3932,1098,3954,1097,3960,965,3937,885,3930,801,3930,715,3939,632,3958,592,3973,554,3991,519,4014,486,4041,472,4058,459,4081,437,4142,421,4218,408,4302,394,4467,390,4586"/>
+<area shape="rect" id="edge25-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;AuthService&#39;)" title="field: authService\nverifyUser" alt="" coords="532,3919,626,3947"/>
+<area shape="poly" id="edge30" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;VerifyRequest&#39;)" title="field: request" alt="" coords="423,4583,451,4567,483,4554,564,4533,648,4517,732,4507,815,4501,968,4497,1090,4501,1089,4507,968,4503,816,4506,733,4512,649,4523,565,4538,485,4559,454,4571,425,4588"/>
+<area shape="rect" id="edge30-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;VerifyRequest&#39;)" title="field: request" alt="" coords="544,4503,614,4517"/>
+<area shape="poly" id="edge32" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;ResetPasswordRequest&#39;)" title="field: request" alt="" coords="421,4637,451,4657,485,4674,542,4691,589,4697,697,4701,1047,4718,1393,4724,1699,4723,1929,4718,1930,4724,1699,4728,1393,4729,1047,4723,697,4706,588,4702,541,4696,483,4679,448,4662,418,4641"/>
+<area shape="rect" id="edge32-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;ResetPasswordRequest&#39;)" title="field: request" alt="" coords="1143,4689,1213,4703"/>
+<area shape="poly" id="edge29" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;LoginRequest&#39;)" title="field: loginRequest" alt="" coords="409,4637,442,4673,463,4690,485,4704,541,4728,587,4736,697,4743,881,4761,1068,4774,1433,4789,1748,4794,1970,4793,1970,4799,1748,4799,1432,4794,1068,4779,880,4766,697,4749,586,4742,539,4733,483,4709,460,4695,438,4677,405,4641"/>
+<area shape="rect" id="edge29-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;LoginRequest&#39;)" title="field: loginRequest" alt="" coords="1127,4732,1229,4746"/>
+<area shape="poly" id="edge24" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserService&#39;)" title="deleteUserById\nfield: userService\nforgotPassword\n+ 5 more" alt="" coords="448,4637,485,4647,568,4659,654,4667,824,4672,977,4667,1096,4657,1097,4663,977,4672,824,4677,654,4673,567,4665,483,4652,446,4642"/>
+<area shape="rect" id="edge24-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserService&#39;)" title="deleteUserById\nfield: userService\nforgotPassword\n+ 5 more" alt="" coords="532,4593,626,4649"/>
+<area shape="poly" id="edge23" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserRepository&#39;)" title="save" alt="" coords="383,4585,384,4444,394,4240,405,4135,423,4040,448,3963,464,3933,483,3911,538,3905,674,3898,1103,3880,1964,3851,1964,3856,1104,3886,674,3903,538,3910,485,3916,468,3936,453,3965,428,4041,411,4136,399,4240,389,4444,389,4585"/>
+<area shape="rect" id="edge23-label" href="javascript:showEdgeInfo(&#39;UserController&#39;, &#39;UserRepository&#39;)" title="save" alt="" coords="1165,3850,1191,3864"/>
+<area shape="rect" id="node64" href="javascript:showNodeInfo(&#39;ReviewController&#39;)" title="ReviewController\n(ReviewController)" alt="" coords="1092,3134,1263,3186"/>
+<area shape="poly" id="edge20" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;Review&#39;)" title="field: createdReview\nfield: review\nfield: updatedReview" alt="" coords="1263,3155,1907,3133,1996,3129,1996,3135,1907,3138,1263,3160"/>
+<area shape="rect" id="edge20-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;Review&#39;)" title="field: createdReview\nfield: review\nfield: updatedReview" alt="" coords="1737,3093,1852,3135"/>
+<area shape="poly" id="edge21" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewDTO&#39;)" title="field: reviewDTO" alt="" coords="1263,3156,1434,3156,1636,3161,1812,3173,1874,3184,1909,3198,1921,3212,1925,3228,1923,3259,1920,3289,1923,3303,1933,3316,1962,3329,2017,3342,2169,3363,2417,3389,2461,3397,2460,3402,2416,3395,2168,3369,2016,3347,1960,3334,1930,3320,1918,3305,1914,3289,1917,3258,1920,3228,1916,3215,1906,3202,1873,3189,1812,3179,1635,3166,1434,3162,1263,3162"/>
+<area shape="rect" id="edge21-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewDTO&#39;)" title="field: reviewDTO" alt="" coords="2013,3304,2103,3318"/>
+<area shape="poly" id="edge18" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="1263,3146,1682,3091,1965,3053,1966,3059,1683,3096,1264,3152"/>
+<area shape="rect" id="edge18-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="1773,3050,1817,3064"/>
+<area shape="poly" id="edge19" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewService&#39;)" title="createReview\ndeleteReview\nfield: reviewService\n+ 5 more" alt="" coords="1264,3167,1359,3186,1412,3201,1467,3221,1522,3246,1573,3276,1620,3313,1661,3357,1675,3384,1679,3410,1676,3436,1670,3460,1665,3484,1663,3508,1668,3531,1684,3554,1697,3561,1721,3569,1793,3584,1967,3609,1966,3614,1792,3589,1720,3574,1695,3566,1681,3558,1664,3533,1658,3508,1659,3484,1665,3459,1671,3435,1673,3410,1670,3386,1656,3360,1617,3317,1570,3281,1519,3250,1465,3226,1411,3206,1358,3191,1263,3172"/>
+<area shape="rect" id="edge19-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewService&#39;)" title="createReview\ndeleteReview\nfield: reviewService\n+ 5 more" alt="" coords="1742,3500,1848,3556"/>
+</map>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeInfoPanel()"></div>
+    <div class="info-panel" id="infoPanel">
+        <button class="close" onclick="closeInfoPanel()">×</button>
+        <h3 id="infoPanelTitle">Node Information</h3>
+        <div id="infoPanelContent"></div>
+    </div>
+
+    <div class="status-bar" id="statusBar"></div>
+
+    <script>
+        let metadata = {
+  "project_info": {
+    "source_directory": "Api_LTDD_CuoiKy-master\\src\\main\\java",
+    "total_files": 64,
+    "total_classes": 164,
+    "analysis_date": "D:\\ThucTap\\GenerateGraph3\\DependGraphForJava2",
+    "custom_nodes": 0,
+    "custom_edges": 0
+  },
+  "files": {
+    "Product": {
+      "classes": [
+        "Product"
+      ],
+      "outgoing_calls": {
+        "Category": [
+          "field: category"
+        ]
+      },
+      "incoming_calls": {
+        "ProductController": [
+          "field: product",
+          "field: createdProduct",
+          "field: updatedProduct"
+        ],
+        "CartServiceImpl": [
+          "field: product",
+          "chain: multiply()..."
+        ],
+        "OrderServiceImpl": [
+          "field: product",
+          "chain: multiply()..."
+        ],
+        "ProductServiceImpl": [
+          "new Product()",
+          "field: product",
+          "field: existingProduct",
+          "field: entity"
+        ],
+        "ReviewServiceImpl": [
+          "field: product"
+        ],
+        "CartItem": [
+          "field: product"
+        ],
+        "OrderItem": [
+          "field: product"
+        ],
+        "Review": [
+          "field: product"
+        ],
+        "CartItemRepository": [
+          "field: product"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderItemDTO": {
+      "classes": [
+        "OrderItemDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderServiceImpl": [
+          "new OrderItemDTO()",
+          "field: dto"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderItem": {
+      "classes": [
+        "OrderItem"
+      ],
+      "outgoing_calls": {
+        "Order": [
+          "field: order"
+        ],
+        "Product": [
+          "field: product"
+        ]
+      },
+      "incoming_calls": {
+        "OrderServiceImpl": [
+          "new OrderItem()",
+          "field: orderItem"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserEntity": {
+      "classes": [
+        "UserEntity"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "builder",
+          "field: user"
+        ],
+        "AuthService": [
+          "field: foundUser",
+          "if-condition: foundUser.getOtp()",
+          "chain: equals()..."
+        ],
+        "CartServiceImpl": [
+          "field: user"
+        ],
+        "OrderServiceImpl": [
+          "field: user"
+        ],
+        "ReviewServiceImpl": [
+          "field: user"
+        ],
+        "UserService": [
+          "builder",
+          "field: user",
+          "field: userEntity",
+          "field: updatedUser",
+          "if-condition: user.getIsActive()"
+        ],
+        "Cart": [
+          "field: user"
+        ],
+        "Order": [
+          "field: user"
+        ],
+        "Review": [
+          "field: user"
+        ],
+        "CartRepository": [
+          "field: user"
+        ],
+        "OrderRepository": [
+          "field: user"
+        ]
+      },
+      "is_custom": false
+    },
+    "ForgotPasswordRequest": {
+      "classes": [
+        "ForgotPasswordRequest"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: request"
+        ]
+      },
+      "is_custom": false
+    },
+    "UpdateUserRequest": {
+      "classes": [
+        "UpdateUserRequest"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: request"
+        ],
+        "UserService": [
+          "field: request"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderRepository": {
+      "classes": [
+        "OrderRepository"
+      ],
+      "outgoing_calls": {
+        "UserEntity": [
+          "field: user"
+        ]
+      },
+      "incoming_calls": {
+        "OrderServiceImpl": [
+          "save",
+          "findById",
+          "findByUserOrderByOrderDateDesc",
+          "findByUserOrderByOrderDateDesc",
+          "findById",
+          "save",
+          "findById",
+          "save",
+          "field: orderRepository"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderServiceImpl": {
+      "classes": [
+        "OrderServiceImpl"
+      ],
+      "outgoing_calls": {
+        "UserRepository": [
+          "findById",
+          "findById",
+          "findById"
+        ],
+        "CartRepository": [
+          "findByUser",
+          "save",
+          "field: cartRepository"
+        ],
+        "OrderRepository": [
+          "save",
+          "findById",
+          "findByUserOrderByOrderDateDesc",
+          "findByUserOrderByOrderDateDesc",
+          "findById",
+          "save",
+          "findById",
+          "save",
+          "field: orderRepository"
+        ],
+        "UserNotFoundException": [
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()"
+        ],
+        "Order": [
+          "new Order()",
+          "field: order",
+          "field: savedOrder",
+          "field: updatedOrder",
+          "field: status",
+          "nested-type: OrderStatus.SHIPPING",
+          "nested-type: OrderStatus.DELIVERED",
+          "nested-type: Order.OrderStatus",
+          "if-condition: order.getStatus()",
+          "enum-access: OrderStatus.DELIVERED",
+          "enum-access: OrderStatus.SHIPPING",
+          "enum-access: OrderStatus.RECEIVED",
+          "switch(status)",
+          "chain: add()...",
+          "chain: stream()..."
+        ],
+        "OrderItem": [
+          "new OrderItem()",
+          "field: orderItem"
+        ],
+        "OrderNotFoundException": [
+          "new OrderNotFoundException()",
+          "new OrderNotFoundException()",
+          "new OrderNotFoundException()"
+        ],
+        "OrderDTO": [
+          "new OrderDTO()",
+          "field: orderDTO",
+          "chain: getId()..."
+        ],
+        "OrderItemDTO": [
+          "new OrderItemDTO()",
+          "field: dto"
+        ],
+        "OrderService": [
+          "implements OrderService",
+          "implements: OrderService"
+        ],
+        "OrderItemRepository": [
+          "field: orderItemRepository"
+        ],
+        "CartItemRepository": [
+          "field: cartItemRepository"
+        ],
+        "IUserRepository": [
+          "field: userRepository"
+        ],
+        "ProductRepository": [
+          "field: productRepository"
+        ],
+        "UserEntity": [
+          "field: user"
+        ],
+        "Cart": [
+          "field: cart",
+          "if-condition: cart.getCartItems()",
+          "chain: isEmpty()...",
+          "chain: clear()..."
+        ],
+        "Product": [
+          "field: product",
+          "chain: multiply()..."
+        ],
+        "CheckoutRequestDTO": [
+          "field: checkoutRequest"
+        ],
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO",
+          "if-condition: statusUpdateDTO.getStatus()"
+        ]
+      },
+      "incoming_calls": {
+        "OrderService": [
+          "implemented-by: OrderServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "Cart": {
+      "classes": [
+        "Cart"
+      ],
+      "outgoing_calls": {
+        "UserEntity": [
+          "field: user"
+        ]
+      },
+      "incoming_calls": {
+        "CartServiceImpl": [
+          "new Cart()",
+          "new Cart()",
+          "field: cart",
+          "field: newCart",
+          "chain: add()...",
+          "chain: remove()...",
+          "chain: clear()...",
+          "chain: stream()..."
+        ],
+        "OrderServiceImpl": [
+          "field: cart",
+          "if-condition: cart.getCartItems()",
+          "chain: isEmpty()...",
+          "chain: clear()..."
+        ],
+        "CartItem": [
+          "field: cart"
+        ],
+        "CartItemRepository": [
+          "field: cart"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductService": {
+      "classes": [
+        "ProductService"
+      ],
+      "outgoing_calls": {
+        "ProductDTO": [
+          "field: productDTO"
+        ],
+        "ProductServiceImpl": [
+          "implemented-by: ProductServiceImpl"
+        ]
+      },
+      "incoming_calls": {
+        "ProductController": [
+          "getAllProducts",
+          "getProductById",
+          "createProduct",
+          "updateProduct",
+          "deleteProduct",
+          "getProductsByCategory",
+          "searchProductsByName",
+          "field: productService"
+        ],
+        "ProductServiceImpl": [
+          "implements ProductService",
+          "implements: ProductService"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartServiceImpl": {
+      "classes": [
+        "CartServiceImpl"
+      ],
+      "outgoing_calls": {
+        "UserRepository": [
+          "findById",
+          "findById",
+          "findById",
+          "findById",
+          "findById"
+        ],
+        "CartRepository": [
+          "findByUser",
+          "save",
+          "findByUser",
+          "save",
+          "findByUser",
+          "findByUser",
+          "findByUser",
+          "save",
+          "field: cartRepository"
+        ],
+        "ProductRepository": [
+          "findById",
+          "findById",
+          "findById",
+          "field: productRepository"
+        ],
+        "CartItemRepository": [
+          "findByCartAndProduct",
+          "save",
+          "save",
+          "findByCartAndProduct",
+          "save",
+          "findByCartAndProduct",
+          "delete",
+          "field: cartItemRepository"
+        ],
+        "UserNotFoundException": [
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()"
+        ],
+        "Cart": [
+          "new Cart()",
+          "new Cart()",
+          "field: cart",
+          "field: newCart",
+          "chain: add()...",
+          "chain: remove()...",
+          "chain: clear()...",
+          "chain: stream()..."
+        ],
+        "ProductNotFoundException": [
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()"
+        ],
+        "CartItem": [
+          "new CartItem()",
+          "field: cartItem",
+          "field: newCartItem"
+        ],
+        "CartDTO": [
+          "new CartDTO()",
+          "field: cartDTO",
+          "chain: getId()..."
+        ],
+        "CartItemResponseDTO": [
+          "new CartItemResponseDTO()",
+          "field: dto"
+        ],
+        "CartService": [
+          "implements CartService",
+          "implements: CartService"
+        ],
+        "IUserRepository": [
+          "field: userRepository"
+        ],
+        "UserEntity": [
+          "field: user"
+        ],
+        "Product": [
+          "field: product",
+          "chain: multiply()..."
+        ],
+        "CartItemDTO": [
+          "field: cartItemDTO"
+        ]
+      },
+      "incoming_calls": {
+        "CartService": [
+          "implemented-by: CartServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductController": {
+      "classes": [
+        "ProductController"
+      ],
+      "outgoing_calls": {
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "ProductService": [
+          "getAllProducts",
+          "getProductById",
+          "createProduct",
+          "updateProduct",
+          "deleteProduct",
+          "getProductsByCategory",
+          "searchProductsByName",
+          "field: productService"
+        ],
+        "Product": [
+          "field: product",
+          "field: createdProduct",
+          "field: updatedProduct"
+        ],
+        "ProductDTO": [
+          "field: productDTO"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "Order": {
+      "classes": [
+        "Order",
+        "OrderStatus"
+      ],
+      "outgoing_calls": {
+        "UserEntity": [
+          "field: user"
+        ]
+      },
+      "incoming_calls": {
+        "OrderServiceImpl": [
+          "new Order()",
+          "field: order",
+          "field: savedOrder",
+          "field: updatedOrder",
+          "field: status",
+          "nested-type: OrderStatus.SHIPPING",
+          "nested-type: OrderStatus.DELIVERED",
+          "nested-type: Order.OrderStatus",
+          "if-condition: order.getStatus()",
+          "enum-access: OrderStatus.DELIVERED",
+          "enum-access: OrderStatus.SHIPPING",
+          "enum-access: OrderStatus.RECEIVED",
+          "switch(status)",
+          "chain: add()...",
+          "chain: stream()..."
+        ],
+        "OrderDTO": [
+          "nested-type: Order.OrderStatus"
+        ],
+        "OrderStatusUpdateDTO": [
+          "nested-type: Order.OrderStatus"
+        ],
+        "OrderItem": [
+          "field: order"
+        ],
+        "OrderItemRepository": [
+          "field: order"
+        ],
+        "OrderService": [
+          "field: status",
+          "nested-type: Order.OrderStatus"
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryNotFoundException": {
+      "classes": [
+        "CategoryNotFoundException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CategoryServiceImpl": [
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()"
+        ],
+        "ProductServiceImpl": [
+          "new CategoryNotFoundException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "AppException": {
+      "classes": [
+        "AppException"
+      ],
+      "outgoing_calls": {
+        "ErrorCode": [
+          "field: errorCode"
+        ]
+      },
+      "incoming_calls": {
+        "GlobalExceptionHandler": [
+          "field: e"
+        ],
+        "UserService": [
+          "new AppException()",
+          "new AppException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartService": {
+      "classes": [
+        "CartService"
+      ],
+      "outgoing_calls": {
+        "CartItemDTO": [
+          "field: cartItemDTO"
+        ],
+        "CartServiceImpl": [
+          "implemented-by: CartServiceImpl"
+        ]
+      },
+      "incoming_calls": {
+        "CartController": [
+          "getCartByUserId",
+          "addItemToCart",
+          "updateCartItem",
+          "removeItemFromCart",
+          "clearCart",
+          "field: cartService"
+        ],
+        "CartServiceImpl": [
+          "implements CartService",
+          "implements: CartService"
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryDTO": {
+      "classes": [
+        "CategoryDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CategoryController": [
+          "field: categoryDTO"
+        ],
+        "CategoryServiceImpl": [
+          "field: categoryDTO",
+          "field: dto",
+          "if-condition: dto.getParentId()"
+        ],
+        "CategoryService": [
+          "field: categoryDTO"
+        ]
+      },
+      "is_custom": false
+    },
+    "Review": {
+      "classes": [
+        "Review"
+      ],
+      "outgoing_calls": {
+        "Product": [
+          "field: product"
+        ],
+        "UserEntity": [
+          "field: user"
+        ]
+      },
+      "incoming_calls": {
+        "ReviewController": [
+          "field: review",
+          "field: createdReview",
+          "field: updatedReview"
+        ],
+        "ReviewServiceImpl": [
+          "new Review()",
+          "field: review",
+          "field: existingReview",
+          "field: entity"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductServiceImpl": {
+      "classes": [
+        "ProductServiceImpl"
+      ],
+      "outgoing_calls": {
+        "ProductRepository": [
+          "findAll",
+          "findById",
+          "save",
+          "save",
+          "existsById",
+          "deleteById",
+          "findByCategory_Id",
+          "findByNameContainingIgnoreCase",
+          "field: productRepository",
+          "if-condition: productRepository.existsById()"
+        ],
+        "CategoryRepository": [
+          "findById",
+          "field: categoryRepository"
+        ],
+        "ProductNotFoundException": [
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()"
+        ],
+        "Product": [
+          "new Product()",
+          "field: product",
+          "field: existingProduct",
+          "field: entity"
+        ],
+        "CategoryNotFoundException": [
+          "new CategoryNotFoundException()"
+        ],
+        "ProductService": [
+          "implements ProductService",
+          "implements: ProductService"
+        ],
+        "Category": [
+          "field: category"
+        ],
+        "ProductDTO": [
+          "field: productDTO",
+          "field: dto",
+          "if-condition: dto.getCategoryId()"
+        ]
+      },
+      "incoming_calls": {
+        "ProductService": [
+          "implemented-by: ProductServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartItemDTO": {
+      "classes": [
+        "CartItemDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartController": [
+          "field: cartItemDTO"
+        ],
+        "CartServiceImpl": [
+          "field: cartItemDTO"
+        ],
+        "CartService": [
+          "field: cartItemDTO"
+        ]
+      },
+      "is_custom": false
+    },
+    "IUserRepository": {
+      "classes": [
+        "IUserRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: userRepository"
+        ],
+        "AuthService": [
+          "field: userRepository",
+          "@Autowired: userRepository"
+        ],
+        "CartServiceImpl": [
+          "field: userRepository"
+        ],
+        "OrderServiceImpl": [
+          "field: userRepository"
+        ],
+        "UserService": [
+          "field: userRepository",
+          "if-condition: userRepository.findByEmail()"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderNotFoundException": {
+      "classes": [
+        "OrderNotFoundException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderServiceImpl": [
+          "new OrderNotFoundException()",
+          "new OrderNotFoundException()",
+          "new OrderNotFoundException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewDTO": {
+      "classes": [
+        "ReviewDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "ReviewController": [
+          "field: reviewDTO"
+        ],
+        "ReviewServiceImpl": [
+          "field: reviewDTO",
+          "field: dto"
+        ],
+        "ReviewService": [
+          "field: reviewDTO"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderStatusUpdateDTO": {
+      "classes": [
+        "OrderStatusUpdateDTO"
+      ],
+      "outgoing_calls": {
+        "Order": [
+          "nested-type: Order.OrderStatus"
+        ]
+      },
+      "incoming_calls": {
+        "OrderController": [
+          "field: statusUpdateDTO"
+        ],
+        "OrderServiceImpl": [
+          "field: statusUpdateDTO",
+          "if-condition: statusUpdateDTO.getStatus()"
+        ],
+        "OrderService": [
+          "field: statusUpdateDTO"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewServiceImpl": {
+      "classes": [
+        "ReviewServiceImpl"
+      ],
+      "outgoing_calls": {
+        "ReviewRepository": [
+          "findAll",
+          "findById",
+          "findByProduct_Id",
+          "findByUser_Id",
+          "save",
+          "save",
+          "existsById",
+          "deleteById",
+          "field: reviewRepository",
+          "if-condition: reviewRepository.existsById()"
+        ],
+        "ProductRepository": [
+          "findById",
+          "field: productRepository"
+        ],
+        "UserRepository": [
+          "findById",
+          "field: userRepository"
+        ],
+        "ReviewNotFoundException": [
+          "new ReviewNotFoundException()",
+          "new ReviewNotFoundException()"
+        ],
+        "Review": [
+          "new Review()",
+          "field: review",
+          "field: existingReview",
+          "field: entity"
+        ],
+        "ProductNotFoundException": [
+          "new ProductNotFoundException()"
+        ],
+        "UserNotFoundException": [
+          "new UserNotFoundException()"
+        ],
+        "ReviewService": [
+          "implements ReviewService",
+          "implements: ReviewService"
+        ],
+        "Product": [
+          "field: product"
+        ],
+        "UserEntity": [
+          "field: user"
+        ],
+        "ReviewDTO": [
+          "field: reviewDTO",
+          "field: dto"
+        ]
+      },
+      "incoming_calls": {
+        "ReviewService": [
+          "implemented-by: ReviewServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartItemRepository": {
+      "classes": [
+        "CartItemRepository"
+      ],
+      "outgoing_calls": {
+        "Cart": [
+          "field: cart"
+        ],
+        "Product": [
+          "field: product"
+        ]
+      },
+      "incoming_calls": {
+        "CartServiceImpl": [
+          "findByCartAndProduct",
+          "save",
+          "save",
+          "findByCartAndProduct",
+          "save",
+          "findByCartAndProduct",
+          "delete",
+          "field: cartItemRepository"
+        ],
+        "OrderServiceImpl": [
+          "field: cartItemRepository"
+        ]
+      },
+      "is_custom": false
+    },
+    "RegisterRequest": {
+      "classes": [
+        "RegisterRequest"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: registerRequest"
+        ],
+        "UserService": [
+          "field: request"
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryServiceImpl": {
+      "classes": [
+        "CategoryServiceImpl"
+      ],
+      "outgoing_calls": {
+        "CategoryRepository": [
+          "findAll",
+          "findByParentIsNull",
+          "findByParentId",
+          "findById",
+          "findByName",
+          "findByName",
+          "save",
+          "findByName",
+          "save",
+          "existsById",
+          "deleteById",
+          "findById",
+          "field: categoryRepository",
+          "if-condition: categoryRepository.existsById()"
+        ],
+        "CategoryNotFoundException": [
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()"
+        ],
+        "DuplicateCategoryException": [
+          "new DuplicateCategoryException()",
+          "new DuplicateCategoryException()"
+        ],
+        "Category": [
+          "new Category()",
+          "field: category",
+          "field: existingCategory",
+          "field: parentCategory",
+          "field: entity",
+          "if-condition: existingCategory.isPresent()",
+          "if-condition: existingCategory.getName()",
+          "chain: equals()..."
+        ],
+        "CategoryService": [
+          "implements CategoryService",
+          "implements: CategoryService"
+        ],
+        "CategoryDTO": [
+          "field: categoryDTO",
+          "field: dto",
+          "if-condition: dto.getParentId()"
+        ]
+      },
+      "incoming_calls": {
+        "CategoryService": [
+          "implemented-by: CategoryServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductRepository": {
+      "classes": [
+        "ProductRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartServiceImpl": [
+          "findById",
+          "findById",
+          "findById",
+          "field: productRepository"
+        ],
+        "OrderServiceImpl": [
+          "field: productRepository"
+        ],
+        "ProductServiceImpl": [
+          "findAll",
+          "findById",
+          "save",
+          "save",
+          "existsById",
+          "deleteById",
+          "findByCategory_Id",
+          "findByNameContainingIgnoreCase",
+          "field: productRepository",
+          "if-condition: productRepository.existsById()"
+        ],
+        "ReviewServiceImpl": [
+          "findById",
+          "field: productRepository"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserResponse": {
+      "classes": [
+        "UserResponse"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: user"
+        ],
+        "UserService": [
+          "builder"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartRepository": {
+      "classes": [
+        "CartRepository"
+      ],
+      "outgoing_calls": {
+        "UserEntity": [
+          "field: user"
+        ]
+      },
+      "incoming_calls": {
+        "CartServiceImpl": [
+          "findByUser",
+          "save",
+          "findByUser",
+          "save",
+          "findByUser",
+          "findByUser",
+          "findByUser",
+          "save",
+          "field: cartRepository"
+        ],
+        "OrderServiceImpl": [
+          "findByUser",
+          "save",
+          "field: cartRepository"
+        ]
+      },
+      "is_custom": false
+    },
+    "ApiResponse": {
+      "classes": [
+        "ApiResponse"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "GlobalExceptionHandler": [
+          "builder",
+          "field: apiResponse",
+          "chain: getCode()...",
+          "chain: getMessage()..."
+        ]
+      },
+      "is_custom": false
+    },
+    "CartItem": {
+      "classes": [
+        "CartItem"
+      ],
+      "outgoing_calls": {
+        "Cart": [
+          "field: cart"
+        ],
+        "Product": [
+          "field: product"
+        ]
+      },
+      "incoming_calls": {
+        "CartServiceImpl": [
+          "new CartItem()",
+          "field: cartItem",
+          "field: newCartItem"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserNotFoundException": {
+      "classes": [
+        "UserNotFoundException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "GlobalExceptionHandler": [
+          "field: ex"
+        ],
+        "CartServiceImpl": [
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()"
+        ],
+        "OrderServiceImpl": [
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()"
+        ],
+        "ReviewServiceImpl": [
+          "new UserNotFoundException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewNotFoundException": {
+      "classes": [
+        "ReviewNotFoundException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "GlobalExceptionHandler": [
+          "field: ex"
+        ],
+        "ReviewServiceImpl": [
+          "new ReviewNotFoundException()",
+          "new ReviewNotFoundException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderController": {
+      "classes": [
+        "OrderController"
+      ],
+      "outgoing_calls": {
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "OrderService": [
+          "checkout",
+          "getOrderById",
+          "getOrdersByUserId",
+          "getOrdersByUserId",
+          "updateOrderStatus",
+          "cancelOrder",
+          "field: orderService"
+        ],
+        "OrderDTO": [
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
+        ],
+        "CheckoutRequestDTO": [
+          "field: checkoutRequest"
+        ],
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "AuthService": {
+      "classes": [
+        "AuthService"
+      ],
+      "outgoing_calls": {
+        "UserRepository": [
+          "findByEmail",
+          "save"
+        ],
+        "IUserRepository": [
+          "field: userRepository",
+          "@Autowired: userRepository"
+        ],
+        "UserEntity": [
+          "field: foundUser",
+          "if-condition: foundUser.getOtp()",
+          "chain: equals()..."
+        ]
+      },
+      "incoming_calls": {
+        "UserController": [
+          "verifyUser",
+          "field: authService"
+        ]
+      },
+      "is_custom": false
+    },
+    "GlobalExceptionHandler": {
+      "classes": [
+        "RatingNotFoundException",
+        "GlobalExceptionHandler",
+        "DuplicateRatingException",
+        "UnauthorizedRatingActionException"
+      ],
+      "outgoing_calls": {
+        "ApiResponse": [
+          "builder",
+          "field: apiResponse",
+          "chain: getCode()...",
+          "chain: getMessage()..."
+        ],
+        "ResponseDTO": [
+          "error",
+          "error"
+        ],
+        "ErrorCode": [
+          "field: errorCode"
+        ],
+        "AppException": [
+          "field: e"
+        ],
+        "UserNotFoundException": [
+          "field: ex"
+        ],
+        "ReviewNotFoundException": [
+          "field: ex"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "OrderService": {
+      "classes": [
+        "OrderService"
+      ],
+      "outgoing_calls": {
+        "CheckoutRequestDTO": [
+          "field: checkoutRequest"
+        ],
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO"
+        ],
+        "Order": [
+          "field: status",
+          "nested-type: Order.OrderStatus"
+        ],
+        "OrderServiceImpl": [
+          "implemented-by: OrderServiceImpl"
+        ]
+      },
+      "incoming_calls": {
+        "OrderController": [
+          "checkout",
+          "getOrderById",
+          "getOrdersByUserId",
+          "getOrdersByUserId",
+          "updateOrderStatus",
+          "cancelOrder",
+          "field: orderService"
+        ],
+        "OrderServiceImpl": [
+          "implements OrderService",
+          "implements: OrderService"
+        ]
+      },
+      "is_custom": false
+    },
+    "VerifyRequest": {
+      "classes": [
+        "VerifyRequest"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: request"
+        ]
+      },
+      "is_custom": false
+    },
+    "ResponseDTO": {
+      "classes": [
+        "ResponseDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "CategoryController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "OrderController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "ProductController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "ReviewController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "GlobalExceptionHandler": [
+          "error",
+          "error"
+        ]
+      },
+      "is_custom": false
+    },
+    "EmailService": {
+      "classes": [
+        "EmailService"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserService": [
+          "field: emailService"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderItemRepository": {
+      "classes": [
+        "OrderItemRepository"
+      ],
+      "outgoing_calls": {
+        "Order": [
+          "field: order"
+        ]
+      },
+      "incoming_calls": {
+        "OrderServiceImpl": [
+          "field: orderItemRepository"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartController": {
+      "classes": [
+        "CartController"
+      ],
+      "outgoing_calls": {
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "CartService": [
+          "getCartByUserId",
+          "addItemToCart",
+          "updateCartItem",
+          "removeItemFromCart",
+          "clearCart",
+          "field: cartService"
+        ],
+        "CartDTO": [
+          "field: cart",
+          "field: updatedCart"
+        ],
+        "CartItemDTO": [
+          "field: cartItemDTO"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "CheckoutRequestDTO": {
+      "classes": [
+        "CheckoutRequestDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "field: checkoutRequest"
+        ],
+        "OrderServiceImpl": [
+          "field: checkoutRequest"
+        ],
+        "OrderService": [
+          "field: checkoutRequest"
+        ]
+      },
+      "is_custom": false
+    },
+    "ResetPasswordRequest": {
+      "classes": [
+        "ResetPasswordRequest"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: request"
+        ],
+        "UserService": [
+          "field: request"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderDTO": {
+      "classes": [
+        "OrderDTO"
+      ],
+      "outgoing_calls": {
+        "Order": [
+          "nested-type: Order.OrderStatus"
+        ]
+      },
+      "incoming_calls": {
+        "OrderController": [
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
+        ],
+        "OrderServiceImpl": [
+          "new OrderDTO()",
+          "field: orderDTO",
+          "chain: getId()..."
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryService": {
+      "classes": [
+        "CategoryService"
+      ],
+      "outgoing_calls": {
+        "CategoryDTO": [
+          "field: categoryDTO"
+        ],
+        "CategoryServiceImpl": [
+          "implemented-by: CategoryServiceImpl"
+        ]
+      },
+      "incoming_calls": {
+        "CategoryController": [
+          "getAllCategories",
+          "getRootCategories",
+          "getSubcategories",
+          "getCategoryById",
+          "getCategoryByName",
+          "createCategory",
+          "updateCategory",
+          "deleteCategory",
+          "field: categoryService"
+        ],
+        "CategoryServiceImpl": [
+          "implements CategoryService",
+          "implements: CategoryService"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartDTO": {
+      "classes": [
+        "CartDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartController": [
+          "field: cart",
+          "field: updatedCart"
+        ],
+        "CartServiceImpl": [
+          "new CartDTO()",
+          "field: cartDTO",
+          "chain: getId()..."
+        ]
+      },
+      "is_custom": false
+    },
+    "Category": {
+      "classes": [
+        "Category"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CategoryController": [
+          "field: category",
+          "field: createdCategory",
+          "field: updatedCategory"
+        ],
+        "CategoryServiceImpl": [
+          "new Category()",
+          "field: category",
+          "field: existingCategory",
+          "field: parentCategory",
+          "field: entity",
+          "if-condition: existingCategory.isPresent()",
+          "if-condition: existingCategory.getName()",
+          "chain: equals()..."
+        ],
+        "ProductServiceImpl": [
+          "field: category"
+        ],
+        "Product": [
+          "field: category"
+        ]
+      },
+      "is_custom": false
+    },
+    "ErrorCode": {
+      "classes": [
+        "ErrorCode"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "GlobalExceptionHandler": [
+          "field: errorCode"
+        ],
+        "AppException": [
+          "field: errorCode"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductDTO": {
+      "classes": [
+        "ProductDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "ProductController": [
+          "field: productDTO"
+        ],
+        "ProductServiceImpl": [
+          "field: productDTO",
+          "field: dto",
+          "if-condition: dto.getCategoryId()"
+        ],
+        "ProductService": [
+          "field: productDTO"
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryController": {
+      "classes": [
+        "CategoryController"
+      ],
+      "outgoing_calls": {
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "CategoryService": [
+          "getAllCategories",
+          "getRootCategories",
+          "getSubcategories",
+          "getCategoryById",
+          "getCategoryByName",
+          "createCategory",
+          "updateCategory",
+          "deleteCategory",
+          "field: categoryService"
+        ],
+        "Category": [
+          "field: category",
+          "field: createdCategory",
+          "field: updatedCategory"
+        ],
+        "CategoryDTO": [
+          "field: categoryDTO"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "LoginRequest": {
+      "classes": [
+        "LoginRequest"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: loginRequest"
+        ],
+        "UserService": [
+          "field: request"
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryRepository": {
+      "classes": [
+        "CategoryRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CategoryServiceImpl": [
+          "findAll",
+          "findByParentIsNull",
+          "findByParentId",
+          "findById",
+          "findByName",
+          "findByName",
+          "save",
+          "findByName",
+          "save",
+          "existsById",
+          "deleteById",
+          "findById",
+          "field: categoryRepository",
+          "if-condition: categoryRepository.existsById()"
+        ],
+        "ProductServiceImpl": [
+          "findById",
+          "field: categoryRepository"
+        ]
+      },
+      "is_custom": false
+    },
+    "DuplicateCategoryException": {
+      "classes": [
+        "DuplicateCategoryException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CategoryServiceImpl": [
+          "new DuplicateCategoryException()",
+          "new DuplicateCategoryException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartItemResponseDTO": {
+      "classes": [
+        "CartItemResponseDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartServiceImpl": [
+          "new CartItemResponseDTO()",
+          "field: dto"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewRepository": {
+      "classes": [
+        "ReviewRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "ReviewServiceImpl": [
+          "findAll",
+          "findById",
+          "findByProduct_Id",
+          "findByUser_Id",
+          "save",
+          "save",
+          "existsById",
+          "deleteById",
+          "field: reviewRepository",
+          "if-condition: reviewRepository.existsById()"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserService": {
+      "classes": [
+        "UserService"
+      ],
+      "outgoing_calls": {
+        "UserResponse": [
+          "builder"
+        ],
+        "UserEntity": [
+          "builder",
+          "field: user",
+          "field: userEntity",
+          "field: updatedUser",
+          "if-condition: user.getIsActive()"
+        ],
+        "UserRepository": [
+          "findByEmail",
+          "findByEmail"
+        ],
+        "AppException": [
+          "new AppException()",
+          "new AppException()"
+        ],
+        "IUserRepository": [
+          "field: userRepository",
+          "if-condition: userRepository.findByEmail()"
+        ],
+        "EmailService": [
+          "field: emailService"
+        ],
+        "LoginRequest": [
+          "field: request"
+        ],
+        "RegisterRequest": [
+          "field: request"
+        ],
+        "ResetPasswordRequest": [
+          "field: request"
+        ],
+        "UpdateUserRequest": [
+          "field: request"
+        ]
+      },
+      "incoming_calls": {
+        "UserController": [
+          "register",
+          "login",
+          "getUserById",
+          "deleteUserById",
+          "forgotPassword",
+          "resetPassword",
+          "updateUserInfo",
+          "field: userService"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductNotFoundException": {
+      "classes": [
+        "ProductNotFoundException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartServiceImpl": [
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()"
+        ],
+        "ProductServiceImpl": [
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()"
+        ],
+        "ReviewServiceImpl": [
+          "new ProductNotFoundException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewService": {
+      "classes": [
+        "ReviewService"
+      ],
+      "outgoing_calls": {
+        "ReviewDTO": [
+          "field: reviewDTO"
+        ],
+        "ReviewServiceImpl": [
+          "implemented-by: ReviewServiceImpl"
+        ]
+      },
+      "incoming_calls": {
+        "ReviewController": [
+          "getAllReviews",
+          "getReviewById",
+          "getReviewsByProductId",
+          "getReviewsByUserId",
+          "createReview",
+          "updateReview",
+          "deleteReview",
+          "field: reviewService"
+        ],
+        "ReviewServiceImpl": [
+          "implements ReviewService",
+          "implements: ReviewService"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserRepository": {
+      "classes": [
+        "UserRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "save"
+        ],
+        "AuthService": [
+          "findByEmail",
+          "save"
+        ],
+        "CartServiceImpl": [
+          "findById",
+          "findById",
+          "findById",
+          "findById",
+          "findById"
+        ],
+        "OrderServiceImpl": [
+          "findById",
+          "findById",
+          "findById"
+        ],
+        "ReviewServiceImpl": [
+          "findById",
+          "field: userRepository"
+        ],
+        "UserService": [
+          "findByEmail",
+          "findByEmail"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserController": {
+      "classes": [
+        "UserController"
+      ],
+      "outgoing_calls": {
+        "UserEntity": [
+          "builder",
+          "field: user"
+        ],
+        "UserRepository": [
+          "save"
+        ],
+        "UserService": [
+          "register",
+          "login",
+          "getUserById",
+          "deleteUserById",
+          "forgotPassword",
+          "resetPassword",
+          "updateUserInfo",
+          "field: userService"
+        ],
+        "AuthService": [
+          "verifyUser",
+          "field: authService"
+        ],
+        "IUserRepository": [
+          "field: userRepository"
+        ],
+        "UserResponse": [
+          "field: user"
+        ],
+        "RegisterRequest": [
+          "field: registerRequest"
+        ],
+        "LoginRequest": [
+          "field: loginRequest"
+        ],
+        "VerifyRequest": [
+          "field: request"
+        ],
+        "ForgotPasswordRequest": [
+          "field: request"
+        ],
+        "ResetPasswordRequest": [
+          "field: request"
+        ],
+        "UpdateUserRequest": [
+          "field: request"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "ReviewController": {
+      "classes": [
+        "ReviewController"
+      ],
+      "outgoing_calls": {
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "ReviewService": [
+          "getAllReviews",
+          "getReviewById",
+          "getReviewsByProductId",
+          "getReviewsByUserId",
+          "createReview",
+          "updateReview",
+          "deleteReview",
+          "field: reviewService"
+        ],
+        "Review": [
+          "field: review",
+          "field: createdReview",
+          "field: updatedReview"
+        ],
+        "ReviewDTO": [
+          "field: reviewDTO"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    }
+  },
+  "statistics": {
+    "most_connected_files": [],
+    "method_call_summary": {}
+  },
+  "editing": {
+    "hidden_nodes": [],
+    "hidden_edges": [],
+    "custom_colors": {},
+    "custom_nodes": {},
+    "custom_edges": {}
+  }
+};
+        let currentZoom = 1;
+        let graphImage = document.getElementById('dependencyGraph');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeUI();
+            updateStatistics();
+        });
+
+        function initializeUI() {
+            const nodes = Object.keys(metadata.files || {}).sort();
+            
+            const selects = [
+                document.getElementById('nodeSelect'),
+                document.getElementById('sourceSelect'),
+                document.getElementById('targetSelect'),
+                document.getElementById('colorNodeSelect')
+            ];
+
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">Choose...</option>';
+                nodes.forEach(node => {
+                    const option = document.createElement('option');
+                    option.value = node;
+                    option.textContent = node;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function updateStatistics() {
+            if (!metadata.project_info) return;
+            
+            const totalFiles = Object.keys(metadata.files || {}).length;
+            const totalClasses = Object.values(metadata.files || {}).reduce((sum, file) => sum + (file.classes?.length || 0), 0);
+            const totalConnections = Object.values(metadata.files || {}).reduce((sum, file) => sum + Object.keys(file.outgoing_calls || {}).length, 0);
+            const hiddenElements = (metadata.editing?.hidden_nodes?.length || 0) + (metadata.editing?.hidden_edges?.length || 0);
+            const customNodes = metadata.project_info.custom_nodes || 0;
+            const customEdges = metadata.project_info.custom_edges || 0;
+
+            document.getElementById('totalFiles').textContent = totalFiles;
+            document.getElementById('totalClasses').textContent = totalClasses;
+            document.getElementById('totalConnections').textContent = totalConnections;
+            document.getElementById('hiddenElements').textContent = hiddenElements;
+            document.getElementById('customNodes').textContent = customNodes;
+            document.getElementById('customEdges').textContent = customEdges;
+        }
+
+        function showNodeInfo(nodeName) {
+            const nodeData = metadata.files[nodeName];
+            if (!nodeData) {
+                showStatus('Node information not found', 'error');
+                return;
+            }
+
+            const panel = document.getElementById('infoPanel');
+            const title = document.getElementById('infoPanelTitle');
+            const content = document.getElementById('infoPanelContent');
+
+            title.textContent = `📄 ${nodeName}${nodeData.is_custom ? ' (Custom)' : ''}`;
+            
+            let html = `
+                <div class="method-list">
+                    <h4>📋 Classes (${nodeData.classes?.length || 0})</h4>
+                    ${(nodeData.classes || []).map(cls => `<div class="method-item">${cls}</div>`).join('')}
+                </div>
+            `;
+
+            if (nodeData.outgoing_calls && Object.keys(nodeData.outgoing_calls).length > 0) {
+                html += `
+                    <div class="method-list">
+                        <h4>📤 Outgoing Calls (${Object.keys(nodeData.outgoing_calls).length})</h4>
+                        ${Object.entries(nodeData.outgoing_calls).map(([target, methods]) => `
+                            <div style="margin-bottom: 10px;">
+                                <strong>→ ${target}</strong>
+                                ${methods.map(method => `<div class="method-item">${method}</div>`).join('')}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            if (nodeData.incoming_calls && Object.keys(nodeData.incoming_calls).length > 0) {
+                html += `
+                    <div class="method-list">
+                        <h4>📥 Incoming Calls (${Object.keys(nodeData.incoming_calls).length})</h4>
+                        ${Object.entries(nodeData.incoming_calls).map(([source, methods]) => `
+                            <div style="margin-bottom: 10px;">
+                                <strong>← ${source}</strong>
+                                ${methods.map(method => `<div class="method-item">${method}</div>`).join('')}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            html += `
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-danger" onclick="deleteNodeFromPanel('${nodeName}')">Delete This Node</button>
+                </div>
+            `;
+
+            content.innerHTML = html;
+            showInfoPanel();
+        }
+
+        function showEdgeInfo(sourceName, targetName) {
+            const sourceData = metadata.files[sourceName];
+            if (!sourceData || !sourceData.outgoing_calls[targetName]) {
+                showStatus('Edge information not found', 'error');
+                return;
+            }
+
+            const panel = document.getElementById('infoPanel');
+            const title = document.getElementById('infoPanelTitle');
+            const content = document.getElementById('infoPanelContent');
+
+            title.textContent = `🔗 ${sourceName} → ${targetName}`;
+            
+            const methods = sourceData.outgoing_calls[targetName];
+            const html = `
+                <div class="method-list">
+                    <h4>📞 Method Calls (${methods.length})</h4>
+                    ${methods.map(method => `<div class="method-item">${method}</div>`).join('')}
+                </div>
+                <div class="input-group" style="margin-top: 15px;">
+                    <label for="editEdgeMethods">Edit Methods (comma-separated):</label>
+                    <input type="text" id="editEdgeMethods" value="${methods.join(', ')}">
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-success" onclick="updateEdgeLabel('${sourceName}', '${targetName}')">Update Methods</button>
+                    <button class="btn btn-danger" onclick="hideEdgeFromPanel('${sourceName}', '${targetName}')">Hide This Edge</button>
+                    <button class="btn btn-danger" onclick="deleteEdgeFromPanel('${sourceName}', '${targetName}')">Delete This Edge</button>
+                </div>
+            `;
+
+            content.innerHTML = html;
+            showInfoPanel();
+        }
+
+        function showInfoPanel() {
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('infoPanel').classList.add('show');
+        }
+
+        function closeInfoPanel() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('infoPanel').classList.remove('show');
+        }
+
+        function deleteSelectedNode() {
+            const select = document.getElementById('nodeSelect');
+            const nodeName = select.value;
+            if (!nodeName) {
+                showStatus('Please select a node first', 'error');
+                return;
+            }
+            if (confirm(`Are you sure you want to delete node ${nodeName}? This action cannot be undone.`)) {
+                editGraph('delete_node', { node: nodeName });
+            }
+        }
+
+        function deleteNodeFromPanel(nodeName) {
+            if (confirm(`Are you sure you want to delete node ${nodeName}? This action cannot be undone.`)) {
+                editGraph('delete_node', { node: nodeName });
+                closeInfoPanel();
+            }
+        }
+
+        function addCustomNode() {
+            const nodeName = document.getElementById('newNodeName').value.trim();
+            const classes = document.getElementById('newNodeClasses').value.split(',').map(c => c.trim()).filter(c => c);
+            const color = document.getElementById('newNodeColor').value;
+            
+            if (!nodeName) {
+                showStatus('Please enter a node name', 'error');
+                return;
+            }
+            
+            if (metadata.files[nodeName]) {
+                showStatus('Node name already exists', 'error');
+                return;
+            }
+
+            editGraph('add_node', { node: nodeName, classes, color });
+            
+            document.getElementById('newNodeName').value = '';
+            document.getElementById('newNodeClasses').value = '';
+        }
+
+        function addEdge() {
+            const sourceSelect = document.getElementById('sourceSelect');
+            const targetSelect = document.getElementById('targetSelect');
+            const edgeMethods = document.getElementById('edgeMethods');
+            const source = sourceSelect.value;
+            const target = targetSelect.value;
+            const methods = edgeMethods.value.split(',').map(m => m.trim()).filter(m => m);
+            
+            if (!source || !target) {
+                showStatus('Please select both source and target nodes', 'error');
+                return;
+            }
+            
+            if (source === target) {
+                showStatus('Source and target nodes cannot be the same', 'error');
+                return;
+            }
+            
+            if (metadata.files[source]?.outgoing_calls[target]) {
+                showStatus('Edge already exists', 'error');
+                return;
+            }
+
+            editGraph('add_edge', { source, target, methods });
+            
+            sourceSelect.value = '';
+            targetSelect.value = '';
+            edgeMethods.value = '';
+        }
+
+        function deleteSelectedEdge() {
+            const sourceSelect = document.getElementById('sourceSelect');
+            const targetSelect = document.getElementById('targetSelect');
+            const source = sourceSelect.value;
+            const target = targetSelect.value;
+            
+            if (!source || !target) {
+                showStatus('Please select both source and target nodes', 'error');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete edge ${source} → ${target}? This action cannot be undone.`)) {
+                editGraph('delete_edge', { source, target });
+            }
+        }
+
+        function deleteEdgeFromPanel(source, target) {
+            if (confirm(`Are you sure you want to delete edge ${source} → ${target}? This action cannot be undone.`)) {
+                editGraph('delete_edge', { source, target });
+                closeInfoPanel();
+            }
+        }
+
+        function updateEdgeLabel(source, target) {
+            const methodsInput = document.getElementById('editEdgeMethods');
+            const methods = methodsInput.value.split(',').map(m => m.trim()).filter(m => m);
+            
+            editGraph('update_edge_label', { source, target, methods });
+            closeInfoPanel();
+        }
+
+        function hideSelectedNode() {
+            const select = document.getElementById('nodeSelect');
+            const nodeName = select.value;
+            if (!nodeName) {
+                showStatus('Please select a node first', 'error');
+                return;
+            }
+            editGraph('hide_node', { node: nodeName });
+        }
+
+        function showSelectedNode() {
+            const select = document.getElementById('nodeSelect');
+            const nodeName = select.value;
+            if (!nodeName) {
+                showStatus('Please select a node first', 'error');
+                return;
+            }
+            editGraph('show_node', { node: nodeName });
+        }
+
+        function hideSelectedEdge() {
+            const sourceSelect = document.getElementById('sourceSelect');
+            const targetSelect = document.getElementById('targetSelect');
+            const source = sourceSelect.value;
+            const target = targetSelect.value;
+            
+            if (!source || !target) {
+                showStatus('Please select both source and target nodes', 'error');
+                return;
+            }
+            editGraph('hide_edge', { source, target });
+        }
+
+        function showSelectedEdge() {
+            const sourceSelect = document.getElementById('sourceSelect');
+            const targetSelect = document.getElementById('targetSelect');
+            const source = sourceSelect.value;
+            const target = targetSelect.value;
+            
+            if (!source || !target) {
+                showStatus('Please select both source and target nodes', 'error');
+                return;
+            }
+            editGraph('show_edge', { source, target });
+        }
+
+        function hideEdgeFromPanel(source, target) {
+            editGraph('hide_edge', { source, target });
+            closeInfoPanel();
+        }
+
+        function setNodeColor(color) {
+            const select = document.getElementById('colorNodeSelect');
+            const nodeName = select.value;
+            if (!nodeName) {
+                showStatus('Please select a node first', 'error');
+                return;
+            }
+            editGraph('set_color', { node: nodeName, color });
+        }
+
+        function resetNodeColor() {
+            const select = document.getElementById('colorNodeSelect');
+            const nodeName = select.value;
+            if (!nodeName) {
+                showStatus('Please select a node first', 'error');
+                return;
+            }
+            editGraph('reset_color', { node: nodeName });
+        }
+
+        function regenerateGraph() {
+            showStatus('Regenerating graph...', 'info');
+            editGraph('regenerate', {});
+        }
+
+        function resetAllEditing() {
+            if (confirm('This will reset all hidden nodes, edges, custom colors, and delete custom nodes and edges. Continue?')) {
+                metadata.editing = {
+                    hidden_nodes: [],
+                    hidden_edges: [],
+                    custom_colors: {},
+                    custom_nodes: {},
+                    custom_edges: {}
+                };
+                updateStatistics();
+                regenerateGraph();
+            }
+        }
+
+        function exportSettings() {
+            const settings = {
+                hidden_nodes: metadata.editing?.hidden_nodes || [],
+                hidden_edges: metadata.editing?.hidden_edges || [],
+                custom_colors: metadata.editing?.custom_colors || {},
+                custom_nodes: metadata.editing?.custom_nodes || {},
+                custom_edges: metadata.editing?.custom_edges || {},
+                export_date: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dependency_graph_settings.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showStatus('Settings exported successfully', 'success');
+        }
+
+        function exportToPNG() {
+            const img = document.getElementById('dependencyGraph');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            ctx.drawImage(img, 0, 0);
+            
+            const url = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dependency_graph.png';
+            a.click();
+            
+            showStatus('Graph exported as PNG', 'success');
+        }
+
+        function editGraph(command, params) {
+            const data = { command, ...params };
+            
+            fetch('/api/edit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showStatus(result.message, 'success');
+                    
+                    if (command === 'hide_node') {
+                        if (!metadata.editing.hidden_nodes.includes(params.node)) {
+                            metadata.editing.hidden_nodes.push(params.node);
+                        }
+                    } else if (command === 'show_node') {
+                        metadata.editing.hidden_nodes = metadata.editing.hidden_nodes.filter(n => n !== params.node);
+                    } else if (command === 'delete_node') {
+                        delete metadata.files[params.node];
+                        metadata.editing.hidden_nodes = metadata.editing.hidden_nodes.filter(n => n !== params.node);
+                        metadata.editing.hidden_edges = metadata.editing.hidden_edges.filter(e => 
+                            e.source !== params.node && e.target !== params.node);
+                        delete metadata.editing.custom_colors[params.node];
+                        delete metadata.editing.custom_nodes[params.node];
+                        delete metadata.editing.custom_edges[params.node];
+                        metadata.project_info.custom_nodes = Math.max(0, metadata.project_info.custom_nodes - 1);
+                        initializeUI();
+                    } else if (command === 'add_node') {
+                        metadata.files[params.node] = {
+                            classes: params.classes || [],
+                            outgoing_calls: {},
+                            incoming_calls: {},
+                            is_custom: true
+                        };
+                        metadata.editing.custom_nodes[params.node] = {
+                            classes: params.classes || [],
+                            color: params.color || 'lightblue'
+                        };
+                        metadata.project_info.custom_nodes = (metadata.project_info.custom_nodes || 0) + 1;
+                        initializeUI();
+                    } else if (command === 'add_edge') {
+                        metadata.files[params.source].outgoing_calls[params.target] = params.methods || [];
+                        metadata.files[params.target].incoming_calls[params.source] = params.methods || [];
+                        metadata.editing.custom_edges[params.source] = metadata.editing.custom_edges[params.source] || {};
+                        metadata.editing.custom_edges[params.source][params.target] = params.methods || [];
+                        metadata.project_info.custom_edges = (metadata.project_info.custom_edges || 0) + 1;
+                        initializeUI();
+                    } else if (command === 'delete_edge') {
+                        delete metadata.files[params.source].outgoing_calls[params.target];
+                        delete metadata.files[params.target].incoming_calls[params.source];
+                        if (metadata.editing.custom_edges[params.source]) {
+                            delete metadata.editing.custom_edges[params.source][params.target];
+                            metadata.project_info.custom_edges = Math.max(0, metadata.project_info.custom_edges - 1);
+                        }
+                        metadata.editing.hidden_edges = metadata.editing.hidden_edges.filter(e => 
+                            !(e.source === params.source && e.target === params.target));
+                        initializeUI();
+                    } else if (command === 'update_edge_label') {
+                        metadata.files[params.source].outgoing_calls[params.target] = params.methods;
+                        metadata.files[params.target].incoming_calls[params.source] = params.methods;
+                        if (metadata.editing.custom_edges[params.source]) {
+                            metadata.editing.custom_edges[params.source][params.target] = params.methods;
+                        }
+                    } else if (command === 'hide_edge') {
+                        const edge = { source: params.source, target: params.target };
+                        if (!metadata.editing.hidden_edges.some(e => e.source === edge.source && e.target === edge.target)) {
+                            metadata.editing.hidden_edges.push(edge);
+                        }
+                    } else if (command === 'show_edge') {
+                        metadata.editing.hidden_edges = metadata.editing.hidden_edges.filter(e => 
+                            !(e.source === params.source && e.target === params.target));
+                    } else if (command === 'set_color') {
+                        metadata.editing.custom_colors[params.node] = params.color;
+                    } else if (command === 'reset_color') {
+                        delete metadata.editing.custom_colors[params.node];
+                    }
+                    
+                    updateStatistics();
+                    
+                    if (result.reload) {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                } else {
+                    showStatus(result.message || 'Operation failed', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showStatus('Network error occurred', 'error');
+            });
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom * 1.2, 3);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom / 1.2, 0.3);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            graphImage.style.transform = `scale(${currentZoom})`;
+            graphImage.style.transformOrigin = 'center center';
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusBar = document.getElementById('statusBar');
+            statusBar.textContent = message;
+            statusBar.className = `status-bar show ${type}`;
+            
+            setTimeout(() => {
+                statusBar.classList.remove('show');
+            }, 3000);
+        }
+
+        document.addEventListener('wheel', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                if (e.deltaY < 0) {
+                    zoomIn();
+                } else {
+                    zoomOut();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '+':
+                    case '=':
+                        e.preventDefault();
+                        zoomIn();
+                        break;
+                    case '-':
+                        e.preventDefault();
+                        zoomOut();
+                        break;
+                    case '0':
+                        e.preventDefault();
+                        resetZoom();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        regenerateGraph();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        exportSettings();
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        exportToPNG();
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                closeInfoPanel();
+            }
+        });
+
+        let isDragging = false;
+        let startX, startY, scrollX, scrollY;
+
+        graphImage.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            const container = document.querySelector('.graph-container');
+            scrollX = container.scrollLeft;
+            scrollY = container.scrollTop;
+            graphImage.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            
+            e.preventDefault();
+            const container = document.querySelector('.graph-container');
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            container.scrollLeft = scrollX - dx;
+            container.scrollTop = scrollY - dy;
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            graphImage.style.cursor = 'grab';
+        });
+
+        graphImage.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
