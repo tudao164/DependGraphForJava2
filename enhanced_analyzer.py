@@ -284,7 +284,7 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
                     if injection_label not in self.method_calls[java_file][target_file]:
                         self.method_calls[java_file][target_file].append(injection_label)
             
-            # Also check for implementations (e.g., OrderService -> OrderServiceImpl)
+            # Enhanced: Also check for implementations (e.g., OrderService -> OrderServiceImpl)
             for impl_class in self.implementations.get(service_type, set()):
                 if impl_class in self.classes:
                     impl_file = self.classes[impl_class]
@@ -292,8 +292,186 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
                         impl_label = f"@Autowired: {field_name} → {impl_class}"
                         if impl_label not in self.method_calls[java_file][impl_file]:
                             self.method_calls[java_file][impl_file].append(impl_label)
+            
+            # NEW: Auto-detect implementation classes by naming convention
+            self._auto_detect_service_implementations(java_file, service_type, field_name)
         
         print(f"💉 Autowired dependencies in {java_file.stem}: {len(self.annotation_mappings[java_file])}")
+    
+    def _auto_detect_service_implementations(self, java_file: Path, service_type: str, field_name: str):
+        """Auto-detect service implementations by naming convention"""
+        # Common naming patterns for implementations
+        impl_patterns = [
+            f"{service_type}Impl",
+            f"{service_type}Implementation", 
+            f"{service_type.replace('Service', '')}ServiceImpl",
+            f"{service_type.replace('Repository', '')}RepositoryImpl"
+        ]
+        
+        for impl_name in impl_patterns:
+            if impl_name in self.classes:
+                impl_file = self.classes[impl_name]
+                if impl_file != java_file:
+                    # Add dependency from current file to implementation
+                    impl_label = f"@Service→Impl: {field_name} → {impl_name}"
+                    if impl_label not in self.method_calls[java_file][impl_file]:
+                        self.method_calls[java_file][impl_file].append(impl_label)
+                    
+                    # Also track this as an implementation relationship
+                    self.implementations[service_type].add(impl_name)
+                    print(f"🔍 Auto-detected implementation: {service_type} → {impl_name}")
+                    
+                    # NEW: Analyze method calls from service interface to implementation
+                    self._analyze_service_to_impl_methods(service_type, impl_name, field_name)
+                    break
+    
+    def _analyze_service_to_impl_methods(self, service_interface: str, impl_class: str, field_name: str):
+        """Analyze specific method calls from service interface to implementation"""
+        if service_interface not in self.classes or impl_class not in self.classes:
+            return
+            
+        service_file = self.classes[service_interface]
+        impl_file = self.classes[impl_class]
+        
+        try:
+            # Read service interface to get method signatures
+            with open(service_file, 'r', encoding='utf-8') as f:
+                service_content = f.read()
+            
+            # Read implementation to get method implementations
+            with open(impl_file, 'r', encoding='utf-8') as f:
+                impl_content = f.read()
+            
+            # Extract interface method signatures
+            interface_methods = self._extract_interface_methods(service_content)
+            
+            # Extract implementation method details
+            impl_methods = self._extract_implementation_methods(impl_content)
+            
+            # Map interface methods to implementation methods
+            for method_name in interface_methods:
+                if method_name in impl_methods:
+                    method_label = f"service-method: {method_name}()"
+                    if method_label not in self.method_calls[service_file][impl_file]:
+                        self.method_calls[service_file][impl_file].append(method_label)
+                    
+                    # NEW: Analyze dependencies within the implementation method
+                    self._analyze_implementation_method_dependencies(impl_file, method_name, impl_content)
+            
+            print(f"🔗 Mapped {len(interface_methods)} interface methods to {impl_class}")
+            
+        except Exception as e:
+            print(f"❌ Error analyzing service-to-impl methods: {e}")
+    
+    def _extract_interface_methods(self, content: str) -> set:
+        """Extract method names from interface content"""
+        methods = set()
+        
+        # Pattern for interface method declarations
+        # public ReturnType methodName(params);
+        interface_method_pattern = r'(?:public|protected)?\s+(?:\w+\s+)*(\w+)\s*\([^)]*\)\s*;'
+        
+        matches = re.findall(interface_method_pattern, content)
+        for method_name in matches:
+            # Filter out constructors and common non-methods
+            if (not method_name[0].isupper() and 
+                method_name not in ['class', 'interface', 'enum', 'import', 'package']):
+                methods.add(method_name)
+        
+        return methods
+    
+    def _extract_implementation_methods(self, content: str) -> set:
+        """Extract method names from implementation class content"""
+        methods = set()
+        
+        # Pattern for implementation method declarations
+        # @Override public ReturnType methodName(params) {
+        impl_method_patterns = [
+            r'@Override\s+(?:public|protected|private)?\s+(?:\w+\s+)*(\w+)\s*\([^)]*\)\s*\{',
+            r'(?:public|protected|private)\s+(?:\w+\s+)*(\w+)\s*\([^)]*\)\s*\{'
+        ]
+        
+        for pattern in impl_method_patterns:
+            matches = re.findall(pattern, content)
+            for method_name in matches:
+                # Filter out constructors and common non-methods
+                if (not method_name[0].isupper() and 
+                    method_name not in ['class', 'interface', 'enum', 'import', 'package']):
+                    methods.add(method_name)
+        
+        return methods
+    
+    def _analyze_implementation_method_dependencies(self, impl_file: Path, method_name: str, content: str):
+        """Analyze dependencies within a specific implementation method"""
+        try:
+            # Extract the specific method content
+            method_content = self._extract_method_content(content, method_name)
+            if not method_content:
+                return
+            
+            # Analyze method calls within this specific method
+            method_call_pattern = r'([a-zA-Z_][a-zA-Z0-9_]*)\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\('
+            method_calls = re.findall(method_call_pattern, method_content)
+            
+            # Analyze service/repository calls within the method
+            service_call_pattern = r'([a-z][a-zA-Z0-9_]*(?:Service|Repository))\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\('
+            service_calls = re.findall(service_call_pattern, method_content)
+            
+            for obj_name, called_method in method_calls + service_calls:
+                # Try to resolve the object type
+                obj_type = self._resolve_object_type(impl_file, obj_name)
+                if obj_type and obj_type in self.classes:
+                    target_file = self.classes[obj_type]
+                    if target_file != impl_file:
+                        dependency_label = f"in-{method_name}: {obj_name}.{called_method}()"
+                        if dependency_label not in self.method_calls[impl_file][target_file]:
+                            self.method_calls[impl_file][target_file].append(dependency_label)
+                
+                # Also handle service variable naming (orderService -> OrderService)
+                if obj_name.endswith('Service') or obj_name.endswith('Repository'):
+                    service_class = obj_name[0].upper() + obj_name[1:]
+                    if service_class in self.classes:
+                        target_file = self.classes[service_class]
+                        if target_file != impl_file:
+                            dependency_label = f"in-{method_name}: {service_class}.{called_method}()"
+                            if dependency_label not in self.method_calls[impl_file][target_file]:
+                                self.method_calls[impl_file][target_file].append(dependency_label)
+            
+            print(f"🔍 Analyzed method '{method_name}' in {impl_file.stem}: found {len(method_calls + service_calls)} calls")
+            
+        except Exception as e:
+            print(f"❌ Error analyzing method {method_name}: {e}")
+    
+    def _extract_method_content(self, content: str, method_name: str) -> str:
+        """Extract the content of a specific method"""
+        try:
+            # Pattern to find method start
+            method_start_pattern = rf'(?:@Override\s+)?(?:public|protected|private)\s+[^{{]*{re.escape(method_name)}\s*\([^)]*\)\s*\{{'
+            
+            match = re.search(method_start_pattern, content)
+            if not match:
+                return ""
+            
+            start_pos = match.end() - 1  # Position of opening brace
+            
+            # Find matching closing brace
+            brace_count = 1
+            pos = start_pos + 1
+            
+            while pos < len(content) and brace_count > 0:
+                if content[pos] == '{':
+                    brace_count += 1
+                elif content[pos] == '}':
+                    brace_count -= 1
+                pos += 1
+            
+            if brace_count == 0:
+                return content[start_pos:pos]
+            
+        except Exception as e:
+            print(f"❌ Error extracting method {method_name}: {e}")
+        
+        return ""
     
     def _resolve_object_type(self, java_file: Path, obj_name: str) -> str:
         """Resolve object type from field declarations hoặc local variables"""
@@ -342,9 +520,133 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
                         if impl_to_interface not in self.method_calls[impl_file][interface_file]:
                             self.method_calls[impl_file][interface_file].append(impl_to_interface)
         
+        # NEW: Enhanced service-to-implementation analysis
+        self._enhance_service_impl_relationships()
+        
         print(f"✅ Cross-reference analysis completed")
         print(f"📋 Interfaces found: {len(self.interfaces)}")
         print(f"🔗 Implementation relationships: {sum(len(impls) for impls in self.implementations.values())}")
+    
+    def _enhance_service_impl_relationships(self):
+        """Enhanced analysis for service-implementation relationships"""
+        print("🔍 Enhancing service-implementation analysis...")
+        
+        # Find all service classes and their potential implementations
+        service_classes = {name: path for name, path in self.classes.items() 
+                          if name.endswith('Service') and not name.endswith('Impl')}
+        
+        impl_classes = {name: path for name, path in self.classes.items() 
+                       if name.endswith('Impl') or name.endswith('Implementation')}
+        
+        print(f"🔍 Found {len(service_classes)} service classes and {len(impl_classes)} implementation classes")
+        
+        # Match services with implementations
+        for service_name, service_file in service_classes.items():
+            # Look for corresponding implementation
+            potential_impls = [
+                f"{service_name}Impl",
+                f"{service_name}Implementation",
+                f"{service_name.replace('Service', '')}ServiceImpl"
+            ]
+            
+            for impl_name in potential_impls:
+                if impl_name in impl_classes:
+                    impl_file = impl_classes[impl_name]
+                    
+                    # Add to implementations mapping
+                    self.implementations[service_name].add(impl_name)
+                    
+                    # Add service → implementation relationship
+                    service_to_impl = f"service→impl: {impl_name}"
+                    if service_to_impl not in self.method_calls[service_file][impl_file]:
+                        self.method_calls[service_file][impl_file].append(service_to_impl)
+                    
+                    print(f"🔗 Enhanced mapping: {service_name} → {impl_name}")
+                    
+                    # Analyze method mappings between service and implementation
+                    self._deep_analyze_service_impl_methods(service_name, impl_name)
+                    break
+    
+    def _deep_analyze_service_impl_methods(self, service_name: str, impl_name: str):
+        """Deep analysis of method calls between service interface and implementation"""
+        if service_name not in self.classes or impl_name not in self.classes:
+            return
+            
+        service_file = self.classes[service_name]
+        impl_file = self.classes[impl_name]
+        
+        try:
+            # Read both files
+            with open(service_file, 'r', encoding='utf-8') as f:
+                service_content = f.read()
+            with open(impl_file, 'r', encoding='utf-8') as f:
+                impl_content = f.read()
+            
+            # Get interface methods
+            interface_methods = self._extract_interface_methods(service_content)
+            
+            # For each interface method, analyze its implementation
+            for method_name in interface_methods:
+                self._analyze_specific_impl_method(impl_file, method_name, impl_content)
+            
+            print(f"🔍 Deep analyzed {len(interface_methods)} methods in {impl_name}")
+            
+        except Exception as e:
+            print(f"❌ Error in deep analysis of {service_name}→{impl_name}: {e}")
+    
+    def _analyze_specific_impl_method(self, impl_file: Path, method_name: str, content: str):
+        """Analyze a specific implementation method for dependencies"""
+        method_content = self._extract_method_content(content, method_name)
+        if not method_content:
+            return
+        
+        # Enhanced patterns for method calls within the implementation
+        patterns = [
+            # Direct method calls: object.method()
+            r'([a-zA-Z_][a-zA-Z0-9_]*)\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(',
+            # Repository/Service calls: this.userRepository.findById()
+            r'this\.([a-zA-Z_][a-zA-Z0-9_]*(?:Repository|Service))\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(',
+            # Static method calls: SomeClass.staticMethod()
+            r'([A-Z][a-zA-Z0-9_]*)\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(',
+            # Constructor calls: new SomeClass()
+            r'new\s+([A-Z][a-zA-Z0-9_]*)\s*\('
+        ]
+        
+        dependencies_found = 0
+        
+        for pattern in patterns:
+            matches = re.findall(pattern, method_content)
+            
+            for match in matches:
+                if len(match) == 2:
+                    obj_name, called_method = match
+                    
+                    # Resolve object type
+                    obj_type = self._resolve_object_type(impl_file, obj_name)
+                    if not obj_type:
+                        # Try to match by naming convention
+                        if obj_name.endswith('Service') or obj_name.endswith('Repository'):
+                            obj_type = obj_name[0].upper() + obj_name[1:]
+                    
+                    if obj_type and obj_type in self.classes:
+                        target_file = self.classes[obj_type]
+                        if target_file != impl_file:
+                            dependency_label = f"in-{method_name}: {called_method}()"
+                            if dependency_label not in self.method_calls[impl_file][target_file]:
+                                self.method_calls[impl_file][target_file].append(dependency_label)
+                                dependencies_found += 1
+                else:  # Constructor call
+                    class_name = match[0] if isinstance(match, tuple) else match
+                    if class_name in self.classes:
+                        target_file = self.classes[class_name]
+                        if target_file != impl_file:
+                            dependency_label = f"in-{method_name}: new {class_name}()"
+                            if dependency_label not in self.method_calls[impl_file][target_file]:
+                                self.method_calls[impl_file][target_file].append(dependency_label)
+                                dependencies_found += 1
+        
+        if dependencies_found > 0:
+            print(f"  🔍 Method '{method_name}' → {dependencies_found} dependencies")
     
     def print_enhanced_summary(self):
         """Enhanced summary với thêm thông tin"""
@@ -359,6 +661,14 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
         print(f"⛓️ Method chaining detected: {sum(len(targets) for targets in self.chained_calls.values())}")
         print(f"💉 Annotation-based dependencies: {sum(len(deps) for deps in self.annotation_mappings.values())}")
         
+        # Service-Implementation analysis summary
+        service_impl_count = 0
+        for interface_name, implementations in self.implementations.items():
+            if interface_name.endswith('Service') or interface_name.endswith('Repository'):
+                service_impl_count += len(implementations)
+        
+        print(f"🔧 Service→Implementation mappings: {service_impl_count}")
+        
         # Top interfaces by implementation count
         if self.implementations:
             print(f"\n📊 Most implemented interfaces:")
@@ -366,6 +676,16 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
             for i, (interface_name, implementations) in enumerate(sorted_interfaces[:3], 1):
                 impl_names = ', '.join(implementations)
                 print(f"  {i}. {interface_name}: {len(implementations)} implementations ({impl_names})")
+        
+        # Service-Implementation specific summary
+        services_with_impl = {name: impls for name, impls in self.implementations.items() 
+                             if name.endswith('Service') or name.endswith('Repository')}
+        
+        if services_with_impl:
+            print(f"\n🔧 Service→Implementation Details:")
+            for service_name, implementations in services_with_impl.items():
+                for impl_name in implementations:
+                    print(f"  🔗 {service_name} → {impl_name}")
         
         print(f"{'='*50}")
     
@@ -377,10 +697,236 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
         self.print_enhanced_summary()
         
         return result
+    
+    def analyze_selected_function_flow(self, function_name: str):
+        """
+        Phân tích flow của một function cụ thể từ interface/service đến implementation
+        Ví dụ: cancelOrder từ OrderService đến OrderServiceImpl và các dependencies
+        """
+        print(f"🎯 Analyzing flow for function: {function_name}")
+        
+        # Tìm tất cả classes chứa function này
+        classes_with_function = self._find_classes_with_function(function_name)
+        
+        if not classes_with_function:
+            print(f"❌ Function '{function_name}' not found in any class")
+            return
+        
+        print(f"🔍 Found '{function_name}' in {len(classes_with_function)} classes")
+        
+        # Phân tích từng class
+        for class_name, file_path in classes_with_function.items():
+            print(f"\n📋 Analyzing {function_name} in {class_name}:")
+            
+            # Nếu đây là service interface, tìm implementation
+            if class_name.endswith('Service') and not class_name.endswith('Impl'):
+                impl_classes = self.implementations.get(class_name, set())
+                for impl_class in impl_classes:
+                    if impl_class in self.classes:
+                        impl_file = self.classes[impl_class]
+                        print(f"  🔗 Found implementation: {impl_class}")
+                        
+                        # Phân tích chi tiết function trong implementation
+                        self._analyze_function_in_implementation(impl_file, function_name, impl_class)
+            
+            # Nếu đây là implementation class, phân tích trực tiếp
+            elif class_name.endswith('Impl') or class_name.endswith('Implementation'):
+                print(f"  🔧 Analyzing implementation directly")
+                self._analyze_function_in_implementation(file_path, function_name, class_name)
+    
+    def _find_classes_with_function(self, function_name: str) -> dict:
+        """Tìm tất cả classes chứa function với tên cụ thể"""
+        classes_with_function = {}
+        
+        for class_name, file_path in self.classes.items():
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Pattern để tìm function declaration
+                function_patterns = [
+                    rf'(?:public|protected|private)\s+[^{{]*\s+{re.escape(function_name)}\s*\([^)]*\)\s*[{{;]',
+                    rf'@Override\s+(?:public|protected|private)\s+[^{{]*\s+{re.escape(function_name)}\s*\([^)]*\)\s*\{{',
+                    rf'{re.escape(function_name)}\s*\([^)]*\)\s*;'  # Interface method
+                ]
+                
+                for pattern in function_patterns:
+                    if re.search(pattern, content):
+                        classes_with_function[class_name] = file_path
+                        break
+                        
+            except Exception as e:
+                continue
+        
+        return classes_with_function
+    
+    def _analyze_function_in_implementation(self, impl_file: Path, function_name: str, class_name: str):
+        """Phân tích chi tiết một function trong implementation class"""
+        try:
+            with open(impl_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Extract method content
+            method_content = self._extract_method_content(content, function_name)
+            if not method_content:
+                print(f"    ❌ Could not extract method content for {function_name}")
+                return
+            
+            print(f"    ✅ Extracted method content ({len(method_content)} chars)")
+            
+            # Analyze dependencies within this function
+            dependencies = self._analyze_function_dependencies(impl_file, function_name, method_content)
+            
+            # Add these dependencies to the graph with special labels
+            for dep_type, dep_target, dep_method in dependencies:
+                if dep_target in self.classes:
+                    target_file = self.classes[dep_target]
+                    if target_file != impl_file:
+                        special_label = f"🎯{function_name}: {dep_method}"
+                        if special_label not in self.method_calls[impl_file][target_file]:
+                            self.method_calls[impl_file][target_file].append(special_label)
+            
+            print(f"    📊 Found {len(dependencies)} dependencies in {function_name}")
+            
+            # Tìm và phân tích các service calls trong function này
+            self._analyze_service_calls_in_function(impl_file, function_name, method_content)
+            
+        except Exception as e:
+            print(f"    ❌ Error analyzing {function_name} in {class_name}: {e}")
+    
+    def _analyze_function_dependencies(self, file_path: Path, function_name: str, method_content: str) -> list:
+        """Phân tích dependencies trong một function cụ thể"""
+        dependencies = []
+        
+        # Enhanced patterns for different types of calls
+        patterns = [
+            (r'([a-zA-Z_][a-zA-Z0-9_]*(?:Service|Repository))\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', 'service_call'),
+            (r'([a-zA-Z_][a-zA-Z0-9_]*)\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', 'method_call'),
+            (r'new\s+([A-Z][a-zA-Z0-9_]*)\s*\(', 'constructor'),
+            (r'([A-Z][a-zA-Z0-9_]*)\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', 'static_call'),
+            (r'this\.([a-zA-Z_][a-zA-Z0-9_]*(?:Service|Repository))\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(', 'this_service')
+        ]
+        
+        for pattern, dep_type in patterns:
+            matches = re.findall(pattern, method_content)
+            
+            for match in matches:
+                if dep_type == 'constructor':
+                    # Constructor call: new SomeClass()
+                    class_name = match
+                    dependencies.append((dep_type, class_name, f"new {class_name}()"))
+                    
+                elif dep_type == 'this_service':
+                    # this.serviceField.method() calls
+                    service_field, method = match
+                    # Convert field name to class name (userService -> UserService)
+                    service_class = service_field[0].upper() + service_field[1:]
+                    dependencies.append((dep_type, service_class, f"{service_field}.{method}()"))
+                    
+                elif len(match) == 2:
+                    # Regular method calls
+                    obj_name, method = match
+                    
+                    # Try to resolve object type
+                    obj_type = self._resolve_object_type(file_path, obj_name)
+                    if obj_type:
+                        dependencies.append((dep_type, obj_type, f"{obj_name}.{method}()"))
+                    elif obj_name.endswith('Service') or obj_name.endswith('Repository'):
+                        # Handle service naming convention
+                        service_class = obj_name[0].upper() + obj_name[1:]
+                        dependencies.append((dep_type, service_class, f"{obj_name}.{method}()"))
+        
+        return dependencies
+    
+    def _analyze_service_calls_in_function(self, impl_file: Path, function_name: str, method_content: str):
+        """Phân tích đặc biệt các service calls trong function"""
+        # Pattern cho các autowired service calls
+        service_patterns = [
+            r'this\.([a-zA-Z_][a-zA-Z0-9_]*(?:Service|Repository))\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(',
+            r'([a-zA-Z_][a-zA-Z0-9_]*(?:Service|Repository))\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\('
+        ]
+        
+        service_calls_found = []
+        
+        for pattern in service_patterns:
+            matches = re.findall(pattern, method_content)
+            for service_field, method_called in matches:
+                # Convert service field to class name
+                if service_field.startswith('this.'):
+                    service_field = service_field[5:]
+                
+                service_class = service_field[0].upper() + service_field[1:]
+                
+                # Check if this service has implementation
+                if service_class in self.implementations:
+                    for impl_class in self.implementations[service_class]:
+                        if impl_class in self.classes:
+                            impl_file_target = self.classes[impl_class]
+                            
+                            # Add enhanced dependency label
+                            enhanced_label = f"🎯{function_name}→{service_class}: {method_called}()"
+                            if enhanced_label not in self.method_calls[impl_file][impl_file_target]:
+                                self.method_calls[impl_file][impl_file_target].append(enhanced_label)
+                                service_calls_found.append(f"{service_class}.{method_called}()")
+                            
+                            # Recursively analyze the called method in the service implementation
+                            print(f"    🔄 Recursively analyzing {method_called} in {impl_class}")
+                            self._analyze_function_in_implementation(impl_file_target, method_called, impl_class)
+        
+        if service_calls_found:
+            print(f"    🔗 Service calls in {function_name}: {', '.join(service_calls_found)}")
+    
+    def enhance_with_selected_functions(self, selected_functions):
+        """
+        Enhance analysis with selected functions, automatically analyzing service-to-impl flow
+        """
+        if not selected_functions:
+            return
+            
+        print(f"🎯 Enhancing analysis with {len(selected_functions)} selected functions")
+        
+        # Extract function names from selected function IDs
+        function_names = set()
+        for func_id in selected_functions:
+            if func_id.startswith('method_'):
+                # Extract method name from method_<method_name>_<source>_<target>
+                parts = func_id.split('_', 3)
+                if len(parts) >= 2:
+                    method_name = parts[1]
+                    function_names.add(method_name)
+            elif func_id.startswith('html_'):
+                # For HTML functions, try to extract or map to Java function names
+                # This could be enhanced with mapping logic
+                func_name = func_id.replace('html_', '').replace('_', '')
+                function_names.add(func_name)
+        
+        # Analyze flow for each selected function
+        for function_name in function_names:
+            print(f"\n🔍 Enhanced flow analysis for: {function_name}")
+            self.analyze_selected_function_flow(function_name)
+        
+        print(f"✅ Enhanced analysis completed for {len(function_names)} functions")
+    
+    def filter_by_selection(self, selected_functions):
+        """
+        Override parent method to add enhanced function flow analysis
+        """
+        # Call parent filter method
+        super().filter_by_selection(selected_functions)
+        
+        # Add enhanced function analysis
+        self.enhance_with_selected_functions(selected_functions)
 
 
 if __name__ == "__main__":
     # Test với project hiện tại
     analyzer = SuperEnhancedJavaDependencyAnalyzer("Api_LTDD_CuoiKy-master/src/main/java")
     analyzer.analyze()
+    
+    # Test function flow analysis
+    print("\n" + "="*60)
+    print("🎯 TESTING FUNCTION FLOW ANALYSIS")
+    print("="*60)
+    analyzer.analyze_selected_function_flow("cancelOrder")
+    
     analyzer.generate_enhanced_graph("enhanced_dependencies.dot")

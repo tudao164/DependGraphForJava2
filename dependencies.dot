@@ -4,12 +4,12 @@ digraph JavaDependencies {
     edge [fontname="Arial", fontsize=9, color=darkblue];
     graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
 
-    "OrderService" [label="OrderService\n(OrderService)", URL="javascript:showNodeInfo('OrderService')", fillcolor="lightblue"];
+    "CheckoutRequestDTO" [label="CheckoutRequestDTO\n(CheckoutRequestDTO)", URL="javascript:showNodeInfo('CheckoutRequestDTO')", fillcolor="lightblue"];
     "OrderDTO" [label="OrderDTO\n(OrderDTO)", URL="javascript:showNodeInfo('OrderDTO')", fillcolor="lightblue"];
     "ResponseDTO" [label="ResponseDTO\n(ResponseDTO)", URL="javascript:showNodeInfo('ResponseDTO')", fillcolor="lightblue"];
     "OrderController" [label="OrderController\n(OrderController)", URL="javascript:showNodeInfo('OrderController')", fillcolor="lightblue"];
     "OrderStatusUpdateDTO" [label="OrderStatusUpdateDTO\n(OrderStatusUpdateDTO)", URL="javascript:showNodeInfo('OrderStatusUpdateDTO')", fillcolor="lightblue"];
-    "CheckoutRequestDTO" [label="CheckoutRequestDTO\n(CheckoutRequestDTO)", URL="javascript:showNodeInfo('CheckoutRequestDTO')", fillcolor="lightblue"];
+    "OrderService" [label="OrderService\n(OrderService)", URL="javascript:showNodeInfo('OrderService')", fillcolor="lightblue"];
 
     // Dependencies with method calls
     "OrderController" -> "ResponseDTO" [label="success", URL="javascript:showEdgeInfo('OrderController', 'ResponseDTO')"];
@@ -21,6 +21,6 @@ digraph JavaDependencies {
     "OrderService" -> "OrderStatusUpdateDTO" [label="field: statusUpdateDTO", URL="javascript:showEdgeInfo('OrderService', 'OrderStatusUpdateDTO')"];
 
     // HTML Function Nodes
-    "HTML_cancelOrder" [label="cancelOrder\n(HTML Function)", URL="javascript:showNodeInfo('HTML_cancelOrder')", fillcolor="lightgreen", shape="ellipse"];
-    "HTML_cancelOrder" -> "OrderController" [label="calls", URL="javascript:showEdgeInfo('HTML_cancelOrder', 'OrderController')", color="green", style="bold"];
+    "HTML_checkout" [label="checkout\n(HTML Function)", URL="javascript:showNodeInfo('HTML_checkout')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_checkout" -> "OrderController" [label="calls", URL="javascript:showEdgeInfo('HTML_checkout', 'OrderController')", color="green", style="bold"];
 }

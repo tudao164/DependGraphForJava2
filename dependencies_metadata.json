@@ -8,27 +8,17 @@
     "custom_edges": 0
   },
   "files": {
-    "OrderService": {
+    "CheckoutRequestDTO": {
       "classes": [
-        "OrderService"
+        "CheckoutRequestDTO"
       ],
-      "outgoing_calls": {
-        "CheckoutRequestDTO": [
-          "field: checkoutRequest"
-        ],
-        "OrderStatusUpdateDTO": [
-          "field: statusUpdateDTO"
-        ]
-      },
+      "outgoing_calls": {},
       "incoming_calls": {
         "OrderController": [
-          "checkout",
-          "getOrderById",
-          "getOrdersByUserId",
-          "getOrdersByUserId",
-          "updateOrderStatus",
-          "cancelOrder",
-          "field: orderService"
+          "field: checkoutRequest"
+        ],
+        "OrderService": [
+          "field: checkoutRequest"
         ]
       },
       "is_custom": false
@@ -116,17 +106,27 @@
       },
       "is_custom": false
     },
-    "CheckoutRequestDTO": {
+    "OrderService": {
       "classes": [
-        "CheckoutRequestDTO"
+        "OrderService"
       ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
+      "outgoing_calls": {
+        "CheckoutRequestDTO": [
           "field: checkoutRequest"
         ],
-        "OrderService": [
-          "field: checkoutRequest"
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO"
+        ]
+      },
+      "incoming_calls": {
+        "OrderController": [
+          "checkout",
+          "getOrderById",
+          "getOrdersByUserId",
+          "getOrdersByUserId",
+          "updateOrderStatus",
+          "cancelOrder",
+          "field: orderService"
         ]
       },
       "is_custom": false

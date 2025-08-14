@@ -8,6 +8,39 @@
     "custom_edges": 0
   },
   "files": {
+    "CategoryService": {
+      "classes": [
+        "CategoryService"
+      ],
+      "outgoing_calls": {
+        "CategoryDTO": [
+          "field: categoryDTO"
+        ],
+        "CategoryServiceImpl": [
+          "implemented-by: CategoryServiceImpl",
+          "service\u2192impl: CategoryServiceImpl",
+          "service\u2192impl: com.example.demo.service.CategoryServiceImpl"
+        ]
+      },
+      "incoming_calls": {
+        "CategoryController": [
+          "getAllCategories",
+          "getRootCategories",
+          "getSubcategories",
+          "getCategoryById",
+          "getCategoryByName",
+          "createCategory",
+          "updateCategory",
+          "deleteCategory",
+          "field: categoryService"
+        ],
+        "CategoryServiceImpl": [
+          "implements CategoryService",
+          "implements: CategoryService"
+        ]
+      },
+      "is_custom": false
+    },
     "Product": {
       "classes": [
         "Product"
@@ -29,13 +62,16 @@
         ],
         "OrderServiceImpl": [
           "field: product",
-          "chain: multiply()..."
+          "chain: multiply()...",
+          "in-checkout: getPrice()"
         ],
         "ProductServiceImpl": [
           "new Product()",
           "field: product",
           "field: existingProduct",
-          "field: entity"
+          "field: entity",
+          "in-createProduct: new Product()",
+          "in-updateProduct: setUpdatedAt()"
         ],
         "ReviewServiceImpl": [
           "field: product"
@@ -55,15 +91,392 @@
       },
       "is_custom": false
     },
-    "OrderItemDTO": {
+    "OrderDTO": {
       "classes": [
-        "OrderItemDTO"
+        "OrderDTO"
+      ],
+      "outgoing_calls": {
+        "Order": [
+          "nested-type: Order.OrderStatus"
+        ]
+      },
+      "incoming_calls": {
+        "OrderController": [
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
+        ],
+        "OrderServiceImpl": [
+          "new OrderDTO()",
+          "field: orderDTO",
+          "chain: getId()..."
+        ]
+      },
+      "is_custom": false
+    },
+    "UserRepository": {
+      "classes": [
+        "UserRepository"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
+        "UserController": [
+          "save"
+        ],
+        "AuthService": [
+          "findByEmail",
+          "save"
+        ],
+        "CartServiceImpl": [
+          "findById",
+          "findById",
+          "findById",
+          "findById",
+          "findById"
+        ],
         "OrderServiceImpl": [
-          "new OrderItemDTO()",
+          "findById",
+          "findById",
+          "findById"
+        ],
+        "ReviewServiceImpl": [
+          "findById",
+          "field: userRepository"
+        ],
+        "UserService": [
+          "findByEmail",
+          "findByEmail"
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryNotFoundException": {
+      "classes": [
+        "CategoryNotFoundException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CategoryServiceImpl": [
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "in-getCategoryById: new CategoryNotFoundException()",
+          "in-getCategoryByName: new CategoryNotFoundException()",
+          "in-deleteCategory: new CategoryNotFoundException()"
+        ],
+        "ProductServiceImpl": [
+          "new CategoryNotFoundException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryServiceImpl": {
+      "classes": [
+        "CategoryServiceImpl"
+      ],
+      "outgoing_calls": {
+        "CategoryRepository": [
+          "findAll",
+          "findByParentIsNull",
+          "findByParentId",
+          "findById",
+          "findByName",
+          "findByName",
+          "save",
+          "findByName",
+          "save",
+          "existsById",
+          "deleteById",
+          "findById",
+          "field: categoryRepository",
+          "if-condition: categoryRepository.existsById()",
+          "in-createCategory: findByName()",
+          "in-createCategory: save()",
+          "in-getSubcategories: findByParentId()",
+          "in-getCategoryById: findById()",
+          "in-getAllCategories: findAll()",
+          "in-getCategoryByName: findByName()",
+          "in-getRootCategories: findByParentIsNull()",
+          "in-deleteCategory: existsById()",
+          "in-deleteCategory: deleteById()",
+          "in-updateCategory: findByName()",
+          "in-updateCategory: save()"
+        ],
+        "CategoryNotFoundException": [
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "new CategoryNotFoundException()",
+          "in-getCategoryById: new CategoryNotFoundException()",
+          "in-getCategoryByName: new CategoryNotFoundException()",
+          "in-deleteCategory: new CategoryNotFoundException()"
+        ],
+        "DuplicateCategoryException": [
+          "new DuplicateCategoryException()",
+          "new DuplicateCategoryException()",
+          "in-createCategory: new DuplicateCategoryException()",
+          "in-updateCategory: new DuplicateCategoryException()"
+        ],
+        "Category": [
+          "new Category()",
+          "field: category",
+          "field: existingCategory",
+          "field: parentCategory",
+          "field: entity",
+          "if-condition: existingCategory.isPresent()",
+          "if-condition: existingCategory.getName()",
+          "chain: equals()...",
+          "in-createCategory: isPresent()",
+          "in-createCategory: new Category()",
+          "in-updateCategory: getName()",
+          "in-updateCategory: setUpdatedAt()"
+        ],
+        "CategoryService": [
+          "implements CategoryService",
+          "implements: CategoryService"
+        ],
+        "CategoryDTO": [
+          "field: categoryDTO",
+          "field: dto",
+          "if-condition: dto.getParentId()",
+          "in-createCategory: getName()",
+          "in-updateCategory: getName()"
+        ]
+      },
+      "incoming_calls": {
+        "CategoryService": [
+          "implemented-by: CategoryServiceImpl",
+          "service\u2192impl: CategoryServiceImpl",
+          "service\u2192impl: com.example.demo.service.CategoryServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "AuthService": {
+      "classes": [
+        "AuthService"
+      ],
+      "outgoing_calls": {
+        "UserRepository": [
+          "findByEmail",
+          "save"
+        ],
+        "IUserRepository": [
+          "field: userRepository",
+          "@Autowired: userRepository"
+        ],
+        "UserEntity": [
+          "field: foundUser",
+          "if-condition: foundUser.getOtp()",
+          "chain: equals()..."
+        ]
+      },
+      "incoming_calls": {
+        "UserController": [
+          "verifyUser",
+          "field: authService"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartServiceImpl": {
+      "classes": [
+        "CartServiceImpl"
+      ],
+      "outgoing_calls": {
+        "UserRepository": [
+          "findById",
+          "findById",
+          "findById",
+          "findById",
+          "findById"
+        ],
+        "CartRepository": [
+          "findByUser",
+          "save",
+          "findByUser",
+          "save",
+          "findByUser",
+          "findByUser",
+          "findByUser",
+          "save",
+          "field: cartRepository",
+          "in-getCartByUserId: findByUser()",
+          "in-getCartByUserId: save()",
+          "in-clearCart: findByUser()",
+          "in-clearCart: save()",
+          "in-updateCartItem: findByUser()",
+          "in-removeItemFromCart: findByUser()",
+          "in-addItemToCart: findByUser()",
+          "in-addItemToCart: save()"
+        ],
+        "ProductRepository": [
+          "findById",
+          "findById",
+          "findById",
+          "field: productRepository",
+          "in-updateCartItem: findById()",
+          "in-removeItemFromCart: findById()",
+          "in-addItemToCart: findById()"
+        ],
+        "CartItemRepository": [
+          "findByCartAndProduct",
+          "save",
+          "save",
+          "findByCartAndProduct",
+          "save",
+          "findByCartAndProduct",
+          "delete",
+          "field: cartItemRepository",
+          "in-updateCartItem: findByCartAndProduct()",
+          "in-updateCartItem: save()",
+          "in-removeItemFromCart: findByCartAndProduct()",
+          "in-removeItemFromCart: delete()",
+          "in-addItemToCart: findByCartAndProduct()",
+          "in-addItemToCart: save()"
+        ],
+        "UserNotFoundException": [
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "in-getCartByUserId: new UserNotFoundException()",
+          "in-clearCart: new UserNotFoundException()",
+          "in-updateCartItem: new UserNotFoundException()",
+          "in-removeItemFromCart: new UserNotFoundException()",
+          "in-addItemToCart: new UserNotFoundException()"
+        ],
+        "Cart": [
+          "new Cart()",
+          "new Cart()",
+          "field: cart",
+          "field: newCart",
+          "chain: add()...",
+          "chain: remove()...",
+          "chain: clear()...",
+          "chain: stream()...",
+          "in-getCartByUserId: setUser()",
+          "in-getCartByUserId: new Cart()",
+          "in-clearCart: getCartItems()",
+          "in-removeItemFromCart: getCartItems()",
+          "in-addItemToCart: setUser()",
+          "in-addItemToCart: getCartItems()",
+          "in-addItemToCart: new Cart()"
+        ],
+        "ProductNotFoundException": [
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()",
+          "in-updateCartItem: new ProductNotFoundException()",
+          "in-removeItemFromCart: new ProductNotFoundException()",
+          "in-addItemToCart: new ProductNotFoundException()"
+        ],
+        "CartItem": [
+          "new CartItem()",
+          "field: cartItem",
+          "field: newCartItem",
+          "in-updateCartItem: setQuantity()",
+          "in-addItemToCart: setQuantity()",
+          "in-addItemToCart: getQuantity()",
+          "in-addItemToCart: setCart()",
+          "in-addItemToCart: setProduct()",
+          "in-addItemToCart: new CartItem()"
+        ],
+        "CartDTO": [
+          "new CartDTO()",
+          "field: cartDTO",
+          "chain: getId()..."
+        ],
+        "CartItemResponseDTO": [
+          "new CartItemResponseDTO()",
           "field: dto"
+        ],
+        "CartService": [
+          "implements CartService",
+          "implements: CartService"
+        ],
+        "IUserRepository": [
+          "field: userRepository",
+          "in-getCartByUserId: findById()",
+          "in-clearCart: findById()",
+          "in-updateCartItem: findById()",
+          "in-removeItemFromCart: findById()",
+          "in-addItemToCart: findById()"
+        ],
+        "UserEntity": [
+          "field: user"
+        ],
+        "Product": [
+          "field: product",
+          "chain: multiply()..."
+        ],
+        "CartItemDTO": [
+          "field: cartItemDTO",
+          "in-updateCartItem: getProductId()",
+          "in-updateCartItem: getQuantity()",
+          "in-addItemToCart: getProductId()",
+          "in-addItemToCart: getQuantity()"
+        ]
+      },
+      "incoming_calls": {
+        "CartService": [
+          "implemented-by: CartServiceImpl",
+          "service\u2192impl: CartServiceImpl",
+          "service\u2192impl: com.example.demo.service.CartServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "EmailService": {
+      "classes": [
+        "EmailService"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserService": [
+          "field: emailService"
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryRepository": {
+      "classes": [
+        "CategoryRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CategoryServiceImpl": [
+          "findAll",
+          "findByParentIsNull",
+          "findByParentId",
+          "findById",
+          "findByName",
+          "findByName",
+          "save",
+          "findByName",
+          "save",
+          "existsById",
+          "deleteById",
+          "findById",
+          "field: categoryRepository",
+          "if-condition: categoryRepository.existsById()",
+          "in-createCategory: findByName()",
+          "in-createCategory: save()",
+          "in-getSubcategories: findByParentId()",
+          "in-getCategoryById: findById()",
+          "in-getAllCategories: findAll()",
+          "in-getCategoryByName: findByName()",
+          "in-getRootCategories: findByParentIsNull()",
+          "in-deleteCategory: existsById()",
+          "in-deleteCategory: deleteById()",
+          "in-updateCategory: findByName()",
+          "in-updateCategory: save()"
+        ],
+        "ProductServiceImpl": [
+          "findById",
+          "field: categoryRepository"
         ]
       },
       "is_custom": false
@@ -83,7 +496,247 @@
       "incoming_calls": {
         "OrderServiceImpl": [
           "new OrderItem()",
-          "field: orderItem"
+          "field: orderItem",
+          "in-checkout: setOrder()",
+          "in-checkout: setProduct()",
+          "in-checkout: setQuantity()",
+          "in-checkout: setPrice()",
+          "in-checkout: setSubtotal()",
+          "in-checkout: new OrderItem()"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductService": {
+      "classes": [
+        "ProductService"
+      ],
+      "outgoing_calls": {
+        "ProductDTO": [
+          "field: productDTO"
+        ],
+        "ProductServiceImpl": [
+          "implemented-by: ProductServiceImpl",
+          "service\u2192impl: ProductServiceImpl",
+          "service\u2192impl: com.example.demo.service.ProductServiceImpl"
+        ]
+      },
+      "incoming_calls": {
+        "ProductController": [
+          "getAllProducts",
+          "getProductById",
+          "createProduct",
+          "updateProduct",
+          "deleteProduct",
+          "getProductsByCategory",
+          "searchProductsByName",
+          "field: productService"
+        ],
+        "ProductServiceImpl": [
+          "implements ProductService",
+          "implements: ProductService"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductServiceImpl": {
+      "classes": [
+        "ProductServiceImpl"
+      ],
+      "outgoing_calls": {
+        "ProductRepository": [
+          "findAll",
+          "findById",
+          "save",
+          "save",
+          "existsById",
+          "deleteById",
+          "findByCategory_Id",
+          "findByNameContainingIgnoreCase",
+          "field: productRepository",
+          "if-condition: productRepository.existsById()",
+          "in-createProduct: save()",
+          "in-deleteProduct: existsById()",
+          "in-deleteProduct: deleteById()",
+          "in-getAllProducts: findAll()",
+          "in-getProductById: findById()",
+          "in-searchProductsByName: findByNameContainingIgnoreCase()",
+          "in-updateProduct: save()",
+          "in-getProductsByCategory: findByCategory_Id()"
+        ],
+        "CategoryRepository": [
+          "findById",
+          "field: categoryRepository"
+        ],
+        "ProductNotFoundException": [
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()",
+          "in-deleteProduct: new ProductNotFoundException()",
+          "in-getProductById: new ProductNotFoundException()"
+        ],
+        "Product": [
+          "new Product()",
+          "field: product",
+          "field: existingProduct",
+          "field: entity",
+          "in-createProduct: new Product()",
+          "in-updateProduct: setUpdatedAt()"
+        ],
+        "CategoryNotFoundException": [
+          "new CategoryNotFoundException()"
+        ],
+        "ProductService": [
+          "implements ProductService",
+          "implements: ProductService"
+        ],
+        "Category": [
+          "field: category"
+        ],
+        "ProductDTO": [
+          "field: productDTO",
+          "field: dto",
+          "if-condition: dto.getCategoryId()"
+        ]
+      },
+      "incoming_calls": {
+        "ProductService": [
+          "implemented-by: ProductServiceImpl",
+          "service\u2192impl: ProductServiceImpl",
+          "service\u2192impl: com.example.demo.service.ProductServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductDTO": {
+      "classes": [
+        "ProductDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "ProductController": [
+          "field: productDTO"
+        ],
+        "ProductServiceImpl": [
+          "field: productDTO",
+          "field: dto",
+          "if-condition: dto.getCategoryId()"
+        ],
+        "ProductService": [
+          "field: productDTO"
+        ]
+      },
+      "is_custom": false
+    },
+    "Order": {
+      "classes": [
+        "Order",
+        "OrderStatus"
+      ],
+      "outgoing_calls": {
+        "UserEntity": [
+          "field: user"
+        ]
+      },
+      "incoming_calls": {
+        "OrderServiceImpl": [
+          "new Order()",
+          "field: order",
+          "field: savedOrder",
+          "field: updatedOrder",
+          "field: status",
+          "nested-type: OrderStatus.SHIPPING",
+          "nested-type: OrderStatus.DELIVERED",
+          "nested-type: Order.OrderStatus",
+          "if-condition: order.getStatus()",
+          "enum-access: OrderStatus.DELIVERED",
+          "enum-access: OrderStatus.SHIPPING",
+          "enum-access: OrderStatus.RECEIVED",
+          "switch(status)",
+          "chain: add()...",
+          "chain: stream()...",
+          "in-getStatusDisplayText: name()",
+          "in-updateOrderStatus: setStatus()",
+          "in-updateOrderStatus: setDeliveryDate()",
+          "in-checkout: setUser()",
+          "in-checkout: setShippingAddress()",
+          "in-checkout: setPhoneNumber()",
+          "in-checkout: getOrderItems()",
+          "in-checkout: setTotalAmount()",
+          "in-checkout: new Order()",
+          "in-cancelOrder: getStatus()",
+          "in-cancelOrder: setStatus()",
+          "\ud83c\udfafcancelOrder: order.getStatus()",
+          "\ud83c\udfafcancelOrder: order.setStatus()"
+        ],
+        "OrderDTO": [
+          "nested-type: Order.OrderStatus"
+        ],
+        "OrderStatusUpdateDTO": [
+          "nested-type: Order.OrderStatus"
+        ],
+        "OrderItem": [
+          "field: order"
+        ],
+        "OrderItemRepository": [
+          "field: order"
+        ],
+        "OrderService": [
+          "field: status",
+          "nested-type: Order.OrderStatus"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewService": {
+      "classes": [
+        "ReviewService"
+      ],
+      "outgoing_calls": {
+        "ReviewDTO": [
+          "field: reviewDTO"
+        ],
+        "ReviewServiceImpl": [
+          "implemented-by: ReviewServiceImpl",
+          "service\u2192impl: ReviewServiceImpl",
+          "service\u2192impl: com.example.demo.service.ReviewServiceImpl"
+        ]
+      },
+      "incoming_calls": {
+        "ReviewController": [
+          "getAllReviews",
+          "getReviewById",
+          "getReviewsByProductId",
+          "getReviewsByUserId",
+          "createReview",
+          "updateReview",
+          "deleteReview",
+          "field: reviewService"
+        ],
+        "ReviewServiceImpl": [
+          "implements ReviewService",
+          "implements: ReviewService"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartItemDTO": {
+      "classes": [
+        "CartItemDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartController": [
+          "field: cartItemDTO"
+        ],
+        "CartServiceImpl": [
+          "field: cartItemDTO",
+          "in-updateCartItem: getProductId()",
+          "in-updateCartItem: getQuantity()",
+          "in-addItemToCart: getProductId()",
+          "in-addItemToCart: getQuantity()"
+        ],
+        "CartService": [
+          "field: cartItemDTO"
         ]
       },
       "is_custom": false
@@ -137,328 +790,17 @@
       },
       "is_custom": false
     },
-    "ForgotPasswordRequest": {
+    "ErrorCode": {
       "classes": [
-        "ForgotPasswordRequest"
+        "ErrorCode"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "UserController": [
-          "field: request"
-        ]
-      },
-      "is_custom": false
-    },
-    "UpdateUserRequest": {
-      "classes": [
-        "UpdateUserRequest"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "UserController": [
-          "field: request"
+        "GlobalExceptionHandler": [
+          "field: errorCode"
         ],
-        "UserService": [
-          "field: request"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderRepository": {
-      "classes": [
-        "OrderRepository"
-      ],
-      "outgoing_calls": {
-        "UserEntity": [
-          "field: user"
-        ]
-      },
-      "incoming_calls": {
-        "OrderServiceImpl": [
-          "save",
-          "findById",
-          "findByUserOrderByOrderDateDesc",
-          "findByUserOrderByOrderDateDesc",
-          "findById",
-          "save",
-          "findById",
-          "save",
-          "field: orderRepository"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderServiceImpl": {
-      "classes": [
-        "OrderServiceImpl"
-      ],
-      "outgoing_calls": {
-        "UserRepository": [
-          "findById",
-          "findById",
-          "findById"
-        ],
-        "CartRepository": [
-          "findByUser",
-          "save",
-          "field: cartRepository"
-        ],
-        "OrderRepository": [
-          "save",
-          "findById",
-          "findByUserOrderByOrderDateDesc",
-          "findByUserOrderByOrderDateDesc",
-          "findById",
-          "save",
-          "findById",
-          "save",
-          "field: orderRepository"
-        ],
-        "UserNotFoundException": [
-          "new UserNotFoundException()",
-          "new UserNotFoundException()",
-          "new UserNotFoundException()"
-        ],
-        "Order": [
-          "new Order()",
-          "field: order",
-          "field: savedOrder",
-          "field: updatedOrder",
-          "field: status",
-          "nested-type: OrderStatus.SHIPPING",
-          "nested-type: OrderStatus.DELIVERED",
-          "nested-type: Order.OrderStatus",
-          "if-condition: order.getStatus()",
-          "enum-access: OrderStatus.DELIVERED",
-          "enum-access: OrderStatus.SHIPPING",
-          "enum-access: OrderStatus.RECEIVED",
-          "switch(status)",
-          "chain: add()...",
-          "chain: stream()..."
-        ],
-        "OrderItem": [
-          "new OrderItem()",
-          "field: orderItem"
-        ],
-        "OrderNotFoundException": [
-          "new OrderNotFoundException()",
-          "new OrderNotFoundException()",
-          "new OrderNotFoundException()"
-        ],
-        "OrderDTO": [
-          "new OrderDTO()",
-          "field: orderDTO",
-          "chain: getId()..."
-        ],
-        "OrderItemDTO": [
-          "new OrderItemDTO()",
-          "field: dto"
-        ],
-        "OrderService": [
-          "implements OrderService",
-          "implements: OrderService"
-        ],
-        "OrderItemRepository": [
-          "field: orderItemRepository"
-        ],
-        "CartItemRepository": [
-          "field: cartItemRepository"
-        ],
-        "IUserRepository": [
-          "field: userRepository"
-        ],
-        "ProductRepository": [
-          "field: productRepository"
-        ],
-        "UserEntity": [
-          "field: user"
-        ],
-        "Cart": [
-          "field: cart",
-          "if-condition: cart.getCartItems()",
-          "chain: isEmpty()...",
-          "chain: clear()..."
-        ],
-        "Product": [
-          "field: product",
-          "chain: multiply()..."
-        ],
-        "CheckoutRequestDTO": [
-          "field: checkoutRequest"
-        ],
-        "OrderStatusUpdateDTO": [
-          "field: statusUpdateDTO",
-          "if-condition: statusUpdateDTO.getStatus()"
-        ]
-      },
-      "incoming_calls": {
-        "OrderService": [
-          "implemented-by: OrderServiceImpl"
-        ]
-      },
-      "is_custom": false
-    },
-    "Cart": {
-      "classes": [
-        "Cart"
-      ],
-      "outgoing_calls": {
-        "UserEntity": [
-          "field: user"
-        ]
-      },
-      "incoming_calls": {
-        "CartServiceImpl": [
-          "new Cart()",
-          "new Cart()",
-          "field: cart",
-          "field: newCart",
-          "chain: add()...",
-          "chain: remove()...",
-          "chain: clear()...",
-          "chain: stream()..."
-        ],
-        "OrderServiceImpl": [
-          "field: cart",
-          "if-condition: cart.getCartItems()",
-          "chain: isEmpty()...",
-          "chain: clear()..."
-        ],
-        "CartItem": [
-          "field: cart"
-        ],
-        "CartItemRepository": [
-          "field: cart"
-        ]
-      },
-      "is_custom": false
-    },
-    "ProductService": {
-      "classes": [
-        "ProductService"
-      ],
-      "outgoing_calls": {
-        "ProductDTO": [
-          "field: productDTO"
-        ],
-        "ProductServiceImpl": [
-          "implemented-by: ProductServiceImpl"
-        ]
-      },
-      "incoming_calls": {
-        "ProductController": [
-          "getAllProducts",
-          "getProductById",
-          "createProduct",
-          "updateProduct",
-          "deleteProduct",
-          "getProductsByCategory",
-          "searchProductsByName",
-          "field: productService"
-        ],
-        "ProductServiceImpl": [
-          "implements ProductService",
-          "implements: ProductService"
-        ]
-      },
-      "is_custom": false
-    },
-    "CartServiceImpl": {
-      "classes": [
-        "CartServiceImpl"
-      ],
-      "outgoing_calls": {
-        "UserRepository": [
-          "findById",
-          "findById",
-          "findById",
-          "findById",
-          "findById"
-        ],
-        "CartRepository": [
-          "findByUser",
-          "save",
-          "findByUser",
-          "save",
-          "findByUser",
-          "findByUser",
-          "findByUser",
-          "save",
-          "field: cartRepository"
-        ],
-        "ProductRepository": [
-          "findById",
-          "findById",
-          "findById",
-          "field: productRepository"
-        ],
-        "CartItemRepository": [
-          "findByCartAndProduct",
-          "save",
-          "save",
-          "findByCartAndProduct",
-          "save",
-          "findByCartAndProduct",
-          "delete",
-          "field: cartItemRepository"
-        ],
-        "UserNotFoundException": [
-          "new UserNotFoundException()",
-          "new UserNotFoundException()",
-          "new UserNotFoundException()",
-          "new UserNotFoundException()",
-          "new UserNotFoundException()"
-        ],
-        "Cart": [
-          "new Cart()",
-          "new Cart()",
-          "field: cart",
-          "field: newCart",
-          "chain: add()...",
-          "chain: remove()...",
-          "chain: clear()...",
-          "chain: stream()..."
-        ],
-        "ProductNotFoundException": [
-          "new ProductNotFoundException()",
-          "new ProductNotFoundException()",
-          "new ProductNotFoundException()"
-        ],
-        "CartItem": [
-          "new CartItem()",
-          "field: cartItem",
-          "field: newCartItem"
-        ],
-        "CartDTO": [
-          "new CartDTO()",
-          "field: cartDTO",
-          "chain: getId()..."
-        ],
-        "CartItemResponseDTO": [
-          "new CartItemResponseDTO()",
-          "field: dto"
-        ],
-        "CartService": [
-          "implements CartService",
-          "implements: CartService"
-        ],
-        "IUserRepository": [
-          "field: userRepository"
-        ],
-        "UserEntity": [
-          "field: user"
-        ],
-        "Product": [
-          "field: product",
-          "chain: multiply()..."
-        ],
-        "CartItemDTO": [
-          "field: cartItemDTO"
-        ]
-      },
-      "incoming_calls": {
-        "CartService": [
-          "implemented-by: CartServiceImpl"
+        "AppException": [
+          "field: errorCode"
         ]
       },
       "is_custom": false
@@ -499,10 +841,9 @@
       "incoming_calls": {},
       "is_custom": false
     },
-    "Order": {
+    "Cart": {
       "classes": [
-        "Order",
-        "OrderStatus"
+        "Cart"
       ],
       "outgoing_calls": {
         "UserEntity": [
@@ -510,263 +851,35 @@
         ]
       },
       "incoming_calls": {
-        "OrderServiceImpl": [
-          "new Order()",
-          "field: order",
-          "field: savedOrder",
-          "field: updatedOrder",
-          "field: status",
-          "nested-type: OrderStatus.SHIPPING",
-          "nested-type: OrderStatus.DELIVERED",
-          "nested-type: Order.OrderStatus",
-          "if-condition: order.getStatus()",
-          "enum-access: OrderStatus.DELIVERED",
-          "enum-access: OrderStatus.SHIPPING",
-          "enum-access: OrderStatus.RECEIVED",
-          "switch(status)",
+        "CartServiceImpl": [
+          "new Cart()",
+          "new Cart()",
+          "field: cart",
+          "field: newCart",
           "chain: add()...",
-          "chain: stream()..."
-        ],
-        "OrderDTO": [
-          "nested-type: Order.OrderStatus"
-        ],
-        "OrderStatusUpdateDTO": [
-          "nested-type: Order.OrderStatus"
-        ],
-        "OrderItem": [
-          "field: order"
-        ],
-        "OrderItemRepository": [
-          "field: order"
-        ],
-        "OrderService": [
-          "field: status",
-          "nested-type: Order.OrderStatus"
-        ]
-      },
-      "is_custom": false
-    },
-    "CategoryNotFoundException": {
-      "classes": [
-        "CategoryNotFoundException"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "CategoryServiceImpl": [
-          "new CategoryNotFoundException()",
-          "new CategoryNotFoundException()",
-          "new CategoryNotFoundException()",
-          "new CategoryNotFoundException()"
-        ],
-        "ProductServiceImpl": [
-          "new CategoryNotFoundException()"
-        ]
-      },
-      "is_custom": false
-    },
-    "AppException": {
-      "classes": [
-        "AppException"
-      ],
-      "outgoing_calls": {
-        "ErrorCode": [
-          "field: errorCode"
-        ]
-      },
-      "incoming_calls": {
-        "GlobalExceptionHandler": [
-          "field: e"
-        ],
-        "UserService": [
-          "new AppException()",
-          "new AppException()"
-        ]
-      },
-      "is_custom": false
-    },
-    "CartService": {
-      "classes": [
-        "CartService"
-      ],
-      "outgoing_calls": {
-        "CartItemDTO": [
-          "field: cartItemDTO"
-        ],
-        "CartServiceImpl": [
-          "implemented-by: CartServiceImpl"
-        ]
-      },
-      "incoming_calls": {
-        "CartController": [
-          "getCartByUserId",
-          "addItemToCart",
-          "updateCartItem",
-          "removeItemFromCart",
-          "clearCart",
-          "field: cartService"
-        ],
-        "CartServiceImpl": [
-          "implements CartService",
-          "implements: CartService"
-        ]
-      },
-      "is_custom": false
-    },
-    "CategoryDTO": {
-      "classes": [
-        "CategoryDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "CategoryController": [
-          "field: categoryDTO"
-        ],
-        "CategoryServiceImpl": [
-          "field: categoryDTO",
-          "field: dto",
-          "if-condition: dto.getParentId()"
-        ],
-        "CategoryService": [
-          "field: categoryDTO"
-        ]
-      },
-      "is_custom": false
-    },
-    "Review": {
-      "classes": [
-        "Review"
-      ],
-      "outgoing_calls": {
-        "Product": [
-          "field: product"
-        ],
-        "UserEntity": [
-          "field: user"
-        ]
-      },
-      "incoming_calls": {
-        "ReviewController": [
-          "field: review",
-          "field: createdReview",
-          "field: updatedReview"
-        ],
-        "ReviewServiceImpl": [
-          "new Review()",
-          "field: review",
-          "field: existingReview",
-          "field: entity"
-        ]
-      },
-      "is_custom": false
-    },
-    "ProductServiceImpl": {
-      "classes": [
-        "ProductServiceImpl"
-      ],
-      "outgoing_calls": {
-        "ProductRepository": [
-          "findAll",
-          "findById",
-          "save",
-          "save",
-          "existsById",
-          "deleteById",
-          "findByCategory_Id",
-          "findByNameContainingIgnoreCase",
-          "field: productRepository",
-          "if-condition: productRepository.existsById()"
-        ],
-        "CategoryRepository": [
-          "findById",
-          "field: categoryRepository"
-        ],
-        "ProductNotFoundException": [
-          "new ProductNotFoundException()",
-          "new ProductNotFoundException()"
-        ],
-        "Product": [
-          "new Product()",
-          "field: product",
-          "field: existingProduct",
-          "field: entity"
-        ],
-        "CategoryNotFoundException": [
-          "new CategoryNotFoundException()"
-        ],
-        "ProductService": [
-          "implements ProductService",
-          "implements: ProductService"
-        ],
-        "Category": [
-          "field: category"
-        ],
-        "ProductDTO": [
-          "field: productDTO",
-          "field: dto",
-          "if-condition: dto.getCategoryId()"
-        ]
-      },
-      "incoming_calls": {
-        "ProductService": [
-          "implemented-by: ProductServiceImpl"
-        ]
-      },
-      "is_custom": false
-    },
-    "CartItemDTO": {
-      "classes": [
-        "CartItemDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "CartController": [
-          "field: cartItemDTO"
-        ],
-        "CartServiceImpl": [
-          "field: cartItemDTO"
-        ],
-        "CartService": [
-          "field: cartItemDTO"
-        ]
-      },
-      "is_custom": false
-    },
-    "IUserRepository": {
-      "classes": [
-        "IUserRepository"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "UserController": [
-          "field: userRepository"
-        ],
-        "AuthService": [
-          "field: userRepository",
-          "@Autowired: userRepository"
-        ],
-        "CartServiceImpl": [
-          "field: userRepository"
+          "chain: remove()...",
+          "chain: clear()...",
+          "chain: stream()...",
+          "in-getCartByUserId: setUser()",
+          "in-getCartByUserId: new Cart()",
+          "in-clearCart: getCartItems()",
+          "in-removeItemFromCart: getCartItems()",
+          "in-addItemToCart: setUser()",
+          "in-addItemToCart: getCartItems()",
+          "in-addItemToCart: new Cart()"
         ],
         "OrderServiceImpl": [
-          "field: userRepository"
+          "field: cart",
+          "if-condition: cart.getCartItems()",
+          "chain: isEmpty()...",
+          "chain: clear()...",
+          "in-checkout: getCartItems()"
         ],
-        "UserService": [
-          "field: userRepository",
-          "if-condition: userRepository.findByEmail()"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderNotFoundException": {
-      "classes": [
-        "OrderNotFoundException"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderServiceImpl": [
-          "new OrderNotFoundException()",
-          "new OrderNotFoundException()",
-          "new OrderNotFoundException()"
+        "CartItem": [
+          "field: cart"
+        ],
+        "CartItemRepository": [
+          "field: cart"
         ]
       },
       "is_custom": false
@@ -782,7 +895,9 @@
         ],
         "ReviewServiceImpl": [
           "field: reviewDTO",
-          "field: dto"
+          "field: dto",
+          "in-updateReview: getContent()",
+          "in-updateReview: getRating()"
         ],
         "ReviewService": [
           "field: reviewDTO"
@@ -790,95 +905,9 @@
       },
       "is_custom": false
     },
-    "OrderStatusUpdateDTO": {
+    "CartItem": {
       "classes": [
-        "OrderStatusUpdateDTO"
-      ],
-      "outgoing_calls": {
-        "Order": [
-          "nested-type: Order.OrderStatus"
-        ]
-      },
-      "incoming_calls": {
-        "OrderController": [
-          "field: statusUpdateDTO"
-        ],
-        "OrderServiceImpl": [
-          "field: statusUpdateDTO",
-          "if-condition: statusUpdateDTO.getStatus()"
-        ],
-        "OrderService": [
-          "field: statusUpdateDTO"
-        ]
-      },
-      "is_custom": false
-    },
-    "ReviewServiceImpl": {
-      "classes": [
-        "ReviewServiceImpl"
-      ],
-      "outgoing_calls": {
-        "ReviewRepository": [
-          "findAll",
-          "findById",
-          "findByProduct_Id",
-          "findByUser_Id",
-          "save",
-          "save",
-          "existsById",
-          "deleteById",
-          "field: reviewRepository",
-          "if-condition: reviewRepository.existsById()"
-        ],
-        "ProductRepository": [
-          "findById",
-          "field: productRepository"
-        ],
-        "UserRepository": [
-          "findById",
-          "field: userRepository"
-        ],
-        "ReviewNotFoundException": [
-          "new ReviewNotFoundException()",
-          "new ReviewNotFoundException()"
-        ],
-        "Review": [
-          "new Review()",
-          "field: review",
-          "field: existingReview",
-          "field: entity"
-        ],
-        "ProductNotFoundException": [
-          "new ProductNotFoundException()"
-        ],
-        "UserNotFoundException": [
-          "new UserNotFoundException()"
-        ],
-        "ReviewService": [
-          "implements ReviewService",
-          "implements: ReviewService"
-        ],
-        "Product": [
-          "field: product"
-        ],
-        "UserEntity": [
-          "field: user"
-        ],
-        "ReviewDTO": [
-          "field: reviewDTO",
-          "field: dto"
-        ]
-      },
-      "incoming_calls": {
-        "ReviewService": [
-          "implemented-by: ReviewServiceImpl"
-        ]
-      },
-      "is_custom": false
-    },
-    "CartItemRepository": {
-      "classes": [
-        "CartItemRepository"
+        "CartItem"
       ],
       "outgoing_calls": {
         "Cart": [
@@ -890,139 +919,101 @@
       },
       "incoming_calls": {
         "CartServiceImpl": [
-          "findByCartAndProduct",
-          "save",
-          "save",
-          "findByCartAndProduct",
-          "save",
-          "findByCartAndProduct",
-          "delete",
-          "field: cartItemRepository"
-        ],
-        "OrderServiceImpl": [
-          "field: cartItemRepository"
+          "new CartItem()",
+          "field: cartItem",
+          "field: newCartItem",
+          "in-updateCartItem: setQuantity()",
+          "in-addItemToCart: setQuantity()",
+          "in-addItemToCart: getQuantity()",
+          "in-addItemToCart: setCart()",
+          "in-addItemToCart: setProduct()",
+          "in-addItemToCart: new CartItem()"
         ]
       },
       "is_custom": false
     },
-    "RegisterRequest": {
+    "ApiResponse": {
       "classes": [
-        "RegisterRequest"
+        "ApiResponse"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "UserController": [
-          "field: registerRequest"
-        ],
-        "UserService": [
-          "field: request"
+        "GlobalExceptionHandler": [
+          "builder",
+          "field: apiResponse",
+          "chain: getCode()...",
+          "chain: getMessage()..."
         ]
       },
       "is_custom": false
     },
-    "CategoryServiceImpl": {
+    "DuplicateCategoryException": {
       "classes": [
-        "CategoryServiceImpl"
+        "DuplicateCategoryException"
       ],
-      "outgoing_calls": {
-        "CategoryRepository": [
-          "findAll",
-          "findByParentIsNull",
-          "findByParentId",
-          "findById",
-          "findByName",
-          "findByName",
-          "save",
-          "findByName",
-          "save",
-          "existsById",
-          "deleteById",
-          "findById",
-          "field: categoryRepository",
-          "if-condition: categoryRepository.existsById()"
-        ],
-        "CategoryNotFoundException": [
-          "new CategoryNotFoundException()",
-          "new CategoryNotFoundException()",
-          "new CategoryNotFoundException()",
-          "new CategoryNotFoundException()"
-        ],
-        "DuplicateCategoryException": [
-          "new DuplicateCategoryException()",
-          "new DuplicateCategoryException()"
-        ],
-        "Category": [
-          "new Category()",
-          "field: category",
-          "field: existingCategory",
-          "field: parentCategory",
-          "field: entity",
-          "if-condition: existingCategory.isPresent()",
-          "if-condition: existingCategory.getName()",
-          "chain: equals()..."
-        ],
-        "CategoryService": [
-          "implements CategoryService",
-          "implements: CategoryService"
-        ],
-        "CategoryDTO": [
-          "field: categoryDTO",
-          "field: dto",
-          "if-condition: dto.getParentId()"
-        ]
-      },
+      "outgoing_calls": {},
       "incoming_calls": {
-        "CategoryService": [
-          "implemented-by: CategoryServiceImpl"
+        "CategoryServiceImpl": [
+          "new DuplicateCategoryException()",
+          "new DuplicateCategoryException()",
+          "in-createCategory: new DuplicateCategoryException()",
+          "in-updateCategory: new DuplicateCategoryException()"
         ]
       },
       "is_custom": false
     },
-    "ProductRepository": {
+    "ReviewNotFoundException": {
       "classes": [
-        "ProductRepository"
+        "ReviewNotFoundException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "GlobalExceptionHandler": [
+          "field: ex"
+        ],
+        "ReviewServiceImpl": [
+          "new ReviewNotFoundException()",
+          "new ReviewNotFoundException()",
+          "in-getReviewById: new ReviewNotFoundException()",
+          "in-deleteReview: new ReviewNotFoundException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductNotFoundException": {
+      "classes": [
+        "ProductNotFoundException"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
         "CartServiceImpl": [
-          "findById",
-          "findById",
-          "findById",
-          "field: productRepository"
-        ],
-        "OrderServiceImpl": [
-          "field: productRepository"
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()",
+          "in-updateCartItem: new ProductNotFoundException()",
+          "in-removeItemFromCart: new ProductNotFoundException()",
+          "in-addItemToCart: new ProductNotFoundException()"
         ],
         "ProductServiceImpl": [
-          "findAll",
-          "findById",
-          "save",
-          "save",
-          "existsById",
-          "deleteById",
-          "findByCategory_Id",
-          "findByNameContainingIgnoreCase",
-          "field: productRepository",
-          "if-condition: productRepository.existsById()"
+          "new ProductNotFoundException()",
+          "new ProductNotFoundException()",
+          "in-deleteProduct: new ProductNotFoundException()",
+          "in-getProductById: new ProductNotFoundException()"
         ],
         "ReviewServiceImpl": [
-          "findById",
-          "field: productRepository"
+          "new ProductNotFoundException()"
         ]
       },
       "is_custom": false
     },
-    "UserResponse": {
+    "ForgotPasswordRequest": {
       "classes": [
-        "UserResponse"
+        "ForgotPasswordRequest"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
         "UserController": [
-          "field: user"
-        ],
-        "UserService": [
-          "builder"
+          "field: request"
         ]
       },
       "is_custom": false
@@ -1046,191 +1037,87 @@
           "findByUser",
           "findByUser",
           "save",
-          "field: cartRepository"
+          "field: cartRepository",
+          "in-getCartByUserId: findByUser()",
+          "in-getCartByUserId: save()",
+          "in-clearCart: findByUser()",
+          "in-clearCart: save()",
+          "in-updateCartItem: findByUser()",
+          "in-removeItemFromCart: findByUser()",
+          "in-addItemToCart: findByUser()",
+          "in-addItemToCart: save()"
         ],
         "OrderServiceImpl": [
           "findByUser",
           "save",
-          "field: cartRepository"
+          "field: cartRepository",
+          "in-checkout: findByUser()",
+          "in-checkout: save()"
         ]
       },
       "is_custom": false
     },
-    "ApiResponse": {
+    "IUserRepository": {
       "classes": [
-        "ApiResponse"
+        "IUserRepository"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "GlobalExceptionHandler": [
-          "builder",
-          "field: apiResponse",
-          "chain: getCode()...",
-          "chain: getMessage()..."
-        ]
-      },
-      "is_custom": false
-    },
-    "CartItem": {
-      "classes": [
-        "CartItem"
-      ],
-      "outgoing_calls": {
-        "Cart": [
-          "field: cart"
+        "UserController": [
+          "field: userRepository"
         ],
-        "Product": [
-          "field: product"
-        ]
-      },
-      "incoming_calls": {
-        "CartServiceImpl": [
-          "new CartItem()",
-          "field: cartItem",
-          "field: newCartItem"
-        ]
-      },
-      "is_custom": false
-    },
-    "UserNotFoundException": {
-      "classes": [
-        "UserNotFoundException"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "GlobalExceptionHandler": [
-          "field: ex"
-        ],
-        "CartServiceImpl": [
-          "new UserNotFoundException()",
-          "new UserNotFoundException()",
-          "new UserNotFoundException()",
-          "new UserNotFoundException()",
-          "new UserNotFoundException()"
-        ],
-        "OrderServiceImpl": [
-          "new UserNotFoundException()",
-          "new UserNotFoundException()",
-          "new UserNotFoundException()"
-        ],
-        "ReviewServiceImpl": [
-          "new UserNotFoundException()"
-        ]
-      },
-      "is_custom": false
-    },
-    "ReviewNotFoundException": {
-      "classes": [
-        "ReviewNotFoundException"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "GlobalExceptionHandler": [
-          "field: ex"
-        ],
-        "ReviewServiceImpl": [
-          "new ReviewNotFoundException()",
-          "new ReviewNotFoundException()"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderController": {
-      "classes": [
-        "OrderController"
-      ],
-      "outgoing_calls": {
-        "ResponseDTO": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ],
-        "OrderService": [
-          "checkout",
-          "getOrderById",
-          "getOrdersByUserId",
-          "getOrdersByUserId",
-          "updateOrderStatus",
-          "cancelOrder",
-          "field: orderService"
-        ],
-        "OrderDTO": [
-          "field: order",
-          "field: updatedOrder",
-          "field: cancelledOrder"
-        ],
-        "CheckoutRequestDTO": [
-          "field: checkoutRequest"
-        ],
-        "OrderStatusUpdateDTO": [
-          "field: statusUpdateDTO"
-        ]
-      },
-      "incoming_calls": {},
-      "is_custom": false
-    },
-    "AuthService": {
-      "classes": [
-        "AuthService"
-      ],
-      "outgoing_calls": {
-        "UserRepository": [
-          "findByEmail",
-          "save"
-        ],
-        "IUserRepository": [
+        "AuthService": [
           "field: userRepository",
           "@Autowired: userRepository"
         ],
-        "UserEntity": [
-          "field: foundUser",
-          "if-condition: foundUser.getOtp()",
-          "chain: equals()..."
-        ]
-      },
-      "incoming_calls": {
-        "UserController": [
-          "verifyUser",
-          "field: authService"
+        "CartServiceImpl": [
+          "field: userRepository",
+          "in-getCartByUserId: findById()",
+          "in-clearCart: findById()",
+          "in-updateCartItem: findById()",
+          "in-removeItemFromCart: findById()",
+          "in-addItemToCart: findById()"
+        ],
+        "OrderServiceImpl": [
+          "field: userRepository",
+          "in-getOrdersByUserId: findById()",
+          "in-checkout: findById()"
+        ],
+        "UserService": [
+          "field: userRepository",
+          "if-condition: userRepository.findByEmail()"
         ]
       },
       "is_custom": false
     },
-    "GlobalExceptionHandler": {
+    "LoginRequest": {
       "classes": [
-        "RatingNotFoundException",
-        "GlobalExceptionHandler",
-        "DuplicateRatingException",
-        "UnauthorizedRatingActionException"
+        "LoginRequest"
       ],
-      "outgoing_calls": {
-        "ApiResponse": [
-          "builder",
-          "field: apiResponse",
-          "chain: getCode()...",
-          "chain: getMessage()..."
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: loginRequest"
         ],
-        "ResponseDTO": [
-          "error",
-          "error"
-        ],
-        "ErrorCode": [
-          "field: errorCode"
-        ],
-        "AppException": [
-          "field: e"
-        ],
-        "UserNotFoundException": [
-          "field: ex"
-        ],
-        "ReviewNotFoundException": [
-          "field: ex"
+        "UserService": [
+          "field: request"
         ]
       },
-      "incoming_calls": {},
+      "is_custom": false
+    },
+    "RegisterRequest": {
+      "classes": [
+        "RegisterRequest"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: registerRequest"
+        ],
+        "UserService": [
+          "field: request"
+        ]
+      },
       "is_custom": false
     },
     "OrderService": {
@@ -1249,7 +1136,9 @@
           "nested-type: Order.OrderStatus"
         ],
         "OrderServiceImpl": [
-          "implemented-by: OrderServiceImpl"
+          "implemented-by: OrderServiceImpl",
+          "service\u2192impl: OrderServiceImpl",
+          "service\u2192impl: com.example.demo.service.OrderServiceImpl"
         ]
       },
       "incoming_calls": {
@@ -1269,234 +1158,113 @@
       },
       "is_custom": false
     },
-    "VerifyRequest": {
+    "CategoryDTO": {
       "classes": [
-        "VerifyRequest"
+        "CategoryDTO"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "UserController": [
-          "field: request"
-        ]
-      },
-      "is_custom": false
-    },
-    "ResponseDTO": {
-      "classes": [
-        "ResponseDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "CartController": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ],
         "CategoryController": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
+          "field: categoryDTO"
         ],
-        "OrderController": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
+        "CategoryServiceImpl": [
+          "field: categoryDTO",
+          "field: dto",
+          "if-condition: dto.getParentId()",
+          "in-createCategory: getName()",
+          "in-updateCategory: getName()"
         ],
-        "ProductController": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ],
-        "ReviewController": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ],
-        "GlobalExceptionHandler": [
-          "error",
-          "error"
+        "CategoryService": [
+          "field: categoryDTO"
         ]
       },
       "is_custom": false
     },
-    "EmailService": {
+    "UserController": {
       "classes": [
-        "EmailService"
+        "UserController"
       ],
-      "outgoing_calls": {},
-      "incoming_calls": {
+      "outgoing_calls": {
+        "UserEntity": [
+          "builder",
+          "field: user"
+        ],
+        "UserRepository": [
+          "save"
+        ],
         "UserService": [
-          "field: emailService"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderItemRepository": {
-      "classes": [
-        "OrderItemRepository"
-      ],
-      "outgoing_calls": {
-        "Order": [
-          "field: order"
-        ]
-      },
-      "incoming_calls": {
-        "OrderServiceImpl": [
-          "field: orderItemRepository"
-        ]
-      },
-      "is_custom": false
-    },
-    "CartController": {
-      "classes": [
-        "CartController"
-      ],
-      "outgoing_calls": {
-        "ResponseDTO": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
+          "register",
+          "login",
+          "getUserById",
+          "deleteUserById",
+          "forgotPassword",
+          "resetPassword",
+          "updateUserInfo",
+          "field: userService"
         ],
-        "CartService": [
-          "getCartByUserId",
-          "addItemToCart",
-          "updateCartItem",
-          "removeItemFromCart",
-          "clearCart",
-          "field: cartService"
+        "AuthService": [
+          "verifyUser",
+          "field: authService"
         ],
-        "CartDTO": [
-          "field: cart",
-          "field: updatedCart"
+        "IUserRepository": [
+          "field: userRepository"
         ],
-        "CartItemDTO": [
-          "field: cartItemDTO"
+        "UserResponse": [
+          "field: user"
+        ],
+        "RegisterRequest": [
+          "field: registerRequest"
+        ],
+        "LoginRequest": [
+          "field: loginRequest"
+        ],
+        "VerifyRequest": [
+          "field: request"
+        ],
+        "ForgotPasswordRequest": [
+          "field: request"
+        ],
+        "ResetPasswordRequest": [
+          "field: request"
+        ],
+        "UpdateUserRequest": [
+          "field: request"
         ]
       },
       "incoming_calls": {},
       "is_custom": false
     },
-    "CheckoutRequestDTO": {
+    "CartItemRepository": {
       "classes": [
-        "CheckoutRequestDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "field: checkoutRequest"
-        ],
-        "OrderServiceImpl": [
-          "field: checkoutRequest"
-        ],
-        "OrderService": [
-          "field: checkoutRequest"
-        ]
-      },
-      "is_custom": false
-    },
-    "ResetPasswordRequest": {
-      "classes": [
-        "ResetPasswordRequest"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "UserController": [
-          "field: request"
-        ],
-        "UserService": [
-          "field: request"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderDTO": {
-      "classes": [
-        "OrderDTO"
+        "CartItemRepository"
       ],
       "outgoing_calls": {
-        "Order": [
-          "nested-type: Order.OrderStatus"
+        "Cart": [
+          "field: cart"
+        ],
+        "Product": [
+          "field: product"
         ]
       },
       "incoming_calls": {
-        "OrderController": [
-          "field: order",
-          "field: updatedOrder",
-          "field: cancelledOrder"
-        ],
-        "OrderServiceImpl": [
-          "new OrderDTO()",
-          "field: orderDTO",
-          "chain: getId()..."
-        ]
-      },
-      "is_custom": false
-    },
-    "CategoryService": {
-      "classes": [
-        "CategoryService"
-      ],
-      "outgoing_calls": {
-        "CategoryDTO": [
-          "field: categoryDTO"
-        ],
-        "CategoryServiceImpl": [
-          "implemented-by: CategoryServiceImpl"
-        ]
-      },
-      "incoming_calls": {
-        "CategoryController": [
-          "getAllCategories",
-          "getRootCategories",
-          "getSubcategories",
-          "getCategoryById",
-          "getCategoryByName",
-          "createCategory",
-          "updateCategory",
-          "deleteCategory",
-          "field: categoryService"
-        ],
-        "CategoryServiceImpl": [
-          "implements CategoryService",
-          "implements: CategoryService"
-        ]
-      },
-      "is_custom": false
-    },
-    "CartDTO": {
-      "classes": [
-        "CartDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "CartController": [
-          "field: cart",
-          "field: updatedCart"
-        ],
         "CartServiceImpl": [
-          "new CartDTO()",
-          "field: cartDTO",
-          "chain: getId()..."
+          "findByCartAndProduct",
+          "save",
+          "save",
+          "findByCartAndProduct",
+          "save",
+          "findByCartAndProduct",
+          "delete",
+          "field: cartItemRepository",
+          "in-updateCartItem: findByCartAndProduct()",
+          "in-updateCartItem: save()",
+          "in-removeItemFromCart: findByCartAndProduct()",
+          "in-removeItemFromCart: delete()",
+          "in-addItemToCart: findByCartAndProduct()",
+          "in-addItemToCart: save()"
+        ],
+        "OrderServiceImpl": [
+          "field: cartItemRepository"
         ]
       },
       "is_custom": false
@@ -1520,7 +1288,11 @@
           "field: entity",
           "if-condition: existingCategory.isPresent()",
           "if-condition: existingCategory.getName()",
-          "chain: equals()..."
+          "chain: equals()...",
+          "in-createCategory: isPresent()",
+          "in-createCategory: new Category()",
+          "in-updateCategory: getName()",
+          "in-updateCategory: setUpdatedAt()"
         ],
         "ProductServiceImpl": [
           "field: category"
@@ -1531,132 +1303,15 @@
       },
       "is_custom": false
     },
-    "ErrorCode": {
+    "OrderItemDTO": {
       "classes": [
-        "ErrorCode"
+        "OrderItemDTO"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "GlobalExceptionHandler": [
-          "field: errorCode"
-        ],
-        "AppException": [
-          "field: errorCode"
-        ]
-      },
-      "is_custom": false
-    },
-    "ProductDTO": {
-      "classes": [
-        "ProductDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "ProductController": [
-          "field: productDTO"
-        ],
-        "ProductServiceImpl": [
-          "field: productDTO",
-          "field: dto",
-          "if-condition: dto.getCategoryId()"
-        ],
-        "ProductService": [
-          "field: productDTO"
-        ]
-      },
-      "is_custom": false
-    },
-    "CategoryController": {
-      "classes": [
-        "CategoryController"
-      ],
-      "outgoing_calls": {
-        "ResponseDTO": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ],
-        "CategoryService": [
-          "getAllCategories",
-          "getRootCategories",
-          "getSubcategories",
-          "getCategoryById",
-          "getCategoryByName",
-          "createCategory",
-          "updateCategory",
-          "deleteCategory",
-          "field: categoryService"
-        ],
-        "Category": [
-          "field: category",
-          "field: createdCategory",
-          "field: updatedCategory"
-        ],
-        "CategoryDTO": [
-          "field: categoryDTO"
-        ]
-      },
-      "incoming_calls": {},
-      "is_custom": false
-    },
-    "LoginRequest": {
-      "classes": [
-        "LoginRequest"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "UserController": [
-          "field: loginRequest"
-        ],
-        "UserService": [
-          "field: request"
-        ]
-      },
-      "is_custom": false
-    },
-    "CategoryRepository": {
-      "classes": [
-        "CategoryRepository"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "CategoryServiceImpl": [
-          "findAll",
-          "findByParentIsNull",
-          "findByParentId",
-          "findById",
-          "findByName",
-          "findByName",
-          "save",
-          "findByName",
-          "save",
-          "existsById",
-          "deleteById",
-          "findById",
-          "field: categoryRepository",
-          "if-condition: categoryRepository.existsById()"
-        ],
-        "ProductServiceImpl": [
-          "findById",
-          "field: categoryRepository"
-        ]
-      },
-      "is_custom": false
-    },
-    "DuplicateCategoryException": {
-      "classes": [
-        "DuplicateCategoryException"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "CategoryServiceImpl": [
-          "new DuplicateCategoryException()",
-          "new DuplicateCategoryException()"
+        "OrderServiceImpl": [
+          "new OrderItemDTO()",
+          "field: dto"
         ]
       },
       "is_custom": false
@@ -1670,27 +1325,6 @@
         "CartServiceImpl": [
           "new CartItemResponseDTO()",
           "field: dto"
-        ]
-      },
-      "is_custom": false
-    },
-    "ReviewRepository": {
-      "classes": [
-        "ReviewRepository"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "ReviewServiceImpl": [
-          "findAll",
-          "findById",
-          "findByProduct_Id",
-          "findByUser_Id",
-          "save",
-          "save",
-          "existsById",
-          "deleteById",
-          "field: reviewRepository",
-          "if-condition: reviewRepository.existsById()"
         ]
       },
       "is_custom": false
@@ -1752,145 +1386,616 @@
       },
       "is_custom": false
     },
-    "ProductNotFoundException": {
+    "OrderRepository": {
       "classes": [
-        "ProductNotFoundException"
+        "OrderRepository"
       ],
-      "outgoing_calls": {},
+      "outgoing_calls": {
+        "UserEntity": [
+          "field: user"
+        ]
+      },
       "incoming_calls": {
-        "CartServiceImpl": [
-          "new ProductNotFoundException()",
-          "new ProductNotFoundException()",
-          "new ProductNotFoundException()"
-        ],
-        "ProductServiceImpl": [
-          "new ProductNotFoundException()",
-          "new ProductNotFoundException()"
-        ],
-        "ReviewServiceImpl": [
-          "new ProductNotFoundException()"
+        "OrderServiceImpl": [
+          "save",
+          "findById",
+          "findByUserOrderByOrderDateDesc",
+          "findByUserOrderByOrderDateDesc",
+          "findById",
+          "save",
+          "findById",
+          "save",
+          "field: orderRepository",
+          "in-updateOrderStatus: findById()",
+          "in-updateOrderStatus: save()",
+          "in-getOrderById: findById()",
+          "in-getOrdersByUserId: findByUserOrderByOrderDateDesc()",
+          "in-checkout: save()",
+          "in-cancelOrder: findById()",
+          "in-cancelOrder: save()",
+          "\ud83c\udfafcancelOrder: orderRepository.findById()",
+          "\ud83c\udfafcancelOrder: orderRepository.save()"
         ]
       },
       "is_custom": false
     },
-    "ReviewService": {
+    "ResponseDTO": {
       "classes": [
-        "ReviewService"
+        "ResponseDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "CategoryController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "OrderController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "ProductController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "ReviewController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "GlobalExceptionHandler": [
+          "error",
+          "error"
+        ]
+      },
+      "is_custom": false
+    },
+    "CategoryController": {
+      "classes": [
+        "CategoryController"
       ],
       "outgoing_calls": {
-        "ReviewDTO": [
-          "field: reviewDTO"
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "CategoryService": [
+          "getAllCategories",
+          "getRootCategories",
+          "getSubcategories",
+          "getCategoryById",
+          "getCategoryByName",
+          "createCategory",
+          "updateCategory",
+          "deleteCategory",
+          "field: categoryService"
+        ],
+        "Category": [
+          "field: category",
+          "field: createdCategory",
+          "field: updatedCategory"
+        ],
+        "CategoryDTO": [
+          "field: categoryDTO"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "OrderController": {
+      "classes": [
+        "OrderController"
+      ],
+      "outgoing_calls": {
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "OrderService": [
+          "checkout",
+          "getOrderById",
+          "getOrdersByUserId",
+          "getOrdersByUserId",
+          "updateOrderStatus",
+          "cancelOrder",
+          "field: orderService"
+        ],
+        "OrderDTO": [
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
+        ],
+        "CheckoutRequestDTO": [
+          "field: checkoutRequest"
+        ],
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "OrderStatusUpdateDTO": {
+      "classes": [
+        "OrderStatusUpdateDTO"
+      ],
+      "outgoing_calls": {
+        "Order": [
+          "nested-type: Order.OrderStatus"
+        ]
+      },
+      "incoming_calls": {
+        "OrderController": [
+          "field: statusUpdateDTO"
+        ],
+        "OrderServiceImpl": [
+          "field: statusUpdateDTO",
+          "if-condition: statusUpdateDTO.getStatus()",
+          "in-updateOrderStatus: getStatus()"
+        ],
+        "OrderService": [
+          "field: statusUpdateDTO"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewRepository": {
+      "classes": [
+        "ReviewRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "ReviewServiceImpl": [
+          "findAll",
+          "findById",
+          "findByProduct_Id",
+          "findByUser_Id",
+          "save",
+          "save",
+          "existsById",
+          "deleteById",
+          "field: reviewRepository",
+          "if-condition: reviewRepository.existsById()",
+          "in-getReviewById: findById()",
+          "in-getAllReviews: findAll()",
+          "in-deleteReview: existsById()",
+          "in-deleteReview: deleteById()",
+          "in-getReviewsByProductId: findByProduct_Id()",
+          "in-updateReview: save()",
+          "in-getReviewsByUserId: findByUser_Id()",
+          "in-createReview: save()"
+        ]
+      },
+      "is_custom": false
+    },
+    "ProductRepository": {
+      "classes": [
+        "ProductRepository"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartServiceImpl": [
+          "findById",
+          "findById",
+          "findById",
+          "field: productRepository",
+          "in-updateCartItem: findById()",
+          "in-removeItemFromCart: findById()",
+          "in-addItemToCart: findById()"
+        ],
+        "OrderServiceImpl": [
+          "field: productRepository"
+        ],
+        "ProductServiceImpl": [
+          "findAll",
+          "findById",
+          "save",
+          "save",
+          "existsById",
+          "deleteById",
+          "findByCategory_Id",
+          "findByNameContainingIgnoreCase",
+          "field: productRepository",
+          "if-condition: productRepository.existsById()",
+          "in-createProduct: save()",
+          "in-deleteProduct: existsById()",
+          "in-deleteProduct: deleteById()",
+          "in-getAllProducts: findAll()",
+          "in-getProductById: findById()",
+          "in-searchProductsByName: findByNameContainingIgnoreCase()",
+          "in-updateProduct: save()",
+          "in-getProductsByCategory: findByCategory_Id()"
         ],
         "ReviewServiceImpl": [
-          "implemented-by: ReviewServiceImpl"
+          "findById",
+          "field: productRepository"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserNotFoundException": {
+      "classes": [
+        "UserNotFoundException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "GlobalExceptionHandler": [
+          "field: ex"
+        ],
+        "CartServiceImpl": [
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "in-getCartByUserId: new UserNotFoundException()",
+          "in-clearCart: new UserNotFoundException()",
+          "in-updateCartItem: new UserNotFoundException()",
+          "in-removeItemFromCart: new UserNotFoundException()",
+          "in-addItemToCart: new UserNotFoundException()"
+        ],
+        "OrderServiceImpl": [
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "in-getOrdersByUserId: new UserNotFoundException()",
+          "in-checkout: new UserNotFoundException()"
+        ],
+        "ReviewServiceImpl": [
+          "new UserNotFoundException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartService": {
+      "classes": [
+        "CartService"
+      ],
+      "outgoing_calls": {
+        "CartItemDTO": [
+          "field: cartItemDTO"
+        ],
+        "CartServiceImpl": [
+          "implemented-by: CartServiceImpl",
+          "service\u2192impl: CartServiceImpl",
+          "service\u2192impl: com.example.demo.service.CartServiceImpl"
+        ]
+      },
+      "incoming_calls": {
+        "CartController": [
+          "getCartByUserId",
+          "addItemToCart",
+          "updateCartItem",
+          "removeItemFromCart",
+          "clearCart",
+          "field: cartService"
+        ],
+        "CartServiceImpl": [
+          "implements CartService",
+          "implements: CartService"
+        ]
+      },
+      "is_custom": false
+    },
+    "GlobalExceptionHandler": {
+      "classes": [
+        "DuplicateRatingException",
+        "RatingNotFoundException",
+        "GlobalExceptionHandler",
+        "UnauthorizedRatingActionException"
+      ],
+      "outgoing_calls": {
+        "ApiResponse": [
+          "builder",
+          "field: apiResponse",
+          "chain: getCode()...",
+          "chain: getMessage()..."
+        ],
+        "ResponseDTO": [
+          "error",
+          "error"
+        ],
+        "ErrorCode": [
+          "field: errorCode"
+        ],
+        "AppException": [
+          "field: e"
+        ],
+        "UserNotFoundException": [
+          "field: ex"
+        ],
+        "ReviewNotFoundException": [
+          "field: ex"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "OrderItemRepository": {
+      "classes": [
+        "OrderItemRepository"
+      ],
+      "outgoing_calls": {
+        "Order": [
+          "field: order"
+        ]
+      },
+      "incoming_calls": {
+        "OrderServiceImpl": [
+          "field: orderItemRepository"
+        ]
+      },
+      "is_custom": false
+    },
+    "Review": {
+      "classes": [
+        "Review"
+      ],
+      "outgoing_calls": {
+        "Product": [
+          "field: product"
+        ],
+        "UserEntity": [
+          "field: user"
         ]
       },
       "incoming_calls": {
         "ReviewController": [
-          "getAllReviews",
-          "getReviewById",
-          "getReviewsByProductId",
-          "getReviewsByUserId",
-          "createReview",
-          "updateReview",
-          "deleteReview",
-          "field: reviewService"
+          "field: review",
+          "field: createdReview",
+          "field: updatedReview"
         ],
         "ReviewServiceImpl": [
-          "implements ReviewService",
-          "implements: ReviewService"
+          "new Review()",
+          "field: review",
+          "field: existingReview",
+          "field: entity",
+          "in-updateReview: setContent()",
+          "in-updateReview: setRating()",
+          "in-updateReview: setUpdatedAt()",
+          "in-createReview: new Review()"
         ]
       },
       "is_custom": false
     },
-    "UserRepository": {
+    "OrderServiceImpl": {
       "classes": [
-        "UserRepository"
+        "OrderServiceImpl"
+      ],
+      "outgoing_calls": {
+        "UserRepository": [
+          "findById",
+          "findById",
+          "findById"
+        ],
+        "CartRepository": [
+          "findByUser",
+          "save",
+          "field: cartRepository",
+          "in-checkout: findByUser()",
+          "in-checkout: save()"
+        ],
+        "OrderRepository": [
+          "save",
+          "findById",
+          "findByUserOrderByOrderDateDesc",
+          "findByUserOrderByOrderDateDesc",
+          "findById",
+          "save",
+          "findById",
+          "save",
+          "field: orderRepository",
+          "in-updateOrderStatus: findById()",
+          "in-updateOrderStatus: save()",
+          "in-getOrderById: findById()",
+          "in-getOrdersByUserId: findByUserOrderByOrderDateDesc()",
+          "in-checkout: save()",
+          "in-cancelOrder: findById()",
+          "in-cancelOrder: save()",
+          "\ud83c\udfafcancelOrder: orderRepository.findById()",
+          "\ud83c\udfafcancelOrder: orderRepository.save()"
+        ],
+        "UserNotFoundException": [
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "new UserNotFoundException()",
+          "in-getOrdersByUserId: new UserNotFoundException()",
+          "in-checkout: new UserNotFoundException()"
+        ],
+        "Order": [
+          "new Order()",
+          "field: order",
+          "field: savedOrder",
+          "field: updatedOrder",
+          "field: status",
+          "nested-type: OrderStatus.SHIPPING",
+          "nested-type: OrderStatus.DELIVERED",
+          "nested-type: Order.OrderStatus",
+          "if-condition: order.getStatus()",
+          "enum-access: OrderStatus.DELIVERED",
+          "enum-access: OrderStatus.SHIPPING",
+          "enum-access: OrderStatus.RECEIVED",
+          "switch(status)",
+          "chain: add()...",
+          "chain: stream()...",
+          "in-getStatusDisplayText: name()",
+          "in-updateOrderStatus: setStatus()",
+          "in-updateOrderStatus: setDeliveryDate()",
+          "in-checkout: setUser()",
+          "in-checkout: setShippingAddress()",
+          "in-checkout: setPhoneNumber()",
+          "in-checkout: getOrderItems()",
+          "in-checkout: setTotalAmount()",
+          "in-checkout: new Order()",
+          "in-cancelOrder: getStatus()",
+          "in-cancelOrder: setStatus()",
+          "\ud83c\udfafcancelOrder: order.getStatus()",
+          "\ud83c\udfafcancelOrder: order.setStatus()"
+        ],
+        "OrderItem": [
+          "new OrderItem()",
+          "field: orderItem",
+          "in-checkout: setOrder()",
+          "in-checkout: setProduct()",
+          "in-checkout: setQuantity()",
+          "in-checkout: setPrice()",
+          "in-checkout: setSubtotal()",
+          "in-checkout: new OrderItem()"
+        ],
+        "OrderNotFoundException": [
+          "new OrderNotFoundException()",
+          "new OrderNotFoundException()",
+          "new OrderNotFoundException()",
+          "in-updateOrderStatus: new OrderNotFoundException()",
+          "in-getOrderById: new OrderNotFoundException()",
+          "in-cancelOrder: new OrderNotFoundException()",
+          "\ud83c\udfafcancelOrder: new OrderNotFoundException()"
+        ],
+        "OrderDTO": [
+          "new OrderDTO()",
+          "field: orderDTO",
+          "chain: getId()..."
+        ],
+        "OrderItemDTO": [
+          "new OrderItemDTO()",
+          "field: dto"
+        ],
+        "OrderService": [
+          "implements OrderService",
+          "implements: OrderService"
+        ],
+        "OrderItemRepository": [
+          "field: orderItemRepository"
+        ],
+        "CartItemRepository": [
+          "field: cartItemRepository"
+        ],
+        "IUserRepository": [
+          "field: userRepository",
+          "in-getOrdersByUserId: findById()",
+          "in-checkout: findById()"
+        ],
+        "ProductRepository": [
+          "field: productRepository"
+        ],
+        "UserEntity": [
+          "field: user"
+        ],
+        "Cart": [
+          "field: cart",
+          "if-condition: cart.getCartItems()",
+          "chain: isEmpty()...",
+          "chain: clear()...",
+          "in-checkout: getCartItems()"
+        ],
+        "Product": [
+          "field: product",
+          "chain: multiply()...",
+          "in-checkout: getPrice()"
+        ],
+        "CheckoutRequestDTO": [
+          "field: checkoutRequest",
+          "in-checkout: getShippingAddress()",
+          "in-checkout: getPhoneNumber()"
+        ],
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO",
+          "if-condition: statusUpdateDTO.getStatus()",
+          "in-updateOrderStatus: getStatus()"
+        ]
+      },
+      "incoming_calls": {
+        "OrderService": [
+          "implemented-by: OrderServiceImpl",
+          "service\u2192impl: OrderServiceImpl",
+          "service\u2192impl: com.example.demo.service.OrderServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartDTO": {
+      "classes": [
+        "CartDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "CartController": [
+          "field: cart",
+          "field: updatedCart"
+        ],
+        "CartServiceImpl": [
+          "new CartDTO()",
+          "field: cartDTO",
+          "chain: getId()..."
+        ]
+      },
+      "is_custom": false
+    },
+    "CheckoutRequestDTO": {
+      "classes": [
+        "CheckoutRequestDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "field: checkoutRequest"
+        ],
+        "OrderServiceImpl": [
+          "field: checkoutRequest",
+          "in-checkout: getShippingAddress()",
+          "in-checkout: getPhoneNumber()"
+        ],
+        "OrderService": [
+          "field: checkoutRequest"
+        ]
+      },
+      "is_custom": false
+    },
+    "VerifyRequest": {
+      "classes": [
+        "VerifyRequest"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
         "UserController": [
-          "save"
-        ],
-        "AuthService": [
-          "findByEmail",
-          "save"
-        ],
-        "CartServiceImpl": [
-          "findById",
-          "findById",
-          "findById",
-          "findById",
-          "findById"
-        ],
-        "OrderServiceImpl": [
-          "findById",
-          "findById",
-          "findById"
-        ],
-        "ReviewServiceImpl": [
-          "findById",
-          "field: userRepository"
-        ],
-        "UserService": [
-          "findByEmail",
-          "findByEmail"
-        ]
-      },
-      "is_custom": false
-    },
-    "UserController": {
-      "classes": [
-        "UserController"
-      ],
-      "outgoing_calls": {
-        "UserEntity": [
-          "builder",
-          "field: user"
-        ],
-        "UserRepository": [
-          "save"
-        ],
-        "UserService": [
-          "register",
-          "login",
-          "getUserById",
-          "deleteUserById",
-          "forgotPassword",
-          "resetPassword",
-          "updateUserInfo",
-          "field: userService"
-        ],
-        "AuthService": [
-          "verifyUser",
-          "field: authService"
-        ],
-        "IUserRepository": [
-          "field: userRepository"
-        ],
-        "UserResponse": [
-          "field: user"
-        ],
-        "RegisterRequest": [
-          "field: registerRequest"
-        ],
-        "LoginRequest": [
-          "field: loginRequest"
-        ],
-        "VerifyRequest": [
-          "field: request"
-        ],
-        "ForgotPasswordRequest": [
-          "field: request"
-        ],
-        "ResetPasswordRequest": [
-          "field: request"
-        ],
-        "UpdateUserRequest": [
           "field: request"
         ]
       },
-      "incoming_calls": {},
       "is_custom": false
     },
     "ReviewController": {
@@ -1927,6 +2032,201 @@
         ]
       },
       "incoming_calls": {},
+      "is_custom": false
+    },
+    "AppException": {
+      "classes": [
+        "AppException"
+      ],
+      "outgoing_calls": {
+        "ErrorCode": [
+          "field: errorCode"
+        ]
+      },
+      "incoming_calls": {
+        "GlobalExceptionHandler": [
+          "field: e"
+        ],
+        "UserService": [
+          "new AppException()",
+          "new AppException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "CartController": {
+      "classes": [
+        "CartController"
+      ],
+      "outgoing_calls": {
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ],
+        "CartService": [
+          "getCartByUserId",
+          "addItemToCart",
+          "updateCartItem",
+          "removeItemFromCart",
+          "clearCart",
+          "field: cartService"
+        ],
+        "CartDTO": [
+          "field: cart",
+          "field: updatedCart"
+        ],
+        "CartItemDTO": [
+          "field: cartItemDTO"
+        ]
+      },
+      "incoming_calls": {},
+      "is_custom": false
+    },
+    "UpdateUserRequest": {
+      "classes": [
+        "UpdateUserRequest"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: request"
+        ],
+        "UserService": [
+          "field: request"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderNotFoundException": {
+      "classes": [
+        "OrderNotFoundException"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderServiceImpl": [
+          "new OrderNotFoundException()",
+          "new OrderNotFoundException()",
+          "new OrderNotFoundException()",
+          "in-updateOrderStatus: new OrderNotFoundException()",
+          "in-getOrderById: new OrderNotFoundException()",
+          "in-cancelOrder: new OrderNotFoundException()",
+          "\ud83c\udfafcancelOrder: new OrderNotFoundException()"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewServiceImpl": {
+      "classes": [
+        "ReviewServiceImpl"
+      ],
+      "outgoing_calls": {
+        "ReviewRepository": [
+          "findAll",
+          "findById",
+          "findByProduct_Id",
+          "findByUser_Id",
+          "save",
+          "save",
+          "existsById",
+          "deleteById",
+          "field: reviewRepository",
+          "if-condition: reviewRepository.existsById()",
+          "in-getReviewById: findById()",
+          "in-getAllReviews: findAll()",
+          "in-deleteReview: existsById()",
+          "in-deleteReview: deleteById()",
+          "in-getReviewsByProductId: findByProduct_Id()",
+          "in-updateReview: save()",
+          "in-getReviewsByUserId: findByUser_Id()",
+          "in-createReview: save()"
+        ],
+        "ProductRepository": [
+          "findById",
+          "field: productRepository"
+        ],
+        "UserRepository": [
+          "findById",
+          "field: userRepository"
+        ],
+        "ReviewNotFoundException": [
+          "new ReviewNotFoundException()",
+          "new ReviewNotFoundException()",
+          "in-getReviewById: new ReviewNotFoundException()",
+          "in-deleteReview: new ReviewNotFoundException()"
+        ],
+        "Review": [
+          "new Review()",
+          "field: review",
+          "field: existingReview",
+          "field: entity",
+          "in-updateReview: setContent()",
+          "in-updateReview: setRating()",
+          "in-updateReview: setUpdatedAt()",
+          "in-createReview: new Review()"
+        ],
+        "ProductNotFoundException": [
+          "new ProductNotFoundException()"
+        ],
+        "UserNotFoundException": [
+          "new UserNotFoundException()"
+        ],
+        "ReviewService": [
+          "implements ReviewService",
+          "implements: ReviewService"
+        ],
+        "Product": [
+          "field: product"
+        ],
+        "UserEntity": [
+          "field: user"
+        ],
+        "ReviewDTO": [
+          "field: reviewDTO",
+          "field: dto",
+          "in-updateReview: getContent()",
+          "in-updateReview: getRating()"
+        ]
+      },
+      "incoming_calls": {
+        "ReviewService": [
+          "implemented-by: ReviewServiceImpl",
+          "service\u2192impl: ReviewServiceImpl",
+          "service\u2192impl: com.example.demo.service.ReviewServiceImpl"
+        ]
+      },
+      "is_custom": false
+    },
+    "UserResponse": {
+      "classes": [
+        "UserResponse"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: user"
+        ],
+        "UserService": [
+          "builder"
+        ]
+      },
+      "is_custom": false
+    },
+    "ResetPasswordRequest": {
+      "classes": [
+        "ResetPasswordRequest"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "UserController": [
+          "field: request"
+        ],
+        "UserService": [
+          "field: request"
+        ]
+      },
       "is_custom": false
     }
   },
