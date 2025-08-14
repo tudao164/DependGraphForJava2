@@ -8,58 +8,32 @@
     "custom_edges": 0
   },
   "files": {
-    "OrderService": {
+    "OrderStatusUpdateDTO": {
       "classes": [
-        "OrderService"
+        "OrderStatusUpdateDTO"
       ],
-      "outgoing_calls": {
-        "CheckoutRequestDTO": [
-          "field: checkoutRequest"
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "field: statusUpdateDTO"
         ],
-        "OrderStatusUpdateDTO": [
+        "OrderService": [
           "field: statusUpdateDTO"
         ]
       },
-      "incoming_calls": {
-        "OrderController": [
-          "checkout",
-          "getOrderById",
-          "getOrdersByUserId",
-          "getOrdersByUserId",
-          "updateOrderStatus",
-          "cancelOrder",
-          "field: orderService"
-        ]
-      },
       "is_custom": false
     },
-    "OrderDTO": {
+    "CheckoutRequestDTO": {
       "classes": [
-        "OrderDTO"
+        "CheckoutRequestDTO"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
         "OrderController": [
-          "field: order",
-          "field: updatedOrder",
-          "field: cancelledOrder"
-        ]
-      },
-      "is_custom": false
-    },
-    "ResponseDTO": {
-      "classes": [
-        "ResponseDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
+          "field: checkoutRequest"
+        ],
+        "OrderService": [
+          "field: checkoutRequest"
         ]
       },
       "is_custom": false
@@ -101,32 +75,58 @@
       "incoming_calls": {},
       "is_custom": false
     },
-    "OrderStatusUpdateDTO": {
+    "OrderDTO": {
       "classes": [
-        "OrderStatusUpdateDTO"
+        "OrderDTO"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
         "OrderController": [
-          "field: statusUpdateDTO"
-        ],
-        "OrderService": [
-          "field: statusUpdateDTO"
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
         ]
       },
       "is_custom": false
     },
-    "CheckoutRequestDTO": {
+    "ResponseDTO": {
       "classes": [
-        "CheckoutRequestDTO"
+        "ResponseDTO"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
         "OrderController": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderService": {
+      "classes": [
+        "OrderService"
+      ],
+      "outgoing_calls": {
+        "CheckoutRequestDTO": [
           "field: checkoutRequest"
         ],
-        "OrderService": [
-          "field: checkoutRequest"
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO"
+        ]
+      },
+      "incoming_calls": {
+        "OrderController": [
+          "checkout",
+          "getOrderById",
+          "getOrdersByUserId",
+          "getOrdersByUserId",
+          "updateOrderStatus",
+          "cancelOrder",
+          "field: orderService"
         ]
       },
       "is_custom": false

@@ -4,12 +4,12 @@ digraph JavaDependencies {
     edge [fontname="Arial", fontsize=9, color=darkblue];
     graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
 
-    "OrderService" [label="OrderService\n(OrderService)", URL="javascript:showNodeInfo('OrderService')", fillcolor="lightblue"];
-    "OrderDTO" [label="OrderDTO\n(OrderDTO)", URL="javascript:showNodeInfo('OrderDTO')", fillcolor="lightblue"];
-    "ResponseDTO" [label="ResponseDTO\n(ResponseDTO)", URL="javascript:showNodeInfo('ResponseDTO')", fillcolor="lightblue"];
-    "OrderController" [label="OrderController\n(OrderController)", URL="javascript:showNodeInfo('OrderController')", fillcolor="lightblue"];
     "OrderStatusUpdateDTO" [label="OrderStatusUpdateDTO\n(OrderStatusUpdateDTO)", URL="javascript:showNodeInfo('OrderStatusUpdateDTO')", fillcolor="lightblue"];
     "CheckoutRequestDTO" [label="CheckoutRequestDTO\n(CheckoutRequestDTO)", URL="javascript:showNodeInfo('CheckoutRequestDTO')", fillcolor="lightblue"];
+    "OrderController" [label="OrderController\n(OrderController)", URL="javascript:showNodeInfo('OrderController')", fillcolor="lightblue"];
+    "OrderDTO" [label="OrderDTO\n(OrderDTO)", URL="javascript:showNodeInfo('OrderDTO')", fillcolor="lightblue"];
+    "ResponseDTO" [label="ResponseDTO\n(ResponseDTO)", URL="javascript:showNodeInfo('ResponseDTO')", fillcolor="lightblue"];
+    "OrderService" [label="OrderService\n(OrderService)", URL="javascript:showNodeInfo('OrderService')", fillcolor="lightblue"];
 
     // Dependencies with method calls
     "OrderController" -> "ResponseDTO" [label="success", URL="javascript:showEdgeInfo('OrderController', 'ResponseDTO')"];
@@ -19,6 +19,24 @@ digraph JavaDependencies {
     "OrderController" -> "OrderStatusUpdateDTO" [label="field: statusUpdateDTO", URL="javascript:showEdgeInfo('OrderController', 'OrderStatusUpdateDTO')"];
     "OrderService" -> "CheckoutRequestDTO" [label="field: checkoutRequest", URL="javascript:showEdgeInfo('OrderService', 'CheckoutRequestDTO')"];
     "OrderService" -> "OrderStatusUpdateDTO" [label="field: statusUpdateDTO", URL="javascript:showEdgeInfo('OrderService', 'OrderStatusUpdateDTO')"];
+
+    // Service Implementation Nodes
+    "OrderServiceImpl" [label="OrderServiceImpl\n(Implementation)", URL="javascript:showNodeInfo('OrderServiceImpl')", fillcolor="lightcoral", shape="box"];
+    "OrderService" -> "OrderServiceImpl" [label="implements", URL="javascript:showEdgeInfo('OrderService', 'OrderServiceImpl')", color="red", style="dashed"];
+
+    // cancelOrder method dependencies in OrderServiceImpl
+    "RuntimeException" [label="RuntimeException", URL="javascript:showNodeInfo('RuntimeException')", fillcolor="mistyrose", shape="box"];
+    "OrderServiceImpl" -> "RuntimeException" [label="exception (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'RuntimeException')", color="red"];
+    "Repository" [label="Repository", URL="javascript:showNodeInfo('Repository')", fillcolor="lightyellow", shape="box"];
+    "OrderServiceImpl" -> "Repository" [label="findById (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'Repository')", color="orange"];
+    "OrderRepository" [label="OrderRepository", URL="javascript:showNodeInfo('OrderRepository')", fillcolor="lightyellow", shape="box"];
+    "OrderServiceImpl" -> "OrderRepository" [label="findById (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'OrderRepository')", color="orange"];
+    "OrderNotFoundException" [label="OrderNotFoundException", URL="javascript:showNodeInfo('OrderNotFoundException')", fillcolor="mistyrose", shape="box"];
+    "OrderServiceImpl" -> "OrderNotFoundException" [label="new (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'OrderNotFoundException')"];
+    "RuntimeException" [label="RuntimeException", URL="javascript:showNodeInfo('RuntimeException')", fillcolor="mistyrose", shape="box"];
+    "OrderServiceImpl" -> "RuntimeException" [label="new (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'RuntimeException')"];
+    "Order" [label="Order", URL="javascript:showNodeInfo('Order')", fillcolor="white", shape="box"];
+    "OrderServiceImpl" -> "Order" [label="OrderStatus (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'Order')"];
 
     // HTML Function Nodes
     "HTML_cancelOrder" [label="cancelOrder\n(HTML Function)", URL="javascript:showNodeInfo('HTML_cancelOrder')", fillcolor="lightgreen", shape="ellipse"];

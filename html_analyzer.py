@@ -15,6 +15,9 @@ class HTMLAwareAnalyzer(SuperEnhancedJavaDependencyAnalyzer):
     
     def filter_by_selection(self, selected_functions):
         """Override to preserve HTML data through filtering"""
+        # Extract Java function names from selected functions for detailed analysis
+        java_function_names = []
+        
         # First, process HTML functions and store them
         selected_html_functions = [func_id for func_id in selected_functions if func_id.startswith('html_')]
         
@@ -28,6 +31,12 @@ class HTMLAwareAnalyzer(SuperEnhancedJavaDependencyAnalyzer):
                     func_data = self.html_db.get_function_by_id(f"html_{func_id}")
                     if func_data:
                         html_functions_data.append(func_data)
+                        # Extract function name for Java analysis
+                        func_name = func_data['name']
+                        # Remove parentheses and clean up function name
+                        clean_func_name = func_name.replace('()', '').replace('/', '_').split('.')[-1]
+                        if clean_func_name not in java_function_names:
+                            java_function_names.append(clean_func_name)
                 
                 # Get controller mappings
                 controller_mappings = self.html_db.get_controller_mappings_for_html(selected_html_functions)
@@ -46,6 +55,23 @@ class HTMLAwareAnalyzer(SuperEnhancedJavaDependencyAnalyzer):
                         
             except Exception as e:
                 print(f"❌ Error processing HTML functions in filter: {e}")
+        
+        # Extract function names from regular Java selections
+        for func_id in selected_functions:
+            if not func_id.startswith('html_'):
+                # Assume func_id is a Java class or method name
+                if '.' in func_id:
+                    # Extract method name if it's in format ClassName.methodName
+                    method_name = func_id.split('.')[-1]
+                    if method_name not in java_function_names:
+                        java_function_names.append(method_name)
+                elif func_id not in java_function_names:
+                    java_function_names.append(func_id)
+        
+        # Set selected functions for detailed implementation analysis
+        if java_function_names:
+            print(f"🎯 Setting selected functions for implementation analysis: {java_function_names}")
+            self.set_selected_functions(java_function_names)
         
         # Call parent method to handle Java filtering
         super().filter_by_selection(selected_functions)
