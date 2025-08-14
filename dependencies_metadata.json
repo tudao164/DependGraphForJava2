@@ -23,17 +23,33 @@
       },
       "is_custom": false
     },
-    "CheckoutRequestDTO": {
+    "ResponseDTO": {
       "classes": [
-        "CheckoutRequestDTO"
+        "ResponseDTO"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
         "OrderController": [
-          "field: checkoutRequest"
-        ],
-        "OrderService": [
-          "field: checkoutRequest"
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderDTO": {
+      "classes": [
+        "OrderDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
         ]
       },
       "is_custom": false
@@ -75,37 +91,6 @@
       "incoming_calls": {},
       "is_custom": false
     },
-    "OrderDTO": {
-      "classes": [
-        "OrderDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "field: order",
-          "field: updatedOrder",
-          "field: cancelledOrder"
-        ]
-      },
-      "is_custom": false
-    },
-    "ResponseDTO": {
-      "classes": [
-        "ResponseDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ]
-      },
-      "is_custom": false
-    },
     "OrderService": {
       "classes": [
         "OrderService"
@@ -127,6 +112,21 @@
           "updateOrderStatus",
           "cancelOrder",
           "field: orderService"
+        ]
+      },
+      "is_custom": false
+    },
+    "CheckoutRequestDTO": {
+      "classes": [
+        "CheckoutRequestDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "field: checkoutRequest"
+        ],
+        "OrderService": [
+          "field: checkoutRequest"
         ]
       },
       "is_custom": false
