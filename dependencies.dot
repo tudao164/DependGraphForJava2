@@ -4,29 +4,41 @@ digraph JavaDependencies {
     edge [fontname="Arial", fontsize=9, color=darkblue];
     graph [fontname="Arial Bold", fontsize=14, label="Java Dependency Graph"];
 
+    "OrderController" [label="OrderController\n(OrderController)", URL="javascript:showNodeInfo('OrderController')", fillcolor="lightblue"];
     "ResponseDTO" [label="ResponseDTO\n(ResponseDTO)", URL="javascript:showNodeInfo('ResponseDTO')", fillcolor="lightblue"];
-    "ReviewService" [label="ReviewService\n(ReviewService)", URL="javascript:showNodeInfo('ReviewService')", fillcolor="lightblue"];
-    "ReviewDTO" [label="ReviewDTO\n(ReviewDTO)", URL="javascript:showNodeInfo('ReviewDTO')", fillcolor="lightblue"];
-    "Review" [label="Review\n(Review)", URL="javascript:showNodeInfo('Review')", fillcolor="lightblue"];
-    "ReviewController" [label="ReviewController\n(ReviewController)", URL="javascript:showNodeInfo('ReviewController')", fillcolor="lightblue"];
+    "OrderService" [label="OrderService\n(OrderService)", URL="javascript:showNodeInfo('OrderService')", fillcolor="lightblue"];
+    "CheckoutRequestDTO" [label="CheckoutRequestDTO\n(CheckoutRequestDTO)", URL="javascript:showNodeInfo('CheckoutRequestDTO')", fillcolor="lightblue"];
+    "OrderDTO" [label="OrderDTO\n(OrderDTO)", URL="javascript:showNodeInfo('OrderDTO')", fillcolor="lightblue"];
+    "OrderStatusUpdateDTO" [label="OrderStatusUpdateDTO\n(OrderStatusUpdateDTO)", URL="javascript:showNodeInfo('OrderStatusUpdateDTO')", fillcolor="lightblue"];
 
     // Dependencies with method calls
-    "ReviewController" -> "ResponseDTO" [label="success", URL="javascript:showEdgeInfo('ReviewController', 'ResponseDTO')"];
-    "ReviewController" -> "ReviewService" [label="createReview\ndeleteReview\nfield: reviewService\n+ 5 more", URL="javascript:showEdgeInfo('ReviewController', 'ReviewService')"];
-    "ReviewController" -> "Review" [label="field: createdReview\nfield: review\nfield: updatedReview", URL="javascript:showEdgeInfo('ReviewController', 'Review')"];
-    "ReviewController" -> "ReviewDTO" [label="field: reviewDTO", URL="javascript:showEdgeInfo('ReviewController', 'ReviewDTO')"];
-    "ReviewService" -> "ReviewDTO" [label="field: reviewDTO", URL="javascript:showEdgeInfo('ReviewService', 'ReviewDTO')"];
+    "OrderController" -> "ResponseDTO" [label="success", URL="javascript:showEdgeInfo('OrderController', 'ResponseDTO')"];
+    "OrderController" -> "OrderService" [label="cancelOrder\ncheckout\nfield: orderService\n+ 3 more", URL="javascript:showEdgeInfo('OrderController', 'OrderService')"];
+    "OrderController" -> "OrderDTO" [label="field: cancelledOrder\nfield: order\nfield: updatedOrder", URL="javascript:showEdgeInfo('OrderController', 'OrderDTO')"];
+    "OrderController" -> "CheckoutRequestDTO" [label="field: checkoutRequest", URL="javascript:showEdgeInfo('OrderController', 'CheckoutRequestDTO')"];
+    "OrderController" -> "OrderStatusUpdateDTO" [label="field: statusUpdateDTO", URL="javascript:showEdgeInfo('OrderController', 'OrderStatusUpdateDTO')"];
+    "OrderService" -> "CheckoutRequestDTO" [label="field: checkoutRequest", URL="javascript:showEdgeInfo('OrderService', 'CheckoutRequestDTO')"];
+    "OrderService" -> "OrderStatusUpdateDTO" [label="field: statusUpdateDTO", URL="javascript:showEdgeInfo('OrderService', 'OrderStatusUpdateDTO')"];
 
     // Service Implementation Nodes
-    "ReviewServiceImpl" [label="ReviewServiceImpl\n(Implementation)", URL="javascript:showNodeInfo('ReviewServiceImpl')", fillcolor="lightcoral", shape="box"];
-    "ReviewService" -> "ReviewServiceImpl" [label="implements", URL="javascript:showEdgeInfo('ReviewService', 'ReviewServiceImpl')", color="red", style="dashed"];
+    "OrderServiceImpl" [label="OrderServiceImpl\n(Implementation)", URL="javascript:showNodeInfo('OrderServiceImpl')", fillcolor="lightcoral", shape="box"];
+    "OrderService" -> "OrderServiceImpl" [label="implements", URL="javascript:showEdgeInfo('OrderService', 'OrderServiceImpl')", color="red", style="dashed"];
 
-    // createReview method dependencies in ReviewServiceImpl
-    "ReviewServiceImpl" -> "Review" [label="new (createReview)", URL="javascript:showEdgeInfo('ReviewServiceImpl', 'Review')"];
-    "ReviewRepository" [label="ReviewRepository", URL="javascript:showNodeInfo('ReviewRepository')", fillcolor="lightyellow", shape="box"];
-    "ReviewServiceImpl" -> "ReviewRepository" [label="save (createReview)", URL="javascript:showEdgeInfo('ReviewServiceImpl', 'ReviewRepository')", color="orange"];
+    // cancelOrder method dependencies in OrderServiceImpl
+    "OrderNotFoundException" [label="OrderNotFoundException", URL="javascript:showNodeInfo('OrderNotFoundException')", fillcolor="mistyrose", shape="box"];
+    "OrderServiceImpl" -> "OrderNotFoundException" [label="new (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'OrderNotFoundException')"];
+    "Order" [label="Order", URL="javascript:showNodeInfo('Order')", fillcolor="white", shape="box"];
+    "OrderServiceImpl" -> "Order" [label="enum_OrderStatus (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'Order')"];
+    "OrderRepository" [label="OrderRepository", URL="javascript:showNodeInfo('OrderRepository')", fillcolor="lightyellow", shape="box"];
+    "OrderServiceImpl" -> "OrderRepository" [label="findById (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'OrderRepository')", color="orange"];
+    "Order" [label="Order", URL="javascript:showNodeInfo('Order')", fillcolor="white", shape="box"];
+    "OrderServiceImpl" -> "Order" [label="method_getStatus (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'Order')"];
+    "RuntimeException" [label="RuntimeException", URL="javascript:showNodeInfo('RuntimeException')", fillcolor="mistyrose", shape="box"];
+    "OrderServiceImpl" -> "RuntimeException" [label="new (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'RuntimeException')"];
+    "RuntimeException" [label="RuntimeException", URL="javascript:showNodeInfo('RuntimeException')", fillcolor="mistyrose", shape="box"];
+    "OrderServiceImpl" -> "RuntimeException" [label="exception (cancelOrder)", URL="javascript:showEdgeInfo('OrderServiceImpl', 'RuntimeException')", color="red"];
 
     // HTML Function Nodes
-    "HTML_createReview" [label="createReview\n(HTML Function)", URL="javascript:showNodeInfo('HTML_createReview')", fillcolor="lightgreen", shape="ellipse"];
-    "HTML_createReview" -> "ReviewController" [label="calls", URL="javascript:showEdgeInfo('HTML_createReview', 'ReviewController')", color="green", style="bold"];
+    "HTML_cancelOrder" [label="cancelOrder\n(HTML Function)", URL="javascript:showNodeInfo('HTML_cancelOrder')", fillcolor="lightgreen", shape="ellipse"];
+    "HTML_cancelOrder" -> "OrderController" [label="calls", URL="javascript:showEdgeInfo('HTML_cancelOrder', 'OrderController')", color="green", style="bold"];
 }

@@ -56,7 +56,7 @@ class HTMLFunctionDatabase:
             
             schema = self.db_config['schema']
             cursor.execute(f'''
-                SELECT function_id, function_name, controller
+                SELECT function_id, function_name, controller, service
                 FROM {schema}.html_function
                 ORDER BY function_name
             ''')
@@ -68,10 +68,11 @@ class HTMLFunctionDatabase:
                     'function_id': row['function_id'],
                     'name': row['function_name'],
                     'controller': row.get('controller', 'Unknown'),
-                    'file': f'Frontend/{row["function_name"]} -> {row.get("controller", "Unknown")}',
+                    'service': row.get('service', 'Unknown'),
+                    'file': f'Frontend/{row["function_name"]} -> {row.get("controller", "Unknown")} -> {row.get("service", "Unknown")}',
                     'type': 'html',
-                    'description': f'HTML/JS function: {row["function_name"]} calls {row.get("controller", "Unknown")}',
-                    'dependencies': 1  # Sẽ có dependency đến Java controller
+                    'description': f'HTML/JS function: {row["function_name"]} → {row.get("controller", "Unknown")} → {row.get("service", "Unknown")}',
+                    'dependencies': 2  # Sẽ có dependency đến Java controller và service
                 })
             
             conn.close()

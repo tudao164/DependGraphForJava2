@@ -180,7 +180,7 @@
 
         .functions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
             max-height: 60vh;
@@ -194,7 +194,7 @@
             background: white;
             border: 2px solid #e2e8f0;
             border-radius: 10px;
-            padding: 15px;
+            padding: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
@@ -213,8 +213,8 @@
 
         .function-card .checkbox {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             width: 20px;
             height: 20px;
             border: 2px solid #cbd5e0;
@@ -237,18 +237,72 @@
             left: 2px;
         }
 
+        .function-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-right: 30px;
+        }
+
+        .flow-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .flow-arrow {
+            font-size: 20px;
+            color: #667eea;
+            margin: 0 10px;
+        }
+
         .function-name {
             font-weight: 600;
             font-size: 16px;
             color: #2d3748;
-            margin-bottom: 8px;
-            margin-right: 30px;
+            margin-bottom: 5px;
+            padding: 8px 12px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            border: 2px solid #cbd5e0;
+        }
+
+        .controller-name {
+            font-weight: 500;
+            font-size: 14px;
+            color: #2b6cb0;
+            margin-bottom: 5px;
+            padding: 6px 10px;
+            background: #bee3f8;
+            border-radius: 6px;
+            border: 1px solid #90cdf4;
+        }
+
+        .service-name {
+            font-weight: 500;
+            font-size: 14px;
+            color: #2f855a;
+            margin-bottom: 5px;
+            padding: 6px 10px;
+            background: #c6f6d5;
+            border-radius: 6px;
+            border: 1px solid #9ae6b4;
+        }
+
+        .flow-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .function-details {
-            font-size: 13px;
+            font-size: 12px;
             color: #666;
-            line-height: 1.4;
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
         }
 
         .function-type {
@@ -324,13 +378,13 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>� HTML Function Selector</h1>
-            <p>Chọn các HTML/JavaScript functions để tạo dependency graph với Java components</p>
+            <h1>🔄 Function Flow Selector</h1>
+            <p>Chọn các function flows (Function → Controller → Service) để tạo dependency graph</p>
         </div>
 
         <div class="controls">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Tìm kiếm HTML functions...">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm theo function, controller, hoặc service...">
                 <span class="search-icon">🔍</span>
             </div>
             <div class="filter-buttons">
@@ -399,7 +453,8 @@
             
             let filteredFunctions = allFunctions.filter(func => {
                 const matchesSearch = func.name.toLowerCase().includes(searchTerm) ||
-                                    func.file.toLowerCase().includes(searchTerm);
+                                    func.controller.toLowerCase().includes(searchTerm) ||
+                                    func.service.toLowerCase().includes(searchTerm);
                 const matchesFilter = currentFilter === 'all' || func.type === currentFilter;
                 return matchesSearch && matchesFilter;
             });
@@ -408,11 +463,30 @@
                 <div class="function-card ${selectedFunctions.has(func.id) ? 'selected' : ''}" 
                      data-id="${func.id}" onclick="toggleFunction('${func.id}')">
                     <div class="checkbox"></div>
-                    <div class="function-type ${func.type}">${func.type}</div>
-                    <div class="function-name">${func.name}</div>
+                    
+                    <div class="function-flow">
+                        <div class="flow-item">
+                            <div class="function-name">${func.name}</div>
+                            <div class="flow-label">Function</div>
+                        </div>
+                        
+                        <div class="flow-arrow">→</div>
+                        
+                        <div class="flow-item">
+                            <div class="controller-name">${func.controller}</div>
+                            <div class="flow-label">Controller</div>
+                        </div>
+                        
+                        <div class="flow-arrow">→</div>
+                        
+                        <div class="flow-item">
+                            <div class="service-name">${func.service}</div>
+                            <div class="flow-label">Service</div>
+                        </div>
+                    </div>
+                    
                     <div class="function-details">
-                        📁 ${func.file}<br>
-                        📊 Dependencies: ${func.dependencies || 0}
+                        🔄 Flow: ${func.name} → ${func.controller} → ${func.service}
                     </div>
                 </div>
             `).join('');
@@ -452,7 +526,8 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filteredFunctions = allFunctions.filter(func => {
                 const matchesSearch = func.name.toLowerCase().includes(searchTerm) ||
-                                    func.file.toLowerCase().includes(searchTerm);
+                                    func.controller.toLowerCase().includes(searchTerm) ||
+                                    func.service.toLowerCase().includes(searchTerm);
                 const matchesFilter = currentFilter === 'all' || func.type === currentFilter;
                 return matchesSearch && matchesFilter;
             });
