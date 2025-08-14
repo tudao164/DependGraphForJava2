@@ -3,6 +3,7 @@
 Enhanced analyzer với HTML nodes support và advanced dependency detection
 """
 
+from collections import defaultdict
 from enhanced_analyzer import SuperEnhancedJavaDependencyAnalyzer
 from html_db import HTMLFunctionDatabase
 
@@ -72,9 +73,54 @@ class HTMLAwareAnalyzer(SuperEnhancedJavaDependencyAnalyzer):
         if java_function_names:
             print(f"🎯 Setting selected functions for implementation analysis: {java_function_names}")
             self.set_selected_functions(java_function_names)
+            # Filter method calls to only show selected function calls
+            self._filter_method_calls_by_selected_functions(java_function_names)
         
         # Call parent method to handle Java filtering
         super().filter_by_selection(selected_functions)
+    
+    def _filter_method_calls_by_selected_functions(self, selected_function_names):
+        """Filter method calls để chỉ hiển thị calls liên quan đến selected functions"""
+        if not selected_function_names:
+            return
+            
+        print(f"🔍 Filtering method calls to show only: {', '.join(selected_function_names)}")
+        
+        # Create filtered method_calls
+        filtered_method_calls = defaultdict(lambda: defaultdict(list))
+        
+        for source_file, targets in self.method_calls.items():
+            for target_file, methods in targets.items():
+                filtered_methods = []
+                
+                for method in methods:
+                    # Keep method if it matches any selected function name
+                    should_keep = False
+                    
+                    # Check if method contains selected function name
+                    for func_name in selected_function_names:
+                        if func_name.lower() in method.lower():
+                            should_keep = True
+                            break
+                    
+                    # Keep field declarations and other structural relationships
+                    if (method.startswith('field:') or 
+                        method.startswith('implements') or 
+                        method.startswith('@Autowired') or
+                        method.startswith('success') or  # Response methods
+                        'dependency' in method.lower()):
+                        should_keep = True
+                    
+                    if should_keep:
+                        filtered_methods.append(method)
+                
+                # Only add if there are methods to keep
+                if filtered_methods:
+                    filtered_method_calls[source_file][target_file] = filtered_methods
+        
+        # Replace original method_calls with filtered version
+        self.method_calls = filtered_method_calls
+        print(f"✅ Filtered method calls: {sum(len(targets) for targets in filtered_method_calls.values())} connections")
         
     def add_html_functions_to_graph(self, selected_html_function_ids):
         """Add HTML functions to graph data"""

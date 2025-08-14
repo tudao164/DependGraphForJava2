@@ -1,61 +1,39 @@
 {
   "project_info": {
     "source_directory": "Api_LTDD_CuoiKy-master\\src\\main\\java",
-    "total_files": 5,
-    "total_classes": 5,
+    "total_files": 6,
+    "total_classes": 6,
     "analysis_date": "D:\\ThucTap\\GenerateGraph3\\DependGraphForJava2",
     "custom_nodes": 0,
     "custom_edges": 0
   },
   "files": {
-    "Review": {
+    "OrderStatusUpdateDTO": {
       "classes": [
-        "Review"
+        "OrderStatusUpdateDTO"
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "ReviewController": [
-          "field: review",
-          "field: createdReview",
-          "field: updatedReview"
-        ]
-      },
-      "is_custom": false
-    },
-    "ReviewDTO": {
-      "classes": [
-        "ReviewDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "ReviewController": [
-          "field: reviewDTO"
+        "OrderController": [
+          "field: statusUpdateDTO"
         ],
-        "ReviewService": [
-          "field: reviewDTO"
+        "OrderService": [
+          "field: statusUpdateDTO"
         ]
       },
       "is_custom": false
     },
-    "ReviewService": {
+    "CheckoutRequestDTO": {
       "classes": [
-        "ReviewService"
+        "CheckoutRequestDTO"
       ],
-      "outgoing_calls": {
-        "ReviewDTO": [
-          "field: reviewDTO"
-        ]
-      },
+      "outgoing_calls": {},
       "incoming_calls": {
-        "ReviewController": [
-          "getAllReviews",
-          "getReviewById",
-          "getReviewsByProductId",
-          "getReviewsByUserId",
-          "createReview",
-          "updateReview",
-          "deleteReview",
-          "field: reviewService"
+        "OrderController": [
+          "field: checkoutRequest"
+        ],
+        "OrderService": [
+          "field: checkoutRequest"
         ]
       },
       "is_custom": false
@@ -66,8 +44,7 @@
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "ReviewController": [
-          "success",
+        "OrderController": [
           "success",
           "success",
           "success",
@@ -78,9 +55,9 @@
       },
       "is_custom": false
     },
-    "ReviewController": {
+    "OrderController": {
       "classes": [
-        "ReviewController"
+        "OrderController"
       ],
       "outgoing_calls": {
         "ResponseDTO": [
@@ -89,29 +66,59 @@
           "success",
           "success",
           "success",
-          "success",
           "success"
         ],
-        "ReviewService": [
-          "getAllReviews",
-          "getReviewById",
-          "getReviewsByProductId",
-          "getReviewsByUserId",
-          "createReview",
-          "updateReview",
-          "deleteReview",
-          "field: reviewService"
+        "OrderService": [
+          "cancelOrder",
+          "field: orderService"
         ],
-        "Review": [
-          "field: review",
-          "field: createdReview",
-          "field: updatedReview"
+        "OrderDTO": [
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
         ],
-        "ReviewDTO": [
-          "field: reviewDTO"
+        "CheckoutRequestDTO": [
+          "field: checkoutRequest"
+        ],
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO"
         ]
       },
       "incoming_calls": {},
+      "is_custom": false
+    },
+    "OrderDTO": {
+      "classes": [
+        "OrderDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "OrderController": [
+          "field: order",
+          "field: updatedOrder",
+          "field: cancelledOrder"
+        ]
+      },
+      "is_custom": false
+    },
+    "OrderService": {
+      "classes": [
+        "OrderService"
+      ],
+      "outgoing_calls": {
+        "CheckoutRequestDTO": [
+          "field: checkoutRequest"
+        ],
+        "OrderStatusUpdateDTO": [
+          "field: statusUpdateDTO"
+        ]
+      },
+      "incoming_calls": {
+        "OrderController": [
+          "cancelOrder",
+          "field: orderService"
+        ]
+      },
       "is_custom": false
     }
   },
