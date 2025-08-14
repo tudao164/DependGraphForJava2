@@ -1,48 +1,63 @@
 {
   "project_info": {
     "source_directory": "Api_LTDD_CuoiKy-master\\src\\main\\java",
-    "total_files": 6,
-    "total_classes": 6,
+    "total_files": 5,
+    "total_classes": 5,
     "analysis_date": "D:\\ThucTap\\GenerateGraph3\\DependGraphForJava2",
     "custom_nodes": 0,
     "custom_edges": 0
   },
   "files": {
-    "OrderController": {
+    "Review": {
       "classes": [
-        "OrderController"
+        "Review"
       ],
-      "outgoing_calls": {
-        "ResponseDTO": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ],
-        "OrderService": [
-          "checkout",
-          "getOrderById",
-          "getOrdersByUserId",
-          "getOrdersByUserId",
-          "updateOrderStatus",
-          "cancelOrder",
-          "field: orderService"
-        ],
-        "OrderDTO": [
-          "field: order",
-          "field: updatedOrder",
-          "field: cancelledOrder"
-        ],
-        "CheckoutRequestDTO": [
-          "field: checkoutRequest"
-        ],
-        "OrderStatusUpdateDTO": [
-          "field: statusUpdateDTO"
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "ReviewController": [
+          "field: review",
+          "field: createdReview",
+          "field: updatedReview"
         ]
       },
-      "incoming_calls": {},
+      "is_custom": false
+    },
+    "ReviewDTO": {
+      "classes": [
+        "ReviewDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "ReviewController": [
+          "field: reviewDTO"
+        ],
+        "ReviewService": [
+          "field: reviewDTO"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewService": {
+      "classes": [
+        "ReviewService"
+      ],
+      "outgoing_calls": {
+        "ReviewDTO": [
+          "field: reviewDTO"
+        ]
+      },
+      "incoming_calls": {
+        "ReviewController": [
+          "getAllReviews",
+          "getReviewById",
+          "getReviewsByProductId",
+          "getReviewsByUserId",
+          "createReview",
+          "updateReview",
+          "deleteReview",
+          "field: reviewService"
+        ]
+      },
       "is_custom": false
     },
     "ResponseDTO": {
@@ -51,7 +66,8 @@
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "OrderController": [
+        "ReviewController": [
+          "success",
           "success",
           "success",
           "success",
@@ -62,73 +78,40 @@
       },
       "is_custom": false
     },
-    "OrderService": {
+    "ReviewController": {
       "classes": [
-        "OrderService"
+        "ReviewController"
       ],
       "outgoing_calls": {
-        "CheckoutRequestDTO": [
-          "field: checkoutRequest"
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
         ],
-        "OrderStatusUpdateDTO": [
-          "field: statusUpdateDTO"
-        ]
-      },
-      "incoming_calls": {
-        "OrderController": [
-          "checkout",
-          "getOrderById",
-          "getOrdersByUserId",
-          "getOrdersByUserId",
-          "updateOrderStatus",
-          "cancelOrder",
-          "field: orderService"
-        ]
-      },
-      "is_custom": false
-    },
-    "CheckoutRequestDTO": {
-      "classes": [
-        "CheckoutRequestDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "field: checkoutRequest"
+        "ReviewService": [
+          "getAllReviews",
+          "getReviewById",
+          "getReviewsByProductId",
+          "getReviewsByUserId",
+          "createReview",
+          "updateReview",
+          "deleteReview",
+          "field: reviewService"
         ],
-        "OrderService": [
-          "field: checkoutRequest"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderDTO": {
-      "classes": [
-        "OrderDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "field: order",
-          "field: updatedOrder",
-          "field: cancelledOrder"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderStatusUpdateDTO": {
-      "classes": [
-        "OrderStatusUpdateDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "field: statusUpdateDTO"
+        "Review": [
+          "field: review",
+          "field: createdReview",
+          "field: updatedReview"
         ],
-        "OrderService": [
-          "field: statusUpdateDTO"
+        "ReviewDTO": [
+          "field: reviewDTO"
         ]
       },
+      "incoming_calls": {},
       "is_custom": false
     }
   },

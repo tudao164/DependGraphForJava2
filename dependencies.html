@@ -549,48 +549,32 @@
                 </div>
                 <img src="dependencies.png" alt="Java Dependency Graph" usemap="#JavaDependencies" id="dependencyGraph">
                 <map id="JavaDependencies" name="JavaDependencies">
-<area shape="rect" id="node1" href="javascript:showNodeInfo(&#39;OrderController&#39;)" title="OrderController\n(OrderController)" alt="" coords="301,149,459,202"/>
-<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;ResponseDTO&#39;)" title="ResponseDTO\n(ResponseDTO)" alt="" coords="620,5,774,58"/>
-<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="400,147,435,109,458,90,482,75,543,51,604,37,606,42,544,56,484,79,461,95,439,113,404,151"/>
-<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="518,27,562,41"/>
-<area shape="rect" id="node3" href="javascript:showNodeInfo(&#39;OrderService&#39;)" title="OrderService\n(OrderService)" alt="" coords="627,149,767,202"/>
-<area shape="poly" id="edge2" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderService&#39;)" title="cancelOrder\ncheckout\nfield: orderService\n+ 3 more" alt="" coords="460,173,611,173,611,178,460,178"/>
-<area shape="rect" id="edge2-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderService&#39;)" title="cancelOrder\ncheckout\nfield: orderService\n+ 3 more" alt="" coords="490,120,589,176"/>
-<area shape="rect" id="node4" href="javascript:showNodeInfo(&#39;CheckoutRequestDTO&#39;)" title="CheckoutRequestDTO\n(CheckoutRequestDTO)" alt="" coords="954,71,1169,123"/>
-<area shape="poly" id="edge4" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="415,146,446,127,482,112,520,104,569,98,688,91,939,91,939,96,688,96,569,103,521,109,484,117,449,132,417,151"/>
-<area shape="rect" id="edge4-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="635,78,759,92"/>
-<area shape="rect" id="node5" href="javascript:showNodeInfo(&#39;OrderDTO&#39;)" title="OrderDTO\n(OrderDTO)" alt="" coords="637,313,757,366"/>
-<area shape="poly" id="edge3" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderDTO&#39;)" title="field: cancelledOrder\nfield: order\nfield: updatedOrder" alt="" coords="393,201,407,231,426,265,452,298,485,323,517,337,552,345,622,348,622,353,552,350,515,342,482,328,449,302,422,268,402,234,388,203"/>
-<area shape="rect" id="edge3-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderDTO&#39;)" title="field: cancelledOrder\nfield: order\nfield: updatedOrder" alt="" coords="483,284,596,326"/>
-<area shape="rect" id="node6" href="javascript:showNodeInfo(&#39;OrderStatusUpdateDTO&#39;)" title="OrderStatusUpdateDTO\n(OrderStatusUpdateDTO)" alt="" coords="948,232,1176,285"/>
-<area shape="poly" id="edge5" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="460,193,537,211,621,226,783,243,932,252,932,257,782,248,620,231,536,216,459,199"/>
-<area shape="rect" id="edge5-label" href="javascript:showEdgeInfo(&#39;OrderController&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="634,214,760,228"/>
-<area shape="poly" id="edge6" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="767,159,923,126,938,122,939,128,924,131,768,164"/>
-<area shape="rect" id="edge6-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;CheckoutRequestDTO&#39;)" title="field: checkoutRequest" alt="" coords="799,114,923,128"/>
-<area shape="poly" id="edge7" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="768,189,933,227,932,232,767,194"/>
-<area shape="rect" id="edge7-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderStatusUpdateDTO&#39;)" title="field: statusUpdateDTO" alt="" coords="798,186,924,200"/>
-<area shape="rect" id="node7" href="javascript:showNodeInfo(&#39;OrderServiceImpl&#39;)" title="OrderServiceImpl\n(Implementation)" alt="" coords="980,149,1143,202"/>
-<area shape="poly" id="edge8" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderServiceImpl&#39;)" title="implements" alt="" coords="768,173,964,173,964,178,768,178"/>
-<area shape="rect" id="edge8-label" href="javascript:showEdgeInfo(&#39;OrderService&#39;, &#39;OrderServiceImpl&#39;)" title="implements" alt="" coords="829,162,892,176"/>
-<area shape="rect" id="node8" href="javascript:showNodeInfo(&#39;OrderNotFoundException&#39;)" title="OrderNotFoundException" alt="" coords="1405,30,1631,78"/>
-<area shape="poly" id="edge9" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderNotFoundException&#39;)" title="new (cancelOrder)" alt="" coords="1142,151,1174,134,1185,118,1190,110,1198,103,1244,81,1292,66,1341,56,1389,51,1389,56,1342,62,1294,71,1246,86,1201,107,1194,114,1190,121,1178,138,1145,156"/>
-<area shape="rect" id="edge9-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderNotFoundException&#39;)" title="new (cancelOrder)" alt="" coords="1240,40,1341,54"/>
-<area shape="rect" id="node9" href="javascript:showNodeInfo(&#39;Order&#39;)" title="Order" alt="" coords="1482,102,1554,150"/>
-<area shape="poly" id="edge10" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Order&#39;)" title="enum_OrderStatus (cancelOrder)" alt="" coords="1143,147,1199,134,1272,126,1345,122,1466,122,1466,127,1345,127,1272,131,1200,140,1144,152"/>
-<area shape="rect" id="edge10-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Order&#39;)" title="enum_OrderStatus (cancelOrder)" alt="" coords="1200,110,1381,124"/>
-<area shape="poly" id="edge12" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Order&#39;)" title="method_getStatus (cancelOrder)" alt="" coords="1143,170,1256,164,1380,151,1467,135,1468,141,1381,156,1256,169,1144,176"/>
-<area shape="rect" id="edge12-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;Order&#39;)" title="method_getStatus (cancelOrder)" alt="" coords="1202,140,1379,154"/>
-<area shape="rect" id="node10" href="javascript:showNodeInfo(&#39;OrderRepository&#39;)" title="OrderRepository" alt="" coords="1441,174,1595,222"/>
-<area shape="poly" id="edge11" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderRepository&#39;)" title="findById (cancelOrder)" alt="" coords="1144,187,1200,194,1317,199,1425,199,1425,204,1317,204,1200,199,1144,192"/>
-<area shape="rect" id="edge11-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;OrderRepository&#39;)" title="findById (cancelOrder)" alt="" coords="1229,182,1351,196"/>
-<area shape="rect" id="node11" href="javascript:showNodeInfo(&#39;RuntimeException&#39;)" title="RuntimeException" alt="" coords="1434,256,1602,304"/>
-<area shape="poly" id="edge13" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;RuntimeException&#39;)" title="new (cancelOrder)" alt="" coords="1137,200,1201,219,1313,244,1419,263,1418,268,1312,249,1199,224,1136,205"/>
-<area shape="rect" id="edge13-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;RuntimeException&#39;)" title="new (cancelOrder)" alt="" coords="1240,208,1341,222"/>
-<area shape="poly" id="edge14" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;RuntimeException&#39;)" title="exception (cancelOrder)" alt="" coords="1145,196,1178,218,1187,234,1189,250,1192,264,1202,276,1226,289,1252,299,1308,309,1365,309,1418,303,1419,308,1365,315,1307,315,1251,304,1224,294,1198,280,1187,266,1184,251,1182,236,1174,221,1142,200"/>
-<area shape="rect" id="edge14-label" href="javascript:showEdgeInfo(&#39;OrderServiceImpl&#39;, &#39;RuntimeException&#39;)" title="exception (cancelOrder)" alt="" coords="1225,264,1356,278"/>
-<area shape="poly" id="node12" href="javascript:showNodeInfo(&#39;HTML_cancelOrder&#39;)" title="cancelOrder\n(HTML Function)" alt="" coords="228,176,222,164,207,154,182,146,151,140,117,138,82,140,51,146,27,154,11,164,5,176,11,187,27,198,51,206,82,211,117,213,151,211,182,206,207,198,222,187"/>
-<area shape="poly" id="edge15" href="javascript:showEdgeInfo(&#39;HTML_cancelOrder&#39;, &#39;OrderController&#39;)" title="calls" alt="" coords="229,173,285,173,285,178,229,178"/>
-<area shape="rect" id="edge15-label" href="javascript:showEdgeInfo(&#39;HTML_cancelOrder&#39;, &#39;OrderController&#39;)" title="calls" alt="" coords="252,162,277,176"/>
+<area shape="rect" id="node1" href="javascript:showNodeInfo(&#39;Review&#39;)" title="Review\n(Review)" alt="" coords="1314,42,1406,95"/>
+<area shape="rect" id="node2" href="javascript:showNodeInfo(&#39;ReviewDTO&#39;)" title="ReviewDTO\n(ReviewDTO)" alt="" coords="964,62,1095,115"/>
+<area shape="rect" id="node3" href="javascript:showNodeInfo(&#39;ReviewService&#39;)" title="ReviewService\n(ReviewService)" alt="" coords="626,129,778,181"/>
+<area shape="poly" id="edge5" href="javascript:showEdgeInfo(&#39;ReviewService&#39;, &#39;ReviewDTO&#39;)" title="field: reviewDTO" alt="" coords="778,138,917,110,948,104,949,109,918,116,779,143"/>
+<area shape="rect" id="edge5-label" href="javascript:showEdgeInfo(&#39;ReviewService&#39;, &#39;ReviewDTO&#39;)" title="field: reviewDTO" alt="" coords="815,99,905,113"/>
+<area shape="rect" id="node6" href="javascript:showNodeInfo(&#39;ReviewServiceImpl&#39;)" title="ReviewServiceImpl\n(Implementation)" alt="" coords="942,139,1117,192"/>
+<area shape="poly" id="edge6" href="javascript:showEdgeInfo(&#39;ReviewService&#39;, &#39;ReviewServiceImpl&#39;)" title="implements" alt="" coords="779,156,803,157,926,161,926,166,802,162,778,161"/>
+<area shape="rect" id="edge6-label" href="javascript:showEdgeInfo(&#39;ReviewService&#39;, &#39;ReviewServiceImpl&#39;)" title="implements" alt="" coords="829,146,892,160"/>
+<area shape="rect" id="node4" href="javascript:showNodeInfo(&#39;ResponseDTO&#39;)" title="ResponseDTO\n(ResponseDTO)" alt="" coords="625,206,779,259"/>
+<area shape="rect" id="node5" href="javascript:showNodeInfo(&#39;ReviewController&#39;)" title="ReviewController\n(ReviewController)" alt="" coords="301,93,471,145"/>
+<area shape="poly" id="edge3" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;Review&#39;)" title="field: createdReview\nfield: review\nfield: updatedReview" alt="" coords="445,89,495,74,531,67,560,65,625,63,871,46,979,44,1117,47,1298,60,1298,65,1117,52,979,49,871,52,625,68,560,70,532,72,496,79,447,95"/>
+<area shape="rect" id="edge3-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;Review&#39;)" title="field: createdReview\nfield: review\nfield: updatedReview" alt="" coords="803,5,918,47"/>
+<area shape="poly" id="edge4" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewDTO&#39;)" title="field: reviewDTO" alt="" coords="471,99,495,96,619,87,742,83,948,83,948,88,743,88,619,92,495,102,472,105"/>
+<area shape="rect" id="edge4-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewDTO&#39;)" title="field: reviewDTO" alt="" coords="657,71,747,85"/>
+<area shape="poly" id="edge2" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewService&#39;)" title="createReview\ndeleteReview\nfield: reviewService\n+ 5 more" alt="" coords="458,143,496,152,553,158,610,158,610,164,553,163,495,158,457,148"/>
+<area shape="rect" id="edge2-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ReviewService&#39;)" title="createReview\ndeleteReview\nfield: reviewService\n+ 5 more" alt="" coords="495,99,601,155"/>
+<area shape="poly" id="edge1" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="429,144,496,178,553,198,611,213,609,218,552,203,494,183,427,148"/>
+<area shape="rect" id="edge1-label" href="javascript:showEdgeInfo(&#39;ReviewController&#39;, &#39;ResponseDTO&#39;)" title="success" alt="" coords="526,167,570,181"/>
+<area shape="poly" id="edge7" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;Review&#39;)" title="new (createReview)" alt="" coords="1116,137,1298,83,1300,88,1118,142"/>
+<area shape="rect" id="edge7-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;Review&#39;)" title="new (createReview)" alt="" coords="1142,86,1251,100"/>
+<area shape="rect" id="node7" href="javascript:showNodeInfo(&#39;ReviewRepository&#39;)" title="ReviewRepository" alt="" coords="1277,142,1443,190"/>
+<area shape="poly" id="edge8" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewRepository&#39;)" title="save (createReview)" alt="" coords="1117,163,1261,163,1261,168,1117,168"/>
+<area shape="rect" id="edge8-label" href="javascript:showEdgeInfo(&#39;ReviewServiceImpl&#39;, &#39;ReviewRepository&#39;)" title="save (createReview)" alt="" coords="1141,152,1253,166"/>
+<area shape="poly" id="node8" href="javascript:showNodeInfo(&#39;HTML_createReview&#39;)" title="createReview\n(HTML Function)" alt="" coords="228,119,222,107,207,97,182,89,151,84,117,82,82,84,51,89,27,97,11,107,5,119,11,130,27,141,51,149,82,154,117,156,151,154,182,149,207,141,222,130"/>
+<area shape="poly" id="edge9" href="javascript:showEdgeInfo(&#39;HTML_createReview&#39;, &#39;ReviewController&#39;)" title="calls" alt="" coords="228,116,285,116,285,122,228,122"/>
+<area shape="rect" id="edge9-label" href="javascript:showEdgeInfo(&#39;HTML_createReview&#39;, &#39;ReviewController&#39;)" title="calls" alt="" coords="252,105,277,119"/>
 </map>
 
             </div>
@@ -610,48 +594,63 @@
         let metadata = {
   "project_info": {
     "source_directory": "Api_LTDD_CuoiKy-master\\src\\main\\java",
-    "total_files": 6,
-    "total_classes": 6,
+    "total_files": 5,
+    "total_classes": 5,
     "analysis_date": "D:\\ThucTap\\GenerateGraph3\\DependGraphForJava2",
     "custom_nodes": 0,
     "custom_edges": 0
   },
   "files": {
-    "OrderController": {
+    "Review": {
       "classes": [
-        "OrderController"
+        "Review"
       ],
-      "outgoing_calls": {
-        "ResponseDTO": [
-          "success",
-          "success",
-          "success",
-          "success",
-          "success",
-          "success"
-        ],
-        "OrderService": [
-          "checkout",
-          "getOrderById",
-          "getOrdersByUserId",
-          "getOrdersByUserId",
-          "updateOrderStatus",
-          "cancelOrder",
-          "field: orderService"
-        ],
-        "OrderDTO": [
-          "field: order",
-          "field: updatedOrder",
-          "field: cancelledOrder"
-        ],
-        "CheckoutRequestDTO": [
-          "field: checkoutRequest"
-        ],
-        "OrderStatusUpdateDTO": [
-          "field: statusUpdateDTO"
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "ReviewController": [
+          "field: review",
+          "field: createdReview",
+          "field: updatedReview"
         ]
       },
-      "incoming_calls": {},
+      "is_custom": false
+    },
+    "ReviewDTO": {
+      "classes": [
+        "ReviewDTO"
+      ],
+      "outgoing_calls": {},
+      "incoming_calls": {
+        "ReviewController": [
+          "field: reviewDTO"
+        ],
+        "ReviewService": [
+          "field: reviewDTO"
+        ]
+      },
+      "is_custom": false
+    },
+    "ReviewService": {
+      "classes": [
+        "ReviewService"
+      ],
+      "outgoing_calls": {
+        "ReviewDTO": [
+          "field: reviewDTO"
+        ]
+      },
+      "incoming_calls": {
+        "ReviewController": [
+          "getAllReviews",
+          "getReviewById",
+          "getReviewsByProductId",
+          "getReviewsByUserId",
+          "createReview",
+          "updateReview",
+          "deleteReview",
+          "field: reviewService"
+        ]
+      },
       "is_custom": false
     },
     "ResponseDTO": {
@@ -660,7 +659,8 @@
       ],
       "outgoing_calls": {},
       "incoming_calls": {
-        "OrderController": [
+        "ReviewController": [
+          "success",
           "success",
           "success",
           "success",
@@ -671,73 +671,40 @@
       },
       "is_custom": false
     },
-    "OrderService": {
+    "ReviewController": {
       "classes": [
-        "OrderService"
+        "ReviewController"
       ],
       "outgoing_calls": {
-        "CheckoutRequestDTO": [
-          "field: checkoutRequest"
+        "ResponseDTO": [
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success",
+          "success"
         ],
-        "OrderStatusUpdateDTO": [
-          "field: statusUpdateDTO"
-        ]
-      },
-      "incoming_calls": {
-        "OrderController": [
-          "checkout",
-          "getOrderById",
-          "getOrdersByUserId",
-          "getOrdersByUserId",
-          "updateOrderStatus",
-          "cancelOrder",
-          "field: orderService"
-        ]
-      },
-      "is_custom": false
-    },
-    "CheckoutRequestDTO": {
-      "classes": [
-        "CheckoutRequestDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "field: checkoutRequest"
+        "ReviewService": [
+          "getAllReviews",
+          "getReviewById",
+          "getReviewsByProductId",
+          "getReviewsByUserId",
+          "createReview",
+          "updateReview",
+          "deleteReview",
+          "field: reviewService"
         ],
-        "OrderService": [
-          "field: checkoutRequest"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderDTO": {
-      "classes": [
-        "OrderDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "field: order",
-          "field: updatedOrder",
-          "field: cancelledOrder"
-        ]
-      },
-      "is_custom": false
-    },
-    "OrderStatusUpdateDTO": {
-      "classes": [
-        "OrderStatusUpdateDTO"
-      ],
-      "outgoing_calls": {},
-      "incoming_calls": {
-        "OrderController": [
-          "field: statusUpdateDTO"
+        "Review": [
+          "field: review",
+          "field: createdReview",
+          "field: updatedReview"
         ],
-        "OrderService": [
-          "field: statusUpdateDTO"
+        "ReviewDTO": [
+          "field: reviewDTO"
         ]
       },
+      "incoming_calls": {},
       "is_custom": false
     }
   },
