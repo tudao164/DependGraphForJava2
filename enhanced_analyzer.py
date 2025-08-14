@@ -176,6 +176,9 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
                 if method_dependencies:
                     self.method_specific_dependencies[impl_file][method_name] = method_dependencies
                     print(f"  📝 {method_name}: found {len(method_dependencies)} dependencies")
+                    # Debug: print actual dependencies
+                    for dep in method_dependencies:
+                        print(f"    → {dep}")
     
     def _extract_method_dependencies(self, content, method_name, impl_file):
         """Extract dependencies for a specific method"""
@@ -196,12 +199,16 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
             method_body = method_match.group(1)
             
             # Extract different types of dependencies from method body
+            processed_calls = set()  # Track processed method calls to avoid duplicates
             
-            # 1. Repository/Service calls
+            # 1. Repository/Service calls (prioritize this pattern)
             repo_service_pattern = r'([a-z][a-zA-Z0-9_]*(?:Repository|Service))\.([a-z][a-zA-Z0-9_]*)\s*\('
             repo_service_calls = re.findall(repo_service_pattern, method_body)
             
             for field_name, method_call in repo_service_calls:
+                call_signature = f"{field_name}.{method_call}()"
+                processed_calls.add(call_signature)
+                
                 # Resolve field type to class name
                 field_type = self._resolve_field_type(impl_file, field_name)
                 if field_type:
@@ -215,12 +222,18 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
             for class_name in constructors:
                 dependencies.add(f"{class_name}#constructor")
             
-            # 3. Static method calls and enum access
+            # 3. Static method calls (only for true static calls like Math.max(), Collections.sort())
             static_pattern = r'([A-Z][a-zA-Z0-9_]*)\.([a-zA-Z][a-zA-Z0-9_]*)\s*\('
             static_calls = re.findall(static_pattern, method_body)
             for class_name, method_call in static_calls:
-                # Skip common Java classes
-                if class_name not in ['System', 'Math', 'String', 'Objects']:
+                call_signature = f"{class_name}.{method_call}()"
+                # Skip if already processed, skip common Java classes, and skip Repository/Service classes
+                if (call_signature not in processed_calls and 
+                    class_name not in ['System', 'Math', 'String', 'Objects', 'Collections', 'Arrays'] and
+                    not class_name.endswith('Repository') and 
+                    not class_name.endswith('Service') and
+                    not any(call_signature.lower().startswith(pc.lower()) for pc in processed_calls)):
+                    processed_calls.add(call_signature)
                     dependencies.add(f"{class_name}#static_{method_call}")
             
             # 4. Exception throws
@@ -236,18 +249,18 @@ class SuperEnhancedJavaDependencyAnalyzer(EnhancedJavaDependencyAnalyzer):
                 if not enum_value.endswith('()'):  # Not a method call
                     dependencies.add(f"{class_name}#enum_{enum_value}")
             
-            # 6. Method calls on local variables or fields
+            # 6. Method calls on local variables or fields (skip already processed)
             local_method_pattern = r'([a-z][a-zA-Z0-9_]*)\.([a-z][a-zA-Z0-9_]*)\s*\('
             local_calls = re.findall(local_method_pattern, method_body)
             for var_name, method_call in local_calls:
-                # Try to resolve variable type
-                var_type = self._resolve_local_variable_type(method_body, var_name)
-                if var_type:
-                    dependencies.add(f"{var_type}#method_{method_call}")
-                elif var_name.endswith('Repository') or var_name.endswith('Service'):
-                    # Common Spring patterns
-                    class_name = var_name.replace('Repository', 'Repository').replace('Service', 'Service')
-                    dependencies.add(f"{class_name}#method_{method_call}")
+                call_signature = f"{var_name}.{method_call}()"
+                # Skip if already processed by Repository/Service pattern
+                if call_signature not in processed_calls:
+                    # Try to resolve variable type
+                    var_type = self._resolve_local_variable_type(method_body, var_name)
+                    if var_type:
+                        dependencies.add(f"{var_type}#method_{method_call}")
+                    # Skip the fallback for Repository/Service since it's already handled above
         
         return dependencies
     
